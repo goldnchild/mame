@@ -37,20 +37,10 @@ protected:
 
 private:
 
-	uint8_t m_serial_data_out;
-	uint8_t m_serial_clock_out;
-	uint8_t m_store_clock_out;
-
-	uint8_t *m_rom;
-	uint8_t m_ram[256];
-
 	bitmap_rgb32 m_bitmap;
 
 	int m_xpos = 250;
 	int m_ypos = 0;
-	uint16_t m_shift_reg = 0;
-	uint16_t m_parallel_reg = 0;
-	int m_romenable = 0;  // start off disabled
 
 	required_device<screen_device> m_screen;
 
