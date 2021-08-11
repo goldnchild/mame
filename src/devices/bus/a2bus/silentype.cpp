@@ -163,7 +163,7 @@ Mentions using the 6522 chip in the Apple III to interface to the Silentype ther
 //  GLOBAL VARIABLES
 //**************************************************************************
 
-DEFINE_DEVICE_TYPE(A2BUS_SILENTYPE, a2bus_silentype_device, "a2silentype", "Apple Silentype Printer")
+DEFINE_DEVICE_TYPE(A2BUS_SILENTYPE, a2bus_silentype_device, "a2silentype", "Apple Silentype Interface Card")
 
 #define SILENTYPE_ROM_REGION  "rom"
 
