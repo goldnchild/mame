@@ -12,6 +12,15 @@
       input buttons and switches.
     - CPU disassembly doesn't seem to indicate conditional JR or RET.
 
+
+To do:
+
+This printer is very similar to the LX810/AP2000 printer, using the same cpu, but a different gate array
+and different circuit hookups.
+
+Once this is fully working, it should be possible to use subclassing to merge them together.
+
+
 **********************************************************************/
 
 #include "emu.h"
@@ -95,12 +104,10 @@ void epson_lx800_device::device_add_mconfig(machine_config &config)
 	DAC_1BIT(config, "dac", 0).add_route(ALL_OUTPUTS, "speaker", 0.25);
 
 	/* gate array */
-	e05a03_device &e05a03(E05A03(config, m_e05a03, 0));
+	e05a03_device &e05a03(E05A03(config, m_e05a03, 0)); // e05a03 at ic3c
 
 	e05a03.pe_lp_wr_callback().set_output("paperout_led");
 	e05a03.reso_wr_callback().set(FUNC(epson_lx800_device::reset_w)); //reset out
-//  e05a03.pe_wr_callback().set(FUNC(epson_lx800_device::centronics_pe_w));
-//  e05a03.data_rd_callback().set(FUNC(epson_lx800_device::centronics_data_r));
 	e05a03.printhead().set(FUNC(epson_lx800_device::printhead));
 	e05a03.pf_stepper().set(FUNC(epson_lx800_device::pf_stepper));
 	e05a03.cr_stepper().set(FUNC(epson_lx800_device::cr_stepper));
@@ -209,7 +216,15 @@ epson_lx800_device::epson_lx800_device(const machine_config &mconfig, device_typ
 	m_maincpu(*this, "maincpu"),
 	m_e05a03(*this, "e05a03"),
 	m_bitmap_printer(*this, "bitmap_printer"),
-	m_online_led(*this, "online_led")
+	m_online_led(*this, "online_led"),
+	m_online_ioport(*this, "ONLINE"),
+	m_formfeed_ioport(*this, "FORMFEED"),
+	m_linefeed_ioport(*this, "LINEFEED"),
+	m_dipsw1_ioport(*this, "DIPSW1"),
+	m_dipsw2_ioport(*this, "DIPSW2"),
+	m_real_cr_steps(0),
+	m_in_between_offset(0),
+	m_rightward_offset(-3)
 {
 }
 
@@ -253,8 +268,8 @@ uint8_t epson_lx800_device::porta_r(offs_t offset)
 
 	logerror("%s: lx800_porta_r(%02x)\n", machine().describe_context(), offset);
 
-	result |= ioport("LINEFEED")->read() << 3;
-	result |= ioport("FORMFEED")->read() << 4;
+	result |= m_linefeed_ioport->read() << 3;
+	result |= m_formfeed_ioport->read() << 4;
 	result |= 1 << 5;  // paper end
 
 	result |= 1 << 7;  // optional interface
@@ -283,7 +298,7 @@ uint8_t epson_lx800_device::portc_r(offs_t offset)
 
 	logerror("%s: lx800_portc_r(%02x)\n", machine().describe_context(), offset);
 
-	result |= ioport("ONLINE")->read() << 3; // online switch needs to trigger intf2
+	result |= m_online_ioport->read() << 3; // online switch needs to trigger intf2
 
 	return result;
 }
@@ -305,22 +320,22 @@ void epson_lx800_device::portc_w(offs_t offset, uint8_t data)
 
 uint8_t epson_lx800_device::an0_r()
 {
-	return BIT(ioport("DIPSW2")->read(), 0) ? 0 : 255;  // code checks for 0x80 bit so anything >= 0x80
+	return BIT(m_dipsw2_ioport->read(), 0) ? 0 : 255;  // code checks for 0x80 bit so anything >= 0x80
 }
 
 uint8_t epson_lx800_device::an1_r()
 {
-	return BIT(ioport("DIPSW2")->read(), 1) ? 0 : 255;
+	return BIT(m_dipsw2_ioport->read(), 1) ? 0 : 255;
 }
 
 uint8_t epson_lx800_device::an2_r()
 {
-	return BIT(ioport("DIPSW2")->read(), 2) ? 0 : 255;
+	return BIT(m_dipsw2_ioport->read(), 2) ? 0 : 255;
 }
 
 uint8_t epson_lx800_device::an3_r()
 {
-	return BIT(ioport("DIPSW2")->read(), 3) ? 0 : 255; // can also read an external line AUTO_FEED_XT
+	return BIT(m_dipsw2_ioport->read(), 3) ? 0 : 255; // can also read an external line AUTO_FEED_XT
 }
 
 uint8_t epson_lx800_device::an4_r()
@@ -379,19 +394,6 @@ void epson_lx800_device::cr_stepper(uint8_t data)
 	m_cr_timer->adjust(attotime::from_usec(222), m_bitmap_printer->m_cr_direction);
 }
 
-/*
-uint8_t epson_lx800_device::centronics_data_r()
-{
-    logerror("centronics: data read\n");
-    return 0x55;
-}
-
-WRITE_LINE_MEMBER( epson_lx800_device::centronics_pe_w )
-{
-    logerror("centronics: pe = %d\n", state);
-}
-*/
-
 WRITE_LINE_MEMBER( epson_lx800_device::reset_w )
 {
 	logerror("cpu reset");
@@ -440,5 +442,3 @@ void epson_lx800_device::device_timer(emu_timer &timer, device_timer_id id, int 
 		break;
 	}
 }
-
-

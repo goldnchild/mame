@@ -23,6 +23,7 @@ e05a03_device::e05a03_device(const machine_config &mconfig, const char *tag, dev
 	m_write_cr_stepper(*this),
 	m_read_hp_sensor(*this),
 	m_write_nlq_lp(*this),
+	m_write_cond_lp(*this),
 	m_write_pe_lp(*this),
 	m_write_reso(*this),
 //  m_write_pe(*this),
@@ -55,6 +56,7 @@ void e05a03_device::device_start()
 {
 	/* resolve callbacks */
 	m_write_nlq_lp.resolve_safe();
+	m_write_cond_lp.resolve_safe();
 	m_write_pe_lp.resolve_safe();
 	m_write_reso.resolve_safe();
 //  m_write_pe.resolve_safe();
@@ -63,7 +65,7 @@ void e05a03_device::device_start()
 	m_write_printhead.resolve_safe();
 	m_write_pf_stepper.resolve_safe();
 	m_write_cr_stepper.resolve_safe();
-	m_read_hp_sensor.resolve_safe(0);  // reads have to have a parameter
+	m_read_hp_sensor.resolve_safe(0);  // reads have to have a parameter for resolve safe
 
 	m_write_centronics_ack.resolve_safe();
 	m_write_centronics_busy.resolve_safe();

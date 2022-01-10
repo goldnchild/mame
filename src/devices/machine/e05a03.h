@@ -26,9 +26,10 @@ public:
 
 	auto hp_sensor() { return m_read_hp_sensor.bind(); }
 
-	auto nlq_lp_wr_callback() { return m_write_nlq_lp.bind(); }
-	auto pe_lp_wr_callback() { return m_write_pe_lp.bind(); }
-	auto reso_wr_callback() { return m_write_reso.bind(); }
+	auto nlq_lp_wr_callback() { return m_write_nlq_lp.bind(); }  // near letter quality lamp
+	auto cond_lp_wr_callback() { return m_write_cond_lp.bind(); }  // condensed print lamp
+	auto pe_lp_wr_callback() { return m_write_pe_lp.bind(); }  // paper end lamp
+	auto reso_wr_callback() { return m_write_reso.bind(); }  // reset out
 //  auto pe_wr_callback() { return m_write_pe.bind(); }
 //  auto data_rd_callback() { return m_read_data.bind(); }
 
@@ -75,6 +76,7 @@ private:
 	devcb_read_line m_read_hp_sensor; // read home position
 
 	devcb_write_line m_write_nlq_lp; /* pin 2, nlq lamp output */
+	devcb_write_line m_write_cond_lp; /* pin 34, nlq lamp output */
 	devcb_write_line m_write_pe_lp;  /* pin 3, paper empty lamp output */
 	devcb_write_line m_write_reso;   /* pin 25, reset output */
 //  devcb_write_line m_write_pe;     /* pin 35, centronics pe output */

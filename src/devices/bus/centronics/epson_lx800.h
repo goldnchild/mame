@@ -102,6 +102,12 @@ private:
 
 	output_finder<> m_online_led;
 
+	required_ioport m_online_ioport;
+	required_ioport m_formfeed_ioport;
+	required_ioport m_linefeed_ioport;
+	required_ioport m_dipsw1_ioport;
+	required_ioport m_dipsw2_ioport;
+
 	int16_t m_printhead;
 	int m_real_cr_steps;
 	int m_in_between_offset; // in between cr_stepper phases
