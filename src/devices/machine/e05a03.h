@@ -20,11 +20,23 @@ class e05a03_device : public device_t
 public:
 	e05a03_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
+	auto printhead() { return m_write_printhead.bind(); }
+	auto pf_stepper() { return m_write_pf_stepper.bind(); }
+	auto cr_stepper() { return m_write_cr_stepper.bind(); }
+
+	auto hp_sensor() { return m_read_hp_sensor.bind(); }
+
 	auto nlq_lp_wr_callback() { return m_write_nlq_lp.bind(); }
 	auto pe_lp_wr_callback() { return m_write_pe_lp.bind(); }
 	auto reso_wr_callback() { return m_write_reso.bind(); }
-	auto pe_wr_callback() { return m_write_pe.bind(); }
-	auto data_rd_callback() { return m_read_data.bind(); }
+//  auto pe_wr_callback() { return m_write_pe.bind(); }
+//  auto data_rd_callback() { return m_read_data.bind(); }
+
+	auto centronics_ack() { return m_write_centronics_ack.bind(); }
+	auto centronics_busy() { return m_write_centronics_busy.bind(); }
+	auto centronics_perror() { return m_write_centronics_perror.bind(); }
+	auto centronics_fault() { return m_write_centronics_fault.bind(); }
+	auto centronics_select() { return m_write_centronics_select.bind(); }
 
 	void write(offs_t offset, uint8_t data);
 	uint8_t read(offs_t offset);
@@ -36,6 +48,18 @@ public:
 	WRITE_LINE_MEMBER( resi_w ); /* reset input */
 	WRITE_LINE_MEMBER( init_w ); /* centronics init */
 
+	/* Centronics stuff */
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_init );
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_strobe );
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data0 ) { if (state) m_centronics_data |= 0x01; else m_centronics_data &= ~0x01; }
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data1 ) { if (state) m_centronics_data |= 0x02; else m_centronics_data &= ~0x02; }
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data2 ) { if (state) m_centronics_data |= 0x04; else m_centronics_data &= ~0x04; }
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data3 ) { if (state) m_centronics_data |= 0x08; else m_centronics_data &= ~0x08; }
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data4 ) { if (state) m_centronics_data |= 0x10; else m_centronics_data &= ~0x10; }
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data5 ) { if (state) m_centronics_data |= 0x20; else m_centronics_data &= ~0x20; }
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data6 ) { if (state) m_centronics_data |= 0x40; else m_centronics_data &= ~0x40; }
+	DECLARE_WRITE_LINE_MEMBER( centronics_input_data7 ) { if (state) m_centronics_data |= 0x80; else m_centronics_data &= ~0x80; }
+
 protected:
 	// device-level overrides
 	virtual void device_start() override;
@@ -44,11 +68,33 @@ protected:
 private:
 	// internal state
 	/* callbacks */
+
+	devcb_write16 m_write_printhead;
+	devcb_write8 m_write_pf_stepper;
+	devcb_write8 m_write_cr_stepper;
+	devcb_read_line m_read_hp_sensor; // read home position
+
 	devcb_write_line m_write_nlq_lp; /* pin 2, nlq lamp output */
 	devcb_write_line m_write_pe_lp;  /* pin 3, paper empty lamp output */
 	devcb_write_line m_write_reso;   /* pin 25, reset output */
-	devcb_write_line m_write_pe;     /* pin 35, centronics pe output */
-	devcb_read8 m_read_data;         /* pin 47-54, centronics data input */
+//  devcb_write_line m_write_pe;     /* pin 35, centronics pe output */
+//  devcb_read8 m_read_data;         /* pin 47-54, centronics data input */
+
+
+	devcb_write_line m_write_centronics_ack;
+	devcb_write_line m_write_centronics_busy;
+	devcb_write_line m_write_centronics_perror;
+	devcb_write_line m_write_centronics_fault;
+	devcb_write_line m_write_centronics_select;
+
+	/* Centronics stuff */
+	uint8_t m_centronics_data;
+	int m_centronics_busy;
+	int m_centronics_nack;
+	uint8_t m_centronics_init;
+	uint8_t m_centronics_strobe;
+	uint8_t m_centronics_data_latch;
+	uint8_t m_centronics_data_latched;
 
 	/* 24-bit shift register, port 0x00, 0x01 and 0x02 */
 	uint32_t m_shift;
