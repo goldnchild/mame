@@ -88,8 +88,8 @@ void nabu_pc_keyboard_device::device_add_mconfig(machine_config &config)
 
 uint8_t nabu_pc_keyboard_device::p1_data_r()
 {
-// debugger command to see the writes
-// wp 13:rs232:nabu_kbd:mbdcpu,1,w,wpdata==90; wp 2:rs232:nabu_kbd:mbdcpu,1,w,1,{printf "02=%x\n",wpdata;g}; wp 2:rs232:nabu_kbd:mbdcpu,1,r,1,{printf "02 READ =%x\n",wpdata;g};wp 8:rs232:nabu_kbd:mbdcpu,1,w,1,{printf "08=%x\n",wpdata;g}
+// debugger command to see writes to $13 to send data
+// wp 13:rs232:nabu_kbd:mbdcpu,1,w,1,{printf "write (%x) = %x",wpaddr,wpdata;g}
 
 	int col = BIT(m_p1_data,0,3);
 	int row = BIT(m_p1_data,3,3);
@@ -106,7 +106,7 @@ uint8_t nabu_pc_keyboard_device::p1_data_r()
 
 void nabu_pc_keyboard_device::p1_data_w(uint8_t data)
 {
-	// sets the keyboard matrix drivers, bits 0..2 select row, bits 5..3 select column
+	// sets the keyboard matrix drivers, bits 2..0 select col, bits 5..3 select row
 	// bit 6 selects special keys like ctrl, shift and caps lock
 	m_p1_data = data;
 }
