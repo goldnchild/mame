@@ -96,6 +96,7 @@
 #include "bus/rs232/rs232.h"
 #include "cpu/m68000/m68000.h"
 #include "machine/6522via.h"
+#include "machine/bitmap_printer.h"
 #include "machine/z80scc.h"
 
 #include "screen.h"
@@ -121,6 +122,7 @@ public:
 		, m_scc(*this, "scc")
 		, m_via(*this, "via")
 		, m_screen(*this, "screen")
+		, m_bitmap_printer(*this, "bitmap_printer")
 		, m_vram_offset(0)
 		, m_dsw1(*this, "DSW1")
 		, m_dram_ptr(*this, "dram")
@@ -135,6 +137,7 @@ public:
 		, m_print_result(0)
 		, m_sbsy(0)
 		, m_cbsy(0)
+		, m_prnt(0)
 		, m_vsync(0)
 		, m_fifo_count(0)
 		, m_pb6_tick_count(0)
@@ -180,6 +183,7 @@ private:
 	required_device<scc8530_device> m_scc;
 	required_device<via6522_device> m_via;
 	optional_device<screen_device> m_screen;
+	required_device<bitmap_printer_device> m_bitmap_printer;
 	std::unique_ptr<u8[]> m_vram;
 	size_t m_vram_offset;
 	required_ioport m_dsw1;
@@ -195,6 +199,7 @@ private:
 	int m_print_result;
 	bool m_sbsy;
 	bool m_cbsy;
+	bool m_prnt;
 	bool m_vsync;
 	int m_fifo_count;
 	int m_pb6_tick_count;
@@ -413,6 +418,17 @@ void lwriter_state::led_out_w(uint8_t data)
 {
 	//popmessage("LED status: %02X\n", data&0xFF);
 	logerror("LED status: %02X\n", data&0xFF);
+	bool new_prnt = BIT(data, 1);
+	if (new_prnt == 1 && m_prnt == 0)  // starting page
+	{
+		m_bitmap_printer->bitmap_clear_band(0, FB_HEIGHT - 1, 0xffffffff); // clear page
+		for (int i = 0; i < FB_WIDTH / 8 * FB_HEIGHT; i++) m_vram[i] = 0;  // clear vram page
+	}
+	if (new_prnt == 0 && m_prnt == 1)  // finishing page
+	{
+		m_bitmap_printer->write_snapshot_to_file();  // write page to file
+	}
+	m_prnt = new_prnt;
 	m_cbsy = data & 1;
 	if (!m_vsync && (data & 4)) { // vsync
 		LOGMASKED(LOG_VIDEO, "vsync\n");
@@ -429,6 +445,12 @@ void lwriter_state::fifo_out_w(uint8_t data)
 	if (m_vbl_count >= FB_HEIGHT) {
 		m_vbl_count = 0;
 	}
+
+	for (int i=0;i<8;i++)
+		   m_bitmap_printer->pix(m_vbl_count + (m_vram_offset * 8) / (FB_WIDTH),
+								(m_vram_offset  * 8) % FB_WIDTH + i ) =
+								BIT(data, 7-i) ? u32(0) : u32(0xffffffff);  // draw dot on page
+	m_bitmap_printer->m_ypos = m_vbl_count;  // update the position so we can see page scan
 
 	m_vram[m_vbl_count * FB_WIDTH/8 + m_vram_offset] = data;
 	m_vram_offset++;
@@ -659,6 +681,8 @@ void lwriter_state::lwriter(machine_config &config)
 	m_screen->set_size(FB_WIDTH, FB_HEIGHT);
 	m_screen->set_visarea_full();
 	m_screen->set_screen_update(FUNC(lwriter_state::screen_update));
+
+	BITMAP_PRINTER(config, m_bitmap_printer, FB_WIDTH, FB_HEIGHT, 300, 300);  // do 300x300 dpi
 
 	SCC8530N(config, m_scc, CPU_CLK);
 	m_scc->configure_channels(RXC_CLK, 0, RXC_CLK, 0);
