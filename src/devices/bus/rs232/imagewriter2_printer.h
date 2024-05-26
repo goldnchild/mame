@@ -63,9 +63,8 @@ private:
 	int newpageflag = 0;
 	int page_count = 0;
 
-	XTAL baseCLK = 9.8304_MHz_XTAL;  // base clock to 8085 cpu = 9.8304 Mhz
-	XTAL CLK2 = baseCLK / 2;         // CLK2 name from Sams schematic = 4.9152 Mhz
-	XTAL CLK1 = CLK2 / 2;            // CLK1 name from Sams schematic = 2.4576 Mhz
+	XTAL baseCLK = 12_MHz_XTAL;
+
 protected:
 	int dpi = 144;
 	double xscale = 9.0 / 8.0; // 1.125  (stepper moves at 162 dpi, not 144 dpi)

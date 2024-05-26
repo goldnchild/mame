@@ -3,7 +3,172 @@
 
 /**************************************************************************
 
-    Apple ImageWriter Printer
+    Apple ImageWriter 2 Printer
+
+
+
+It uses a gate array to control the printhead and the steppers.
+It's unclear how that works exactly so everything here is guesses and is probably wrong, especially anything
+that has to do with the cr stepper.
+
+After launching, it gets hung up at 2d9 so executing a pc=2da will get past that spot.
+
+Then pressing and holding keypad 0 and the 1 key and then pressing the space bar, then releasing the keypad 0
+will make it do a bunch of activity then it will flash the error led, and you can change
+the print quality led.
+
+Also if you set the FF key upon reset, then perform the above steps, it will go into a self
+test mode, which can be seen by opening up the B800 memory range in the debugger.
+
+Some notes:
+
+
+ESC jump table:
+
+     2C1B   2D15   -.  !    start bold
+     2C1D   2D18   -.  "    stop bold
+     2C1F   368B   6.  #    xxx
+     2C21   313E   1>   $    switch to normal font
+     2C23   368B   6.   %   xxx
+     2C25   32E5   2�   &   mousetext to low ascii
+     2C27   3163   1c   '   switch to custom character font
+     2C29   2E8D   ..   (   set tabs
+     2C2B   2E7A   .z   )   clear tabs
+     2C2D   3166   1f   *   swtich to custom char font high ascii
+     2C2F   317E   1~   +   max width of custom 16 dots
+     2C31   368B   6.   ,   xxx
+     2C33   317B   1{   -   max width of custom 8 dots
+     2C35   368B   6.   .   xxx
+     2C37   368B   6.   /   xxx
+     2C39   2E9B   ..   0    clear all tabs
+     2C3B   2D45   -E   1   insert 1 dot space
+     2C3D   2D47   -G   2   insert 2 dot space
+     2C3F   2D49   -I   3    3
+     2C41   2D4B   -K   4    4
+     2C43   2D4D   -M   5    5
+     2C45   2D4F   -O   6    6 insert 6 dot space
+     2C47   368B   6.   7   XXX
+     2C49   368B   6.   8   XXX
+     2C4B   368B   6.   9   XXX
+     2C4D   368B   6.   :   XXX
+     2C4F   368B   6.   ;   XXX
+     2C51   3241   2A   <   BIDIRECTIONAL
+     2C53   368B   6.   =   XXX
+     2C55   324B   2K   >   UNIDIRECTIONAL
+     2C57   3688   6.   ?   SEND ID STRING   IW10CF
+     2C5B   32FF   2�   A   6 lines per inch   mvi a,$18   24 * 6 = 144
+     2C5D   3306   3.   B   8 lines per inch   mvi a,$12   18 * 8 = 144
+     2C5F   368B   6.   C   xxx
+     2C61   302A   0*   D   set DIP switches  ON
+     2C63   2CE2   ,�   E   2ce2  Elite ESC E    mvi b,$08
+     2C65   3283   2.   F   F nnnn dot column from left margin
+     2C67   333A   3:   G   G IS GRAPHICS nnnn
+     2C69   31F6   1�   H   set page length to nnnn/144
+     2C6B   318F   1.   I   start loading new characters
+     2C6D   368B   6.   J   XXX
+     2C6F   2D27   -'   K   COLOR PRINT
+     2C71   30B6   0�   L   set left margin at col nnn
+     2C73   30F5   0�   M   NLQ font (same as ESC a 2)
+     2C75   2CDE   ,�   N   ESC N 10 cpi   mvi b,$00
+     2C77   30E1   0�   O   paper out sensor OFF
+     2C79   2CED   ,�   P   ESC P 160 dpi mvi b,$58
+     2C7B   2CE6   ,�   Q   ESC Q ultracondensed mvi b,$10
+     2C7D   31CD   1�   R   nnn repeat char nnn times
+     2C7F   333A   3:   S   S IS GRAPHICS nnnn
+     2C81   3309   3    T   distance between lines nn/144 nn = 01 to 99
+     2C83   368B   6.   U   xxx
+     2C85   331A   3.   V   repeat pattern nnnn c
+     2C87   2FFA   /�   W   ESC W stop half height
+     2C89   312C   1,   X   start underline
+     2C8B   312F   1/   Y   stop underling
+     2C8D   3065   0e   Z   set DIP switches OFF
+     2C8F   368B   6.   [   xxx
+     2C91   368B   6.   \   xxx
+     2C93   368B   6.   ]   xxx
+     2C95   368B   6.   ^   xxx
+     2C97   368B   6.   _   xxx
+     2C99   368B   6.   `   xxx
+     2C9B   310D   1.  a    print quality ESC a 0 = correspondence 3103 ESC a 1 = draft 3119 ESC a 2 = NLQ 30f5
+     2C9D   368B   6.  b    xxx
+     2C9F   31E3   1�  c    reset defaults
+     2CA1   368B   6.  d   xxx
+     2CA3   2CF4   ,�  e   semicondensed ESC e 13.4 mvi b,$28
+     2CA5   32F4   2�  f   forward line feed
+     2CA7   332B   3+  g   print line of graphics g nnn
+     2CA9   368B   6.  h   xxx
+     2CAB   368B   6.  i   xxx
+     2CAD   368B   6.  j   xxx
+     2CAF   368B   6.  k   xxx
+     2CB1   3251   2Q  l   linefeed 0 or 1
+     2CB3   3103   1.  m   select correspondence font
+     2CB5   2CF1   ,�  n   ESC n = 9cpi   mvi b,$20
+     2CB7   30F0   0�  o   paper out sensor o
+     2CB9   2CFD   ,�  p   ESC p = 144dpi  mvi b,$78
+     2CBB   2CFA   ,�  q   ESC q = 15 cpi  mvi b,$30
+     2CBD   32FC   2�  r   reverse line feed
+     2CBF   2E3D   .=  s   s n set dot spacing for proportional
+     2CC1   368B   6.  t   xxx
+     2CC3   2E5A   .Z  u   ESC u nnn add one tab stop  ?
+     2CC5   3263   2c  v   set TOF to current position  ?
+     2CC7   2FF1   /�  w   start half height text  ESC W is stop
+     2CC9   3003   0.  x   start superscript
+     2CCB   300E   0.  y   start subscript
+     2CCD   3019   0.  z   stop super or subscript
+
+CONTROL CODES TABLE
+
+     28B0  1B 07 2C   ..,    2c07   ESC    (encounter an ESC code, jump to 2c07)
+     28B3  09 18 37    .7    3718   ctrl+i (moves printer to next tab)
+     28B6  0A 99 37   ..7    3799   ctrl+j  (feeds paper one line)
+     28B9  0B A4 37   .�7    37a4   ctrl+k  (vertical tab???)
+     28BC  0C B1 37   .�7    37b1   ctrl+l  (form feed)
+     28BF  0D F5 36   .�6    36f5   ctrl+m  (execute carriage return)
+     28C2  0E 0D 37   ..7    370d   ctrl+n
+     28C5  0F 06 37   ..7    3706   ctrl+o
+     28C8  13 CB 37   .�7    37cb   ctrl+s (deselect printer)
+     28CB  18 C8 37   .�7    37c8   ctrl+x (erase current line from buffer)
+     28CE  1D D7 37   .�7    37d7   CTRL+] GS  (???)
+     28D1  1F 48 37   .H7    3748   feed 1 to 15 lines of blank paper
+     28D4  FF                       end of table
+
+
+
+
+pa0-7   1-8
+
+pa0-3   lf abcd phase
+
+pa4=pe lp           paper error LP  PA,4
+pa5=sel lp
+pa6=norm lp
+pa7=draft lp
+
+pb0-7   9-16
+
+pb0-3 ribbon motor
+pb4-5 sfmotor
+1516 nc
+
+pc0 = 17 = txdb
+pc1 = 18 = rxd
+pc2 = 19 = sck (according to pg13 should be 16x the baud rate 9600 = 153.6khz)
+pc3 = 20 = CK64 = TI/INT2
+pc4 = 21 = NC  (TIMER OUTPUT PIN), is it really NC? how does it control the baud rate?
+
+pc5 = 22 = rxrdy     pc5= counter input
+
+pc6 = 23 = dtrb
+pc7 = 24 = asyn/apbus interface switching
+
+pt0-7 34-41
+01 pt0 sel sw
+02 pt1 lf sw
+04 pt2 tof sw
+08 pt3 set sw
+10 pt4 pe sw       paper end
+20 pt5 cv open    reads at b6f (calt 0092)  closed = low open=high
+40 pt6 col rbn
+80 pt7 csf on
 
 ***************************************************************************/
 
@@ -13,7 +178,6 @@
 //#define VERBOSE 1
 //#define LOG_OUTPUT_FUNC osd_printf_info
 #include "logmacro.h"
-//#include <math.h>
 #include "imagewriter2_printer.lh"
 
 DEFINE_DEVICE_TYPE(APPLE_IMAGEWRITER2_PRINTER, apple_imagewriter2_printer_device, "apple_imagewriter2", "Apple ImageWriter 2 Printer")
