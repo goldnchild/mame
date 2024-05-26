@@ -6,13 +6,9 @@
 #pragma once
 
 #include "rs232.h"
-//#include "cpu/i8085/i8085.h"
 #include "cpu/upd7810/upd7810.h"
 #include "machine/bitmap_printer.h"
-#include "machine/i8155.h"
-#include "machine/i8251.h"
 #include "machine/steppers.h"
-#include "machine/74123.h"
 #include "machine/timer.h"
 
 class apple_imagewriter2_printer_device : public device_t,
@@ -22,10 +18,6 @@ public:
 	apple_imagewriter2_printer_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
 	DECLARE_INPUT_CHANGED_MEMBER(reset_sw);
-	DECLARE_INPUT_CHANGED_MEMBER(select_sw);
-	DECLARE_INPUT_CHANGED_MEMBER(paper_width_changed);
-	DECLARE_INPUT_CHANGED_MEMBER(dcd_changed);
-
 protected:
 	apple_imagewriter2_printer_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
 
@@ -37,76 +29,31 @@ protected:
 	virtual void device_reset() override;
 
 	void mem_map(address_map &map);
-	void io_map(address_map &map);
+	
+
 
 private:
 
 	required_device<upd7807_device> m_maincpu;
-	required_device<i8251_device> m_uart;
-	required_device<i8155_device> m_8155head;
-	required_device<i8155_device> m_8155switch;
-	required_device<ttl74123_device> m_pulse1;
-	required_device<ttl74123_device> m_pulse2;
 
 	required_device<bitmap_printer_device> m_bitmap_printer;
 	required_device<stepper_device> m_pf_stepper;
 	required_device<stepper_device> m_cr_stepper;
 
-	required_device<timer_device> m_timer_rxclock;
 	required_device<timer_device> m_timer_clk64;
-
-	output_finder<> m_power_led;
-	output_finder<> m_paper_error_led;
-	output_finder<> m_select_led;
 
 	output_finder<> m_pa_led;
 	output_finder<> m_pb_led;
 	output_finder<> m_pc_led;
 	output_finder<> m_pt_led;
 
-
-	void maincpu_out_sod_func(uint8_t data);
-
 	void porta_w(uint8_t data);
 	void portb_w(uint8_t data);
 	uint8_t portt_r();
 
 
-	uint8_t head_pa_r(offs_t offset);
-	void head_pa_w(uint8_t data);
-	uint8_t head_pb_r(offs_t offset);
-	void head_pb_w(uint8_t data);
-	uint8_t head_pc_r(offs_t offset);
-	void head_pc_w(uint8_t data);
-	void head_to(uint8_t data);
-
-	uint8_t switch_pa_r(offs_t offset);
-	void switch_pa_w(uint8_t data);
-	uint8_t switch_pb_r(offs_t offset);
-	void switch_pb_w(uint8_t data);
-	uint8_t switch_pc_r(offs_t offset);
-	void switch_pc_w(uint8_t data);
-	void switch_to(uint8_t data);
-
 	int ioportsaferead(const char * name);
 
-//  virtual DECLARE_WRITE_LINE_MEMBER( input_txd ) override;
-	void input_txd(int state) override;
-
-	void rxrdy_handler(uint8_t data);
-
-	int m_pulse1_out_last = 1;
-
-	void pulse1_out_handler(uint8_t data);
-	void pulse2_out_handler(uint8_t data);
-
-	uint8_t maincpu_in_sid_func();
-	void dtr_handler(uint8_t data);
-	void rts_handler(uint8_t data);
-
-	void txd_handler(uint8_t data);
-
-	TIMER_DEVICE_CALLBACK_MEMBER (pulse_uart_clock);
 	TIMER_DEVICE_CALLBACK_MEMBER (pulse_clk64_clock);
 
 	uint8_t gatearray_r(offs_t offset);
@@ -149,13 +96,6 @@ protected:
 	int m_baud_clock_divisor = 1;
 	int m_baud_clock_divisor_delay = 0;
 
-	int m_ic17_flipflop_head = 0;           // connected to 8155 head     (ic17 7474 part 1/2)
-	int m_ic17_flipflop_select_status = 0;  // connected to 8155 switches (ic17 7474 part 2/2)
-	int m_head_to_last = 0;
-	int m_head_pb_last = 0;
-	int m_switches_pc_last = 0;
-	int m_switches_to_last = 0;
-	u16 m_dotpattern = 0;
 
 	int m_left_edge_adjust = -6;  // to get perfect centering with macpaint
 
@@ -173,7 +113,6 @@ protected:
 	// If this is set improperly, the self test will not print more than a single line since it will
 	// deselect the printer at the right edge.
 
-	void darken_pixel(double darkpct, unsigned int& pixel);
 	void update_head_pos();
 
 	uint32_t screen_update_bitmap(screen_device &screen, bitmap_rgb32 &bitmap, const rectangle &cliprect);
