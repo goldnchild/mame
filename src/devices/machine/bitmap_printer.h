@@ -63,6 +63,14 @@ public:
 	int m_cr_direction; // direction of carriage
 	int m_xpos;
 	int m_ypos;
+public:
+
+	template <typename F>
+		std::enable_if_t<screen_update_rgb32_delegate::supports_callback<F>::value> set_screen_update(F &&callback, const char *name)
+		{
+				m_screen_update_rgb32.set(std::forward<F>(callback), name);
+		}
+
 
 protected:
 	bitmap_printer_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
@@ -78,6 +86,7 @@ private:
 	required_device<screen_device> m_screen;
 	required_device<stepper_device> m_pf_stepper;
 	required_device<stepper_device> m_cr_stepper;
+	screen_update_rgb32_delegate m_screen_update_rgb32; // screen update callback (32-bit RGB)
 
 	required_ioport m_top_margin_ioport;
 	required_ioport m_bottom_margin_ioport;

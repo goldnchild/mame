@@ -70,6 +70,8 @@ void bitmap_printer_device::device_add_mconfig(machine_config &config)
 
 	STEPPER(config, m_pf_stepper, (uint8_t) 0xa);
 	STEPPER(config, m_cr_stepper, (uint8_t) 0xa);
+
+
 }
 
 //**************************************************************************
@@ -84,6 +86,7 @@ bitmap_printer_device::bitmap_printer_device(const machine_config &mconfig, devi
 	m_screen(*this, "screen"),
 	m_pf_stepper(*this, "pf_stepper"),
 	m_cr_stepper(*this, "cr_stepper"),
+	m_screen_update_rgb32(*this),
 	m_top_margin_ioport(*this, "TOPMARGIN"),
 	m_bottom_margin_ioport(*this, "BOTTOMMARGIN"),
 	m_draw_marks_ioport(*this, "DRAWMARKS"),
@@ -151,6 +154,8 @@ void bitmap_printer_device::device_start()
 	save_item(NAME(m_vdpi));
 	save_item(NAME(m_clear_pos));
 	save_item(NAME(m_newpage_flag));
+
+	m_screen_update_rgb32.resolve();  // screen.cpp has it inside device_resolve_objects  MUST have this or segfault
 }
 
 void bitmap_printer_device::device_reset_after_children()
@@ -192,7 +197,7 @@ uint32_t bitmap_printer_device::screen_update_bitmap(screen_device &screen,
 	draw_printhead(bitmap, std::max(m_xpos, 0) , bitmap.height() - m_distfrombottom);
 
 	draw_inch_marks(bitmap);
-
+	if (!m_screen_update_rgb32.isnull()) m_screen_update_rgb32(screen, bitmap, cliprect);
 	return 0;
 }
 

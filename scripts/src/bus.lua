@@ -3208,6 +3208,8 @@ if (BUSES["RS232"]~=null) then
 		MAME_DIR .. "src/devices/bus/rs232/ie15.h",
 		MAME_DIR .. "src/devices/bus/rs232/keyboard.cpp",
 		MAME_DIR .. "src/devices/bus/rs232/keyboard.h",
+		MAME_DIR .. "src/devices/bus/rs232/imagewriter2_printer.cpp",
+		MAME_DIR .. "src/devices/bus/rs232/imagewriter2_printer.h",
 		MAME_DIR .. "src/devices/bus/rs232/loopback.cpp",
 		MAME_DIR .. "src/devices/bus/rs232/loopback.h",
 		MAME_DIR .. "src/devices/bus/rs232/mboardd.cpp",
@@ -3234,6 +3236,14 @@ if (BUSES["RS232"]~=null) then
 		MAME_DIR .. "src/devices/bus/rs232/terminal.h",
 		MAME_DIR .. "src/devices/bus/rs232/xvd701.cpp",
 		MAME_DIR .. "src/devices/bus/rs232/xvd701.h",
+	}
+
+	dependency {
+		{ MAME_DIR .. "src/devices/bus/rs232/imagewriter2_printer.cpp",  GEN_DIR .. "emu/layout/imagewriter2_printer.lh" },
+	}
+
+	custombuildtask {
+		layoutbuildtask("emu/layout", "imagewriter2_printer"),
 	}
 end
 

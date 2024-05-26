@@ -831,13 +831,15 @@ void upd7810_device::upd7810_take_irq()
 		if (0 != (MKH & 0x01))
 			IRR&=~INTFEIN;
 	}
-	else
-	if ((IRR & INTFAD)  && 0 == (MKH & 0x01))
-	{
-		vector = 0x0020;
-		if (0 != (MKL & 0x80))
-			IRR&=~INTFAD;
-	}
+/*
+    else
+    if ((IRR & INTFAD)  && 0 == (MKH & 0x01))
+    {
+        vector = 0x0020;
+        if (0 != (MKL & 0x80))
+            IRR&=~INTFAD;
+    }
+*/
 	else
 	if ((IRR & INTFSR)  && 0 == (MKH & 0x02))
 	{
@@ -1768,6 +1770,7 @@ void upd7810_device::device_start()
 	state_add( UPD7810_LV1,  "LV1",  m_lv1).formatstr("%3u");
 	state_add( UPD7810_CO0,  "CO0",  m_co0).formatstr("%3u");
 	state_add( UPD7810_CO1,  "CO1",  m_co1).formatstr("%3u");
+	state_add( UPD7810_IRR,  "IRR", m_irr).formatstr("%02X");
 
 	state_add( STATE_GENPC, "GENPC", m_pc.w.l ).formatstr("%04X").noshow();
 	state_add( STATE_GENPCBASE, "CURPC", m_ppc.w.l ).formatstr("%04X").noshow();

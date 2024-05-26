@@ -27,7 +27,7 @@ enum
 	UPD7810_TXB, UPD7810_RXB, UPD7810_CR0, UPD7810_CR1, UPD7810_CR2, UPD7810_CR3,
 	UPD7810_AN0, UPD7810_AN1, UPD7810_AN2, UPD7810_AN3, UPD7810_AN4, UPD7810_AN5, UPD7810_AN6, UPD7810_AN7,
 	UPD7810_TXD, UPD7810_RXD, UPD7810_SCK, UPD7810_TI, UPD7810_TO, UPD7810_CI, UPD7810_CO0, UPD7810_CO1,
-	UPD7810_LV0, UPD7810_LV1
+	UPD7810_LV0, UPD7810_LV1, UPD7810_IRR
 };
 
 /* IRQ lines */
@@ -1353,6 +1353,16 @@ protected:
 	void STM_7801();
 	void MOV_MC_A_7801();
 	void base_device_start();
+	void MOV_CY_bit();
+	void MOV_bit_CY();
+	void AND_CY_bit();
+	void OR_CY_bit();
+	void XOR_CY_bit();
+	void NOT_bit();
+	uint8_t GET_bit();
+	void ONI_PT_xx();
+	void OFFI_PT_xx();
+	void CMC();
 };
 
 

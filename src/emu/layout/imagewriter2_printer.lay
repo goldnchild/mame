@@ -1,0 +1,241 @@
+<mamelayout version="2">
+	<element name="button">
+		<rect><color red="1.0" green="1.0" blue="1.0"/></rect>
+		<rect state="1"><color red="1.0" green="0.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+		<rect state="0"><color red="0.0" green="0.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+	</element>
+
+
+	<element name="button80">
+		<rect><color red="0.0" green="0.0" blue="0.0"/></rect>
+		<rect statemask="0x80"><color red="0.0" green="1.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+		<rect statemask="0x80" state="0"><color red="0.0" green="0.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+	</element>
+	<element name="button40">
+		<rect><color red="0.0" green="0.0" blue="0.0"/></rect>
+		<rect statemask="0x40"><color red="0.0" green="1.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+		<rect statemask="0x40" state="0"><color red="0.0" green="0.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+	</element>
+	<element name="button20">
+		<rect><color red="0.0" green="0.0" blue="0.0"/></rect>
+		<rect statemask="0x20"><color red="0.0" green="1.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+		<rect statemask="0x20" state="0"><color red="0.0" green="0.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+	</element>
+	<element name="button10">
+		<rect><color red="0.0" green="0.0" blue="0.0"/></rect>
+		<rect statemask="0x10"><color red="1.0" green="0.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+		<rect statemask="0x10" state="0"><color red="0.0" green="0.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+	</element>
+
+
+	<element name="buttonpwr">
+		<rect><color red="0.0" green="0.0" blue="0.0"/></rect>
+		<rect statemask="0x0" state="0"><color red="0.0" green="1.0" blue="0.0"/><bounds x="0.05" y="0.05" width="0.90" height="0.90"/></rect>
+	</element>
+
+
+
+	<element name="textreset">
+		<text string="on off">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+
+	<element name="textselect0">
+		<text string="select">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+
+	<element name="textlinefeed">
+		<text string="line feed">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+
+	<element name="textformfeed">
+		<text string="form feed">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+
+	<element name="textquality">
+		<text string="print quality">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+
+
+	<element name="textstd">
+		<text string="std">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+	<element name="textdraft">
+		<text string="draft">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+	<element name="textnlq">
+		<text string="near letter quality">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+	<element name="texterror">
+		<text string="error">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+	<element name="textpwr">
+		<text string="pwr">
+		<color red="0.0" green="0.0" blue="0.0"/>
+		</text>
+	</element>
+
+
+<group name="controller">
+
+<!-- right -->
+		<element ref="textreset">
+		<bounds x="480" y="40" width="20" height="10"/>
+		</element>
+
+		<element ref="button" inputtag=":sl1:ssc:rs232:imagewriter2:RESET" inputmask="0x1">
+		<bounds x="480" y="50" width="20" height="10"/>
+		</element>
+
+		<element ref="textselect0">
+		<bounds x="480" y="60" width="20" height="10"/>
+		</element>
+
+		<element ref="button" inputtag=":sl1:ssc:rs232:imagewriter2:SELECT" inputmask="0x1">
+		<bounds x="480" y="70" width="20" height="10"/>
+		</element>
+
+
+		<element ref="textquality">
+		<bounds x="480" y="80" width="20" height="10"/>
+		</element>
+		<element ref="button" inputtag=":sl1:ssc:rs232:imagewriter2:QUALITY" inputmask="0x1">
+		<bounds x="480" y="90" width="20" height="10"/>
+		</element>
+
+
+		<element ref="textlinefeed">
+		<bounds x="480" y="100" width="20" height="10"/>
+		</element>
+		<element ref="button" inputtag=":sl1:ssc:rs232:imagewriter2:LINEFEED" inputmask="0x1">
+		<bounds x="480" y="110" width="20" height="10"/>
+		</element>
+
+		<element ref="textformfeed">
+		<bounds x="480" y="120" width="20" height="10"/>
+		</element>
+		<element ref="button" inputtag=":sl1:ssc:rs232:imagewriter2:FORMFEED" inputmask="0x1">
+		<bounds x="480" y="130" width="20" height="10"/>
+		</element>
+
+
+	<element ref="textstd">
+		<bounds x="440" y="80" width="20" height="10"/>
+	</element>
+
+	<element ref="button80" name="pa_led">
+		<bounds x="440" y="90" width="20" height="10"/>
+	</element>
+
+
+	<element ref="textdraft">
+		<bounds x="420" y="80" width="20" height="10"/>
+	</element>
+
+
+	<element ref="button40" name="pa_led">
+		<bounds x="420" y="90" width="20" height="10"/>
+	</element>
+
+
+	<element ref="textnlq">
+		<bounds x="420" y="100" width="40" height="10"/>
+	</element>
+
+
+
+
+	<element ref="button20" name="pa_led">
+		<bounds x="420" y="70" width="20" height="10"/>
+	</element>
+	<element ref="button20" name="pa_led">
+		<bounds x="440" y="70" width="20" height="10"/>
+	</element>
+
+	<element ref="button10" name="pa_led">
+		<bounds x="420" y="50" width="20" height="10"/>
+	</element>
+	<element ref="buttonpwr" name="pa_led">
+		<bounds x="440" y="50" width="20" height="10"/>
+	</element>
+
+	<element ref="texterror">
+		<bounds x="420" y="40" width="20" height="10"/>
+	</element>
+	<element ref="textpwr">
+		<bounds x="440" y="40" width="20" height="10"/>
+	</element>
+
+</group>
+
+	<element name="framecount"><simplecounter align="2" /></element>
+
+	<view name="Controllers Overlay">
+		<screen index="0">
+			<bounds x="0" y="0" width="256" height="240" />
+		</screen>
+		<screen index="1">
+			<bounds x="256" y="0" width="256" height="240" />
+		</screen>
+		<group ref="controller" id="controllergroup2">
+		<color alpha="0.9" red="1.0" green="1.0" blue="1.0"/>
+		</group>
+		<element ref="framecount" id="framecount">
+			<bounds x="0" y="0" width="50" height="10"/>
+		</element>
+	</view>
+
+
+
+
+
+
+
+
+<script><![CDATA[
+
+-- file is the layout file object
+
+print("LAYOUT LOADED  file.device.name = "..file.device.name)
+print("LAYOUT LOADED  file.device.shortname = "..file.device.shortname)
+print("LAYOUT LOADED  file.device.tag = = "..file.device.tag)
+
+
+--[[[
+file:set_resolve_tags_callback(
+	function ()
+
+file.views["Controllers Overlay"].items["framecount"]:set_element_state_callback(
+		function ()
+		--print("FRAME:"..machine.screens[":screen"]:frame_number())
+		return 0
+		--machine.screens[":screen"]:frame_number()
+		end)
+
+end)
+
+--]]]
+
+]]></script>
+
+
+
+</mamelayout>
+
