@@ -29,7 +29,7 @@ protected:
 	virtual void device_reset() override;
 
 	void mem_map(address_map &map);
-	
+
 
 
 private:
