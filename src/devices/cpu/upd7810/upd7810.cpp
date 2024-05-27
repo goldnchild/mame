@@ -831,15 +831,17 @@ void upd7810_device::upd7810_take_irq()
 		if (0 != (MKH & 0x01))
 			IRR&=~INTFEIN;
 	}
-/*
-    else
-    if ((IRR & INTFAD)  && 0 == (MKH & 0x01))
-    {
-        vector = 0x0020;
-        if (0 != (MKL & 0x80))
-            IRR&=~INTFAD;
-    }
-*/
+
+	else
+	if  ((m_opXX == s_opXX_7810) && ((IRR & INTFAD)  && 0 == (MKH & 0x01)))
+// skip if we are 7807 since 7807 doesn't have AD conversion
+//    if ((IRR & INTFAD)  && 0 == (MKH & 0x01))
+	{
+		vector = 0x0020;
+		if (0 != (MKL & 0x80))
+			IRR&=~INTFAD;
+	}
+
 	else
 	if ((IRR & INTFSR)  && 0 == (MKH & 0x02))
 	{

@@ -20,6 +20,11 @@ the print quality led.
 Also if you set the FF key upon reset, then perform the above steps, it will go into a self
 test mode, which can be seen by opening up the B800 memory range in the debugger.
 
+The layout is setup to work with the apple2e driver due to the inputtags being relative, e.g. inputtag=":sl1:ssc:rs232:imagewriter2:RESET"
+
+./mame apple2e -sl1 ssc -sl1:ssc:rs232 imagewriter2 -window -debug
+
+
 Some notes:
 
 
