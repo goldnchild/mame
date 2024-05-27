@@ -713,10 +713,26 @@ uint32_t apple_imagewriter2_printer_device::screen_update_bitmap(screen_device &
 {
 
 	static constexpr int size=40;
-	for (int b=0;b<8;b++) bitmap.plot_box(1*(size*12)+(size/2)*(b>3)+b*size,size*2,size - 2,size - 2, m_porta & (1<<(7-b)) ? (((7-b)==4) ? 0xff0000 : 0x00ff00 ) : 0x0 );
-	for (int b=0;b<8;b++) bitmap.plot_box(1*(size*12)+(size/2)*(b>3)+b*size,size*4,size - 2,size - 2, m_portb & (1<<(7-b)) ? 0x00ff00 : 0x0 );
+	for (int b=0;b<8;b++) bitmap.plot_box(1*(size*4)+(size/2)*(b>3)+b*size,size*2,size - 2,size - 2, m_porta & (1<<(7-b)) ? (((7-b)==4) ? 0xff0000 : 0x00ff00 ) : 0x0 );
+	for (int b=0;b<8;b++) bitmap.plot_box(1*(size*4)+(size/2)*(b>3)+b*size,size*4,size - 2,size - 2, m_portb & (1<<(7-b)) ? 0x00ff00 : 0x0 );
 	u8 portt = portt_r();
-	for (int b=0;b<8;b++) bitmap.plot_box(1*(size*12)+(size/2)*(b>3)+b*size,size*6,size - 2,size - 2, portt & (1<<(7-b)) ? 0x00ff00 : 0x0 );
+	for (int b=0;b<8;b++) bitmap.plot_box(1*(size*4)+(size/2)*(b>3)+b*size,size*6,size - 2,size - 2, portt & (1<<(7-b)) ? 0x00ff00 : 0x0 );
+
+
+    char buffer[128];
+
+	snprintf(buffer, 128, "PA7-4 = Lamps PA3-0 = LF Steppers");
+	draw_string(bitmap, buffer, 40, 40+size*0.5, 2, 2, 0);
+
+	snprintf(buffer, 128, "PB5-4 = SF Motor PB3-0 = Ribbon Steppers");
+	draw_string(bitmap, buffer, 40, 40+size*2.5, 2, 2, 0);
+
+	snprintf(buffer, 128, "PT7=CSF  PT6=COL RBN  PT5=COVER PT4=PAPER SW");
+	draw_string(bitmap, buffer, 40, 40+size*4.5, 2, 2, 0);
+
+	snprintf(buffer, 128, "PT3=QUALITY  PT2=FORM  PT1=LINE PT0=SELECT");
+	draw_string(bitmap, buffer, 40, 40+size*6, 2, 2, 0);
+
 
 
 	return 0;
