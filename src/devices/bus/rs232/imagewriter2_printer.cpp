@@ -719,7 +719,7 @@ uint32_t apple_imagewriter2_printer_device::screen_update_bitmap(screen_device &
 	for (int b=0;b<8;b++) bitmap.plot_box(1*(size*4)+(size/2)*(b>3)+b*size,size*6,size - 2,size - 2, portt & (1<<(7-b)) ? 0x00ff00 : 0x0 );
 
 
-    char buffer[128];
+	char buffer[128];
 
 	snprintf(buffer, 128, "PA7-4 = Lamps PA3-0 = LF Steppers");
 	draw_string(bitmap, buffer, 40, 40+size*0.5, 2, 2, 0);
