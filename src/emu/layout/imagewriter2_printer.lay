@@ -211,27 +211,11 @@
 
 <script><![CDATA[
 
--- file is the layout file object
 
 print("LAYOUT LOADED  file.device.name = "..file.device.name)
 print("LAYOUT LOADED  file.device.shortname = "..file.device.shortname)
 print("LAYOUT LOADED  file.device.tag = = "..file.device.tag)
 
-
---[[[
-file:set_resolve_tags_callback(
-	function ()
-
-file.views["Controllers Overlay"].items["framecount"]:set_element_state_callback(
-		function ()
-		--print("FRAME:"..machine.screens[":screen"]:frame_number())
-		return 0
-		--machine.screens[":screen"]:frame_number()
-		end)
-
-end)
-
---]]]
 
 ]]></script>
 
