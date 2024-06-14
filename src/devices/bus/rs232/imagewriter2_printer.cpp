@@ -27,6 +27,52 @@ The layout is setup to work with the apple2e driver due to the inputtags being r
 
 Some notes:
 
+    IRQ0 4 *NMI
+    IRQ1 8 (INTT0, INTT1 timer 0 and 1)
+    IRQ2 10 (*INT1, INT2) maskable interrupt
+    IRQ3 18 INTE0, INTE1 (timer/event)
+    IRQ4 20 INTEIN (falling signal of CI and TO)
+    IRQ5 28 INTSR INTST (serial send/receive)
+
+
+
+0000: ba           DI
+0001: ba           DI
+0002: 68 ff        MVI     V,$FF
+0004: 48 ad        EXR                   NMI
+0006: 4e 24        JRE     $002C
+0008: ba           DI                    INTT0/INTT1
+0009: b0           PUSH    VA
+000a: b1           PUSH    BC
+000b: b2           PUSH    DE
+000c: b3           PUSH    HL
+000d: 54 f2 25     JMP     $25F2
+0010: ba           DI                       INT1/INT2
+0011: b0           PUSH    VA
+0012: b1           PUSH    BC
+0013: b2           PUSH    DE
+0014: b3           PUSH    HL
+0015: 54 30 1b     JMP     $1B30
+0018: ba           DI                      INTE0/INTE1  event
+0019: b0           PUSH    VA
+001a: b1           PUSH    BC
+001b: b2           PUSH    DE
+001c: b3           PUSH    HL
+001d: 54 0a 1b     JMP     $1B0A
+0020: ff           JR      $0020              INTEIN (not used apparently)
+0021: ff           JR      $0021
+0022: ff           JR      $0022
+0023: ff           JR      $0023
+0024: ff           JR      $0024
+0025: ff           JR      $0025
+0026: ff           JR      $0026
+0027: ff           JR      $0027
+0028: ba           DI                        SERIAL send/receive
+0029: 54 02 21     JMP     $2102
+
+
+
+
 
 ESC jump table:
 
