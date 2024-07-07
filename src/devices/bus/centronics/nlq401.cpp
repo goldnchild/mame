@@ -4,9 +4,20 @@
 
     Schneider NLQ 401 Matrix Printer (skeleton)
 
-    This appears to be an OEM version of a Centronics Printer Corp.
+    This appears to be an OEM version of a Centronics Printer Corp. GLP 3101
     product. The hardware (but not the firmware) is also said to be
     identical with the Brother M1009.
+
+    DIPSWITCH 1 is not present on the NLQ401 board.
+
+    https://zrk.dk/glp/ has a list of printers based on same design.
+
+    make sure DIP28+DIP27 is set on, because SELECT isn't hooked up.
+
+    SELF TEST can be performed by LF key held down on reset/power up.
+
+    HEX DUMP MODE can be engaged by holding LF and ONLINE on reset/powerup.
+      (hex dump mode strangely doesn't seem to do line feeds)
 
 **********************************************************************/
 
@@ -14,6 +25,10 @@
 #include "nlq401.h"
 
 #include "cpu/upd7810/upd7810.h"
+
+
+#define PAPER_WIDTH  1024    // 120 dpi * 8.5333 inches
+#define PAPER_HEIGHT (11*72) // 72 dpi * 11 inches
 
 
 //**************************************************************************
@@ -31,6 +46,8 @@ DEFINE_DEVICE_TYPE(NLQ401, nlq401_device, "nlq401", "Schneider NLQ 401 Matrix Pr
 nlq401_device::nlq401_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
 	: device_t(mconfig, NLQ401, tag, owner, clock)
 	, device_centronics_peripheral_interface(mconfig, *this)
+	, m_maincpu(*this, "maincpu")
+	, m_bitmap_printer(*this, "bitmap_printer")
 	, m_inpexp(*this, "inpexp")
 	, m_outexp(*this, "outexp")
 {
@@ -43,89 +60,22 @@ nlq401_device::nlq401_device(const machine_config &mconfig, const char *tag, dev
 
 void nlq401_device::device_start()
 {
+	output_fault(1);
+	output_select(1);
+	output_perror(0);
 }
 
-
-//-------------------------------------------------
-//  input_data0 - DATA1 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data0(int state)
-{
-	// TODO
-}
-
-//-------------------------------------------------
-//  input_data1 - DATA2 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data1(int state)
-{
-	// TODO
-}
-
-//-------------------------------------------------
-//  input_data2 - DATA3 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data2(int state)
-{
-	// TODO
-}
-
-//-------------------------------------------------
-//  input_data3 - DATA4 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data3(int state)
-{
-	// TODO
-}
-
-//-------------------------------------------------
-//  input_data4 - DATA5 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data4(int state)
-{
-	// TODO
-}
-
-//-------------------------------------------------
-//  input_data5 - DATA6 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data5(int state)
-{
-	// TODO
-}
-
-//-------------------------------------------------
-//  input_data6 - DATA7 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data6(int state)
-{
-	// TODO
-}
-
-//-------------------------------------------------
-//  input_data7 - DATA8 line handler
-//-------------------------------------------------
-
-void nlq401_device::input_data7(int state)
-{
-	// TODO
-}
 
 //-------------------------------------------------
 //  input_strobe - DATA STROBE line handler
 //-------------------------------------------------
 
+/*
 void nlq401_device::input_strobe(int state)
 {
-	// TODO
+    // TODO
 }
+*/
 
 //-------------------------------------------------
 //  input_init - INIT line handler
@@ -137,27 +87,40 @@ void nlq401_device::input_init(int state)
 }
 
 
-//-------------------------------------------------
-//  expander_w - write from MCU to expanders
-//-------------------------------------------------
 
-void nlq401_device::expander_w(u8 data)
+
+u8 nlq401_device::porta_r()
+{
+	return ~m_centronics_data;  // centronics input passes through inverter
+}
+
+void nlq401_device::portb_w(u8 data)
 {
 	m_outexp->write_h(BIT(data, 0, 4));
 	m_outexp->write_s(BIT(data, 4, 3));
 	m_inpexp->write_s(BIT(data, 4, 3));
 	m_outexp->write_std(BIT(data, 7));
+	m_portselect = BIT(data, 4,3);  // keep track of portselect for debugging messages (not used otherwise)
 }
 
-//-------------------------------------------------
-//  expander_r - read from expander port
-//-------------------------------------------------
-
-u8 nlq401_device::expander_r()
+u8 nlq401_device::portc_r()
 {
 	return 0x87 | (m_inpexp->read_h() << 3);
 }
 
+void nlq401_device::portc_w(u8 data)
+{
+	m_pcbusy = BIT(data,2);
+	output_busy(m_pcbusy | m_ls74_input);
+}
+
+
+void nlq401_device::portf_w(u8 data)
+{
+	// pf6 is head pin 9
+	// pf7 is CRPLS (carriage power)
+	m_printhead = (m_printhead & ~(0x01)) | ((BIT(data,6)) << 0);
+}
 
 //-------------------------------------------------
 //  mem_map - address map for microcontroller
@@ -168,17 +131,25 @@ void nlq401_device::mem_map(address_map &map)
 	map(0x0000, 0x3fff).rom().region("prom", 0);
 }
 
-
 //-------------------------------------------------
 //  device_add_mconfig - device-specific config
 //-------------------------------------------------
 
 void nlq401_device::device_add_mconfig(machine_config &config)
 {
-	upd7810_device &mcu(UPD7810(config, "mcu", 11_MHz_XTAL));
-	mcu.set_addrmap(AS_PROGRAM, &nlq401_device::mem_map);
-	mcu.pb_out_cb().set(FUNC(nlq401_device::expander_w));
-	mcu.pc_in_cb().set(FUNC(nlq401_device::expander_r));
+	UPD7810(config, m_maincpu, 11_MHz_XTAL);
+	m_maincpu->set_addrmap(AS_PROGRAM, &nlq401_device::mem_map);
+
+	m_maincpu->pa_in_cb().set(FUNC(nlq401_device::porta_r));
+	m_maincpu->pb_out_cb().set(FUNC(nlq401_device::portb_w));
+	m_maincpu->pc_in_cb().set(FUNC(nlq401_device::portc_r));
+	m_maincpu->pc_out_cb().set(FUNC(nlq401_device::portc_w));
+	m_maincpu->pf_out_cb().set(FUNC(nlq401_device::portf_w));
+
+	m_maincpu->an5_func().set(FUNC(nlq401_device::an5_r));
+	m_maincpu->an6_func().set(FUNC(nlq401_device::an6_r));
+	m_maincpu->an7_func().set(FUNC(nlq401_device::an7_r));
+	m_maincpu->co1_func().set(FUNC(nlq401_device::co1_w));
 
 	TMS1025(config, m_inpexp); // B8 (labeled M50780 on schematic)
 	m_inpexp->set_ms(0);
@@ -191,14 +162,77 @@ void nlq401_device::device_add_mconfig(machine_config &config)
 
 	TMS1025(config, m_outexp); // B2 (labeled M50780 on schematic)
 	m_outexp->set_ms(1); // tied to _RESET
-	//m_outexp->write_port1_callback().set(FUNC(nlq401_device::cr_w));
-	//m_outexp->write_port2_callback().set(FUNC(nlq401_device::lf_w));
-	//m_outexp->write_port3_callback().set(FUNC(nlq401_device::ack_w));
-	//m_outexp->write_port4_callback().set(FUNC(nlq401_device::head_5_8_w));
-	//m_outexp->write_port5_callback().set(FUNC(nlq401_device::head_1_4_w));
-	//m_outexp->write_port7_callback().set(FUNC(nlq401_device::led_w));
+
+	m_outexp->write_port1_callback().set([this] (u8 data)
+	{
+		m_bitmap_printer->update_cr_stepper(bitswap<4>(data, 0, 2, 1, 3));
+	});
+
+	m_outexp->write_port2_callback().set([this] (u8 data)
+	{
+		m_bitmap_printer->update_pf_stepper(bitswap<4>(data, 3, 1, 2, 0));  // reverse bits for reverse direction
+	});
+
+	m_outexp->write_port3_callback().set([this] (u8 data)
+	{
+		output_ack(BIT(data,2));
+		if (BIT(data,3) == 0) m_ls74 = 0;
+	});
+
+	m_outexp->write_port4_callback().set([this] (u8 data)
+	{
+		m_printhead = (m_printhead & ~(0x1E)) | (BIT(data,0,4)) << 1;
+	});
+
+	m_outexp->write_port5_callback().set([this] (u8 data)
+	{
+		m_printhead = (m_printhead & ~(0x1E0)) | (BIT(data,0,4)) << 5;
+	});
+
+	m_outexp->write_port7_callback().set([this] (u8 data)
+	{
+		m_bitmap_printer->set_led_state(bitmap_printer_device::LED_ONLINE, !BIT(data, 0));
+		m_bitmap_printer->set_led_state(bitmap_printer_device::LED_READY,  !BIT(data, 0));
+		m_bitmap_printer->set_led_state(bitmap_printer_device::LED_ERROR,  !BIT(data, 1));
+
+		if (!BIT(data,3))
+		{
+			m_ls74_input = 0;
+			output_busy(m_pcbusy | m_ls74_input);
+			m_maincpu->set_input_line(UPD7810_INTF1, !m_ls74_input ? CLEAR_LINE : ASSERT_LINE);
+		}
+	});
+
+	BITMAP_PRINTER(config, m_bitmap_printer, PAPER_WIDTH, PAPER_HEIGHT, 120, 72);  // do 72 dpi
+	m_bitmap_printer->set_pf_stepper_ratio(1,6);  // pf stepper moves at 216 dpi so at 72dpi half steps
+	m_bitmap_printer->set_cr_stepper_ratio(1,1);
 }
 
+
+CUSTOM_INPUT_MEMBER( nlq401_device::homepos_r )
+{
+	return (m_bitmap_printer->m_xpos < 0);
+}
+
+CUSTOM_INPUT_MEMBER( nlq401_device::ls74_r )
+{
+	return m_ls74;
+}
+
+INPUT_CHANGED_MEMBER(nlq401_device::online_sw)
+{
+	if ((oldval == 0 ) && (newval == 1))
+		m_ls74 = 1;  // set flip flop
+}
+
+INPUT_CHANGED_MEMBER(nlq401_device::reset_printer)
+{
+	if (newval)
+	{
+		m_maincpu->pulse_input_line(INPUT_LINE_RESET, attotime::zero);  // reset cpu (wasn't working disabled keyboard)
+//      m_maincpu->reset();  // this works also
+	}
+}
 
 //**************************************************************************
 //  INPUT PORTS
@@ -223,13 +257,13 @@ static INPUT_PORTS_START(nlq401)
 	PORT_DIPSETTING(0x00, DEF_STR(On))
 
 	PORT_START("P1")
-	PORT_BIT(1, IP_ACTIVE_LOW, IPT_OTHER) PORT_NAME("HP SW")
-	PORT_BIT(2, IP_ACTIVE_LOW, IPT_UNKNOWN)
-	PORT_BIT(4, IP_ACTIVE_LOW, IPT_OTHER) PORT_NAME("PE SW")
-	PORT_BIT(8, IP_ACTIVE_LOW, IPT_UNKNOWN)
+	PORT_BIT(1, IP_ACTIVE_LOW, IPT_OTHER) PORT_NAME("HP SW")  PORT_CUSTOM_MEMBER(nlq401_device, homepos_r)
+	PORT_BIT(2, IP_ACTIVE_LOW, IPT_OTHER)
+	PORT_BIT(4, IP_ACTIVE_HIGH, IPT_KEYBOARD) PORT_NAME("PE SW")  PORT_CODE(KEYCODE_7_PAD) PORT_TOGGLE
+	PORT_BIT(8, IP_ACTIVE_HIGH, IPT_UNKNOWN) PORT_NAME("ONLINE SW") PORT_CUSTOM_MEMBER(nlq401_device, ls74_r)
 
 	PORT_START("P2")
-	PORT_BIT(1, IP_ACTIVE_LOW, IPT_OTHER) PORT_NAME("LF SW")
+	PORT_BIT(1, IP_ACTIVE_LOW, IPT_OTHER) PORT_NAME("LF SW")  PORT_CODE(KEYCODE_9_PAD)
 	PORT_DIPNAME(2, 2, "DIP28") PORT_DIPLOCATION("SW2:8")
 	PORT_DIPSETTING(2, DEF_STR(Off))
 	PORT_DIPSETTING(0, DEF_STR(On))
@@ -275,10 +309,16 @@ static INPUT_PORTS_START(nlq401)
 	PORT_BIT(8, IP_ACTIVE_LOW, IPT_UNKNOWN)
 
 	PORT_START("P6")
-	PORT_BIT(1, IP_ACTIVE_HIGH, IPT_OTHER) PORT_NAME("ONL SW")
+	PORT_BIT(1, IP_ACTIVE_HIGH, IPT_OTHER) PORT_NAME("P60 ONLINESW") PORT_CHANGED_MEMBER(DEVICE_SELF, nlq401_device, online_sw, 0) PORT_CODE(KEYCODE_3_PAD)
 	PORT_BIT(2, IP_ACTIVE_LOW, IPT_UNKNOWN)
 	PORT_BIT(4, IP_ACTIVE_LOW, IPT_UNKNOWN)
 	PORT_BIT(8, IP_ACTIVE_LOW, IPT_UNKNOWN)
+
+	// if it's set to IPT_OTHER it always works, even when keyboard is disabled
+	// IPT_KEYBOARD keyboard input can be disabled from the keyboard menu
+
+	PORT_START("RESET")
+	PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_NAME("Reset Printer") PORT_CODE(KEYCODE_8_PAD) PORT_CHANGED_MEMBER(DEVICE_SELF, nlq401_device, reset_printer, 0)
 INPUT_PORTS_END
 
 //-------------------------------------------------
@@ -307,4 +347,34 @@ ROM_END
 const tiny_rom_entry *nlq401_device::device_rom_region() const
 {
 	return ROM_NAME(nlq401);
+}
+
+uint8_t nlq401_device::an5_r()
+{
+	// not TPCS  (thermal protection sensor?)
+	return 0x0;
+}
+
+uint8_t nlq401_device::an6_r()
+{
+	return 0xff;
+}
+
+uint8_t nlq401_device::an7_r()
+{
+	return 0xff;
+}
+
+void nlq401_device::co1_w(int state)
+{
+	/* Printhead is being fired on !state. */
+	if (!state)
+	{
+		for (int i = 0; i < 9; i++)
+		{
+			if ((m_printhead & (1<<(8-i))) == 0)
+				m_bitmap_printer->pix(m_bitmap_printer->m_ypos + i * 1, // * 1 for no interleave at 72 vdpi
+				m_bitmap_printer->m_xpos )  = 0x000000;
+		}
+	}
 }
