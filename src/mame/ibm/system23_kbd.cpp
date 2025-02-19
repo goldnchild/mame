@@ -58,7 +58,7 @@ const tiny_rom_entry *system23_kbd_device::device_rom_region() const
 
 void system23_kbd_device::device_add_mconfig(machine_config &config)
 {
-//	I8048(config, m_maincpu, MCS48_LC_CLOCK(IND_U(47), CAP_P(20.7)));
+//  I8048(config, m_maincpu, MCS48_LC_CLOCK(IND_U(47), CAP_P(20.7)));
 	I8048(config, m_maincpu, 4'350'000);//Oscillation between 4.17 and 4.35 MHz
 	m_maincpu->bus_in_cb().set(FUNC(system23_kbd_device::bus_r));
 	m_maincpu->bus_out_cb().set(FUNC(system23_kbd_device::bus_w));
@@ -106,7 +106,7 @@ INPUT_PORTS_START( system23_kbd )
 		PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_KEYBOARD ) // No scan code
 		PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_KEYBOARD ) PORT_NAME(".") PORT_CODE(KEYCODE_STOP) //09
 		PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_KEYBOARD ) PORT_NAME(";") PORT_CODE(KEYCODE_COLON) PORT_CHAR(';') PORT_CHAR(':') //1a
-		PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_KEYBOARD ) //PORT_NAME("'") PORT_CODE(KEYCODE_) //1b
+		PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_KEYBOARD ) PORT_NAME("'") PORT_CODE(KEYCODE_QUOTE) //1b
 		PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_KEYBOARD ) //PORT_NAME("Cent") PORT_CODE(KEYCODE_) //2b
 		PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_KEYBOARD ) PORT_CODE(KEYCODE_P) PORT_CHAR('p') PORT_CHAR('P') //2a
 		PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_KEYBOARD ) PORT_CODE(KEYCODE_MINUS) PORT_CHAR('-') PORT_CHAR('_') //3b
@@ -198,7 +198,7 @@ ioport_constructor system23_kbd_device::device_input_ports() const
 
 system23_kbd_device::system23_kbd_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
 	: device_t(mconfig, SYSTEM23_KEYBOARD, tag, owner, clock),
-//		device_pc_kbd_interface(mconfig, *this),
+//      device_pc_kbd_interface(mconfig, *this),
 		m_maincpu(*this, I8048_TAG),
 		m_md(*this, "MD%02u", 0),
 		m_data_strobe(*this),
@@ -257,7 +257,7 @@ void system23_kbd_device::bus_w(uint8_t data)
 
 	    bit     description
 
-	    0..6	scancode in bit 0..6 but bit reversed
+	    0..6    scancode in bit 0..6 but bit reversed
 	    7       sense chip enable
 
 	*/
@@ -352,6 +352,6 @@ int system23_kbd_device::t0_r()
 
 int system23_kbd_device::t1_r()
 {
-//	return BIT(m_bus, 7) && m_q;
+//  return BIT(m_bus, 7) && m_q;
 	return m_q;
 }

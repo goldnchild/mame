@@ -32,7 +32,7 @@ public:
 	u8 read_keyboard();
 	void delay_strobe(int state){ m_t0 = state; };  // read on t0
 	void reset_w(int state){ m_maincpu->set_input_line(INPUT_LINE_RESET, state);};
-	
+
 protected:
 	// device-level overrides
 	virtual void device_start() override ATTR_COLD;
@@ -42,7 +42,7 @@ protected:
 	virtual const tiny_rom_entry *device_rom_region() const override ATTR_COLD;
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
 	virtual ioport_constructor device_input_ports() const override ATTR_COLD;
-	
+
 private:
 	uint8_t bus_r();
 	void bus_w(uint8_t data);
