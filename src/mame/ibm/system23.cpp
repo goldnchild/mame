@@ -363,6 +363,7 @@ namespace
 
 	void system23_state::reset_keyboard(uint8_t data)
 	{
+	/*
 		if(BIT(data,7))
 		{
 			m_keyboard->reset_w(CLEAR_LINE);
@@ -371,8 +372,10 @@ namespace
 		{
 			m_keyboard->reset_w(ASSERT_LINE);
 		}
+	*/
+		m_keyboard->reset_w(BIT(data,7));
 		m_pic->ir0_w(BIT(data,3));
-		m_keyboard->t0_w(BIT(data,5));
+		m_keyboard->delay_strobe(BIT(data,5));
 	}
 
 	uint8_t system23_state::read_keyboard()
@@ -523,7 +526,7 @@ namespace
 		RAM(config, m_ram).set_default_size("128k");
 
 		SYSTEM23_KEYBOARD(config, m_keyboard, 0);
-		m_keyboard->scancode_export().set(FUNC(system23_state::data_strobe_w));
+		m_keyboard->data_strobe().set(FUNC(system23_state::data_strobe_w));
 
 		CLOCK(config, m_pit_clock, 18'432'000 / 12);
 		m_pit_clock->signal_handler().set(FUNC(system23_state::pit_clk2));
