@@ -1,11 +1,12 @@
 // license:BSD-3-Clause
-// copyright-holders:Curt Coder
+// copyright-holders:Curt Coder, Golden Child
 /**********************************************************************
 
-    System 23 keyboard emulation
+    System 23 Datamaster keyboard emulation
+
+       (very similar to IBM Model F PC/XT 83-key keyboard emulation)
 
 *********************************************************************/
-
 
 //#define VERBOSE 1
 
@@ -22,13 +23,11 @@
 
 #define I8048_TAG       "i8048"
 
-
-
 //**************************************************************************
 //  DEVICE DEFINITIONS
 //**************************************************************************
 
-DEFINE_DEVICE_TYPE(SYSTEM23_KEYBOARD, system23_kbd_device, "system23_kbd", "Datamaster System23 Keyboard")
+DEFINE_DEVICE_TYPE(SYSTEM23_KEYBOARD, system23_kbd_device, "system23_kbd", "IBM System23 Keyboard")
 
 
 //-------------------------------------------------
@@ -40,8 +39,6 @@ ROM_START(system23_kbd)
 	ROM_LOAD("kbd_3e88d3bf_8048.bin", 0x0000, 0x0400, CRC(3e88d3bf) SHA1(04884f5d43a940c76bc4d53d2dbd970b80f11fa6))
 ROM_END
 
-
-
 //-------------------------------------------------
 //  rom_region - device-specific ROM region
 //-------------------------------------------------
@@ -50,7 +47,6 @@ const tiny_rom_entry *system23_kbd_device::device_rom_region() const
 {
 	return ROM_NAME( system23_kbd );
 }
-
 
 //-------------------------------------------------
 //  device_add_mconfig - add device configuration
@@ -68,7 +64,6 @@ void system23_kbd_device::device_add_mconfig(machine_config &config)
 	m_maincpu->t0_in_cb().set(FUNC(system23_kbd_device::t0_r));
 	m_maincpu->t1_in_cb().set(FUNC(system23_kbd_device::t1_r));
 }
-
 
 //-------------------------------------------------
 //  INPUT_PORTS( system23_kbd )
@@ -198,7 +193,6 @@ ioport_constructor system23_kbd_device::device_input_ports() const
 
 system23_kbd_device::system23_kbd_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
 	: device_t(mconfig, SYSTEM23_KEYBOARD, tag, owner, clock),
-//      device_pc_kbd_interface(mconfig, *this),
 		m_maincpu(*this, I8048_TAG),
 		m_md(*this, "MD%02u", 0),
 		m_data_strobe(*this),
@@ -225,7 +219,6 @@ void system23_kbd_device::device_start()
 	save_item(NAME(m_q));
 }
 
-
 //-------------------------------------------------
 //  device_reset - device-specific reset
 //-------------------------------------------------
@@ -233,8 +226,6 @@ void system23_kbd_device::device_start()
 void system23_kbd_device::device_reset()
 {
 }
-
-
 
 //-------------------------------------------------
 //  bus_r -
@@ -245,7 +236,6 @@ uint8_t system23_kbd_device::bus_r()
 	// HACK this should be handled in mcs48.cpp
 	return m_bus;
 }
-
 
 //-------------------------------------------------
 //  bus_w -
@@ -291,7 +281,6 @@ uint8_t system23_kbd_device::read_keyboard()
 	printf("Scan Code: %02x\n", (m_bus ^ 0xff) & 0x7f);
 	return m_bus & 0x7f;
 }
-
 
 //-------------------------------------------------
 //  p1_w -

@@ -1,19 +1,19 @@
 // license:BSD-3-Clause
-// copyright-holders:Curt Coder
+// copyright-holders:Curt Coder, Golden Child
 /**********************************************************************
 
-    IBM Model F PC/XT 83-key keyboard emulation
+    System 23 Datamaster Keyboard
+
+      (very similar to IBM Model F PC/XT 83-key keyboard emulation)
 
 *********************************************************************/
 
-#ifndef MAME_IBM_SYSTEM23_KEYBOARD_H
-#define MAME_IBM_SYSTEM23_KEYBOARD_H
+#ifndef MAME_IBM_SYSTEM23_KBD_H
+#define MAME_IBM_SYSTEM23_KBD_H
 
 #pragma once
 
 #include "cpu/mcs48/mcs48.h"
-#include "machine/rescap.h"
-
 
 
 //**************************************************************************
@@ -64,9 +64,7 @@ private:
 	u8 m_t0;
 };
 
-
 // device type definition
 DECLARE_DEVICE_TYPE(SYSTEM23_KEYBOARD, system23_kbd_device)
 
-
-#endif // MAME_IBM_SYSTEM23_KEYBOARD_H
+#endif // MAME_IBM_SYSTEM23_KBD_H
