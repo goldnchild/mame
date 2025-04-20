@@ -632,6 +632,18 @@ end
 
 --------------------------------------------------
 --
+--@src/lib/formats/compumate_cas.h,FORMATS["COMPUMATE_CAS"] = true
+--------------------------------------------------
+
+if opt_tool(FORMATS, "COMPUMATE_CAS") then
+	files {
+		MAME_DIR.. "src/lib/formats/compumate_cas.cpp",
+		MAME_DIR.. "src/lib/formats/compumate_cas.h",
+	}
+end
+
+--------------------------------------------------
+--
 --@src/lib/formats/concept_dsk.h,FORMATS["CONCEPT_DSK"] = true
 --------------------------------------------------
 

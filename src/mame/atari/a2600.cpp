@@ -64,15 +64,15 @@ K5 Prog ROM 13 FOOTBALL (CX2625)
 L5 Prog ROM 14 GOLF (CX2634)
 M5 Prog ROM 15 HANGMAN (CX2662)
 C4 Prog ROM 16 HOMERUN (CX2623)
-D4 Prog ROM 17 H. CANNONBALL (CX2627)
+D4 Prog ROM 17 HUMAN CANNONBALL (CX2627)
 E4 Prog ROM 18 MAZE CRAZE (CX2635)
-F4 Prog ROM 19 MISSILE CMD (CX2638)
+F4 Prog ROM 19 MISSILE COMMAND (CX2638)
 J4 Prog ROM 20 NIGHT DRIVER (CX2633)
 K4 Prog ROM 21 OTHELLO (CX2639)
 L4 Prog ROM 22 OUTLAW (CX2605)
 M4 Prog ROM 23 SOCCER (CX2616)
 C3 Prog ROM 24 SKYDIVER (CX2629)
-D3 Prog ROM 25 sLOT RAcERS (CX2606)
+D3 Prog ROM 25 SLOT RACERS (CX2606)
 E3 Prog ROM 26 SPACE INVADERS (CX2632)
 F3 Prog ROM 27 STREET RACER (CX2612)
 J3 Prog ROM 28 SUPERMAN (CX2631)
@@ -81,16 +81,66 @@ L3 Prog ROM 30 VIDEO CHECKERS (CX2636)
 M3 Prog ROM 31 VIDEO CHESS (CX2645)
 C2 Prog ROM 32 VIDEO OLYMPICS (CX2621)
 D2 Prog ROM 33 VIDEO PINBALL (CX2648)
-E2 Prog ROM 34 WAR LORDS (CX2610)
+E2 Prog ROM 34 WARLORDS (CX2610)
 F2 Prog ROM 35 BERZERK (CX2650)
 J2 Prog ROM 36 HAUNTED HOUSE (CX2654)
 K2 Prog ROM 37 MATH GRAND PRIX (CX2658)
 L2 Prog ROM 38 DEFENDER (CX2609)
-M2 Prog ROM 39 YARS' REVENGE (CX2655)
+M2 Prog ROM 39 YAR'S REVENGE (CX2655)
 C1 Prog ROM 40 PAC-MAN (CX2646)
 D1 Prog ROM 41 SUPER BREAKOUT (CX2608)
-E1 Prog ROM 42 DEMON/DIAMOND (CX2615)
+E1 Prog ROM 42 DEMONS TO DIAMONDS (CX2615)
 
+Sears Video Game Selection Center has the same 42 games
+(games with Sears Tele-Games equivalent have Tele-Games naming)
+D6 Prog ROM 1 ADVENTURE (CX2613)
+E6 Prog ROM 2 AIR-SEA BATTLE (CX2602) = Target Fun
+F6 Prog ROM 3 ASTEROIDS (CX2649)
+J6 Prog ROM 4 BACKGAMMON (CX2617)
+K6 Prog ROM 5 BASKETBALL (CX2624)
+L6 Prog ROM 6 BOWLING (CX2628)
+M6 Prog ROM 7 BREAKOUT (CX2622) = Breakaway
+C5 Prog ROM 8 CANYON BOMBER (CX2607)
+D5 Prog ROM 9 CASINO (CX2652) = Poker Plus
+E5 Prog ROM 10 CIRCUS ATARI (CX2630) = Circus
+F5 Prog ROM 11 COMBAT (CX2601) = Tank Plus
+J5 Prog ROM 12 DODGE'EM (CX2637) = Dodger Cars
+K5 Prog ROM 13 FOOTBALL (CX2625)
+L5 Prog ROM 14 GOLF (CX2634)
+M5 Prog ROM 15 HANGMAN (CX2662)
+C4 Prog ROM 16 HOMERUN (CX2623) = Baseball
+D4 Prog ROM 17 HUMAN CANNONBALL (CX2627) = Cannonman
+E4 Prog ROM 18 MAZE CRAZE (CX2635) = Maze Mania
+F4 Prog ROM 19 MISSILE COMMAND (CX2638)
+J4 Prog ROM 20 NIGHT DRIVER (CX2633)
+K4 Prog ROM 21 OTHELLO (CX2639)
+L4 Prog ROM 22 OUTLAW (CX2605) = Gunslinger
+M4 Prog ROM 23 SOCCER (CX2616)
+C3 Prog ROM 24 SKYDIVER (CX2629) = Darediver
+D3 Prog ROM 25 SLOT RACERS (CX2606) = Maze
+E3 Prog ROM 26 SPACE INVADERS (CX2632)
+F3 Prog ROM 27 STREET RACER (CX2612) = Speedway II
+J3 Prog ROM 28 SUPERMAN (CX2631)
+K3 Prog ROM 29 3D TIC-TAC-TOE (CX2618) = Tic-Tac-Toe
+L3 Prog ROM 30 VIDEO CHECKERS (CX2636) = Checkers
+M3 Prog ROM 31 VIDEO CHESS (CX2645) = Chess
+C2 Prog ROM 32 VIDEO OLYMPICS (CX2621) = Pong Sports
+D2 Prog ROM 33 VIDEO PINBALL (CX2648) = Pinball
+E2 Prog ROM 34 WARLORDS (CX2610)
+F2 Prog ROM 35 BERZERK (CX2650)
+J2 Prog ROM 36 HAUNTED HOUSE (CX2654)
+K2 Prog ROM 37 MATH GRAND PRIX (CX2658)
+L2 Prog ROM 38 DEFENDER (CX2609)
+M2 Prog ROM 39 YAR'S REVENGE (CX2655)
+C1 Prog ROM 40 PAC-MAN (CX2646)
+D1 Prog ROM 41 SUPER BREAKOUT (CX2608)
+E1 Prog ROM 42 DEMONS TO DIAMONDS (CX2615)
+
+and adds 3 more games that were Sears exclusives:
+
+F1 Prog ROM 43 Submarine Commander (49-75142)
+J1 Prog ROM 44 Stellar Track (49-75159)  (unnamed blank entry 44 in game list)
+K1 Prog ROM 45 Steeple Chase (49-75126)
 ***************************************************************************/
 
 #include "emu.h"
@@ -112,6 +162,9 @@ E1 Prog ROM 42 DEMON/DIAMOND (CX2615)
 #include "tia.h"
 
 #include "machine/mos6530.h"
+
+#include "formats/compumate_cas.h"
+#include "imagedev/cassette.h"
 
 //#define VERBOSE (LOG_GENERAL)
 #include "logmacro.h"
@@ -210,6 +263,7 @@ public:
 	a2600_pop_state(const machine_config &mconfig, device_type type, const char *tag)
 		: a2600_base_state(mconfig, type, tag, 3.579545_MHz_XTAL)
 		, m_bank(*this, "bank")
+		, m_a7(*this, "A7")
 		, m_a8(*this, "A8")
 		, m_swb(*this, "SWB")
 	{ }
@@ -229,6 +283,7 @@ private:
 	TIMER_CALLBACK_MEMBER(game_select_button_timer_callback);
 
 	required_memory_bank m_bank;
+	required_ioport m_a7;
 	required_ioport m_a8;
 	required_ioport m_swb;
 	emu_timer *m_reset_timer = nullptr;
@@ -286,7 +341,8 @@ void tvboy_state::tvboy_mem(address_map &map)
 //  read returns number of empty game rom slots
 uint8_t a2600_pop_state::rom_switch_r(offs_t offset)
 {
-	return 5;   // Max 47 games, 5 empty slots => 42 games
+	return m_a7->read();
+//  return 5;   // Max 47 games, 5 empty slots => 42 games
 }
 
 
@@ -526,6 +582,10 @@ static INPUT_PORTS_START( a2600 )
 	PORT_CONFNAME( 0x80, 0x00, "Right Diff. Switch" ) PORT_CODE(KEYCODE_4) PORT_TOGGLE
 	PORT_CONFSETTING(    0x80, "A" )
 	PORT_CONFSETTING(    0x00, "B" )
+
+	PORT_START("DUM0")  // for use by basic programming layout
+	PORT_START("DUM1")
+	PORT_START("DUM2")
 INPUT_PORTS_END
 
 static INPUT_PORTS_START(a2600_pop)
@@ -544,11 +604,30 @@ static INPUT_PORTS_START(a2600_pop)
 	PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_UNUSED)
 
 	PORT_START("A8")
-	PORT_DIPNAME(0x0f, 0x02, "Gameplay duration")
+	PORT_DIPNAME(0x0f, 0x02, "Gameplay duration") PORT_DIPLOCATION("A8:!1,!2,!3,!4")
 	PORT_DIPSETTING(0x01, "2 minutes")
 	PORT_DIPSETTING(0x02, "1 minute")
 	PORT_DIPSETTING(0x04, "30 seconds")
 	PORT_DIPSETTING(0x08, "Infinite")
+
+	PORT_START("A7")
+	PORT_DIPNAME(0x0f, 0x05, "Upper Rom Slots Free (47 - Free = Used)") PORT_DIPLOCATION("A7:1,2,3,4")
+	PORT_DIPSETTING(0x00, "0 Free 47 Used")
+	PORT_DIPSETTING(0x01, "1 Free 46 Used")
+	PORT_DIPSETTING(0x02, "2 Free 45 Used Sears VGSC")
+	PORT_DIPSETTING(0x03, "3 Free 44 Used")
+	PORT_DIPSETTING(0x04, "4 Free 43 Used")
+	PORT_DIPSETTING(0x05, "5 Free 42 Used Atari POP")
+	PORT_DIPSETTING(0x06, "6 Free 41 Used")
+	PORT_DIPSETTING(0x07, "7 Free 40 Used")
+	PORT_DIPSETTING(0x08, "8 Free 39 Used")
+	PORT_DIPSETTING(0x09, "9 Free 38 Used")
+	PORT_DIPSETTING(0x0a, "10 Free 37 Used")
+	PORT_DIPSETTING(0x0b, "11 Free 36 Used")
+	PORT_DIPSETTING(0x0c, "12 Free 35 Used")
+	PORT_DIPSETTING(0x0d, "13 Free 34 Used")
+	PORT_DIPSETTING(0x0e, "14 Free 33 Used")
+	PORT_DIPSETTING(0x0f, "15 Free 32 Used")
 INPUT_PORTS_END
 
 static INPUT_PORTS_START( tvboy )
@@ -700,6 +779,387 @@ void tvboy_state::tvboyn(machine_config &config)
 }
 
 
+
+
+
+
+class a2600_compumate_state : public a2600_base_state
+{
+public:
+	a2600_compumate_state(const machine_config &mconfig, device_type type, const char *tag, XTAL xtal = 3.579545_MHz_XTAL)
+		: a2600_base_state(mconfig, type, tag, xtal)
+		, m_bank(*this, "bank")
+		, m_swb(*this, "SWB")
+		, m_keycolumns(*this, "COL%d", 0U)
+		, m_controlkeys(*this, "CONTROLKEYS")
+		, m_cass(*this, "cassette")
+		, m_rom(*this, "maincpu")
+	{ }
+
+	void a2600_compumate_common(machine_config &config);
+	void a2600_compumate(machine_config &config);
+	void a2600p_compumate(machine_config &config);
+
+	u8 inp_r(offs_t offset);
+	u8 joy_r(offs_t offset);
+	void joy_w(offs_t offset, u8 data);
+	u8 mem_r(offs_t offset);
+	void mem_w(offs_t offset, u8 data);
+
+protected:
+	virtual void machine_start() override ATTR_COLD;
+//  virtual void machine_reset() override ATTR_COLD;
+
+	void memory_map(address_map &map) ATTR_COLD;
+
+	uint8_t rom_switch_r(offs_t offset);
+	void rom_switch_w(offs_t offset, uint8_t data);
+
+	optional_memory_bank m_bank;
+	required_ioport m_swb;
+	required_ioport_array<10> m_keycolumns;
+	required_ioport m_controlkeys;
+	optional_device<cassette_image_device> m_cass;
+	required_memory_region m_rom;
+	u8 m_ram[0x800] = {0};
+	u8 m_rombank = 0;
+	u8 m_ram_enable = 1;
+	u8 m_write_enable = 1;
+	u8 m_inc_keycol = 0;
+	u8 m_ddr = 0;
+	u8 m_porta = 0;
+	u8 m_keycol = 0;
+};
+
+
+class a2600p_compumate_state : public a2600_compumate_state
+{
+public:
+	a2600p_compumate_state(const machine_config &mconfig, device_type type, const char *tag) :
+		a2600_compumate_state(mconfig, type, tag, 3.546894_MHz_XTAL)
+	{ }
+
+	//void a2600p_compumate(machine_config &config);
+};
+
+
+/*
+    Compumate Information from z26 emulator
+    (some incorrect information in the z26 source comments, but z26 code is correct)
+    (Best information comes from Kevtris Atari 2600)
+
+    there are 4 4K banks selectable at $1000 - $1FFFF
+    bankswitching is done though the controller ports
+    INPT0: D7 = CTRL key input (0 on startup / 1 = key pressed)
+    INPT1: D7 = always HIGH input (tested at startup)
+    INPT2: D7 = always HIGH input (tested at startup)
+    INPT3: D7 = SHIFT key input (0 on startup / 1 = key pressed)
+    INPT4: D7 = keyboard row 1 input (0 = key pressed)
+    INPT5: D7 = keyboard row 3 input (0 = key pressed)
+    SWCHA: D7 = tape recorder I/O ?
+           D6 = 1 -> increase key column (0 to 9)
+           D5 = 1 -> reset key column to 0 (if D4 = 0)
+           D5 = 0 -> enable RAM writing (if D4 = 1)
+           D4 = 1 -> map 2K of RAM at $1800 - $1fff
+           D3 = keyboard row 4 input (0 = key pressed)
+           D2 = keyboard row 2 input (0 = key pressed)
+           D1 = bank select high bit
+           D0 = bank select low bit
+
+    bit 6 swa also controls the cassette out bit
+    bit 7 swa reads from the cassette
+
+
+    keyboard column numbering:
+               1 2 4 8
+    column 0 = 7 U J M
+    column 1 = 6 Y H N
+    column 2 = 8 I K ,
+    column 3 = 2 W S X
+    column 4 = 3 E D C
+    column 5 = 0 P ENTER SPACE
+    column 6 = 9 O L .
+    column 7 = 5 T G B
+    column 8 = 1 Q A Z
+    column 9 = 4 R F V
+*/
+
+
+void a2600_compumate_state::joy_w(offs_t offset, u8 data)
+{
+	if (offset==0)
+	{
+		u8 last = m_porta;
+		m_porta = data;
+		m_rombank      = BIT(data, 0, 2);
+		m_ram_enable   = BIT(data, 4);
+		m_write_enable = BIT(data, 5);
+		m_inc_keycol   = BIT(data, 6);
+
+		m_cass->output(BIT(data, 6) ? -1.0 : 1.0);
+
+		if (m_ram_enable && BIT(data, 5))
+		{
+			m_keycol = 0;
+		}
+		if (BIT(data,6) == 1 && BIT(last,6) == 0)
+		{
+			m_keycol = (m_keycol + 1) % 10;
+		}
+
+//      printf("joywrite: %x = %x    bank=%x  ramenable=%x  writeenable=%x inckeycol=%x   m_ddr=%x  keycol=%x  bit7=%x\n",offset,data,m_rombank,m_ram_enable,m_write_enable,BIT(data,6),m_ddr,m_keycol,BIT(data,7));
+	}
+	else if (offset==1) m_ddr = data;
+}
+
+u8 a2600_compumate_state::joy_r(offs_t offset)
+{
+	if (offset == 0)
+		return (m_porta & 0x73) |
+			((m_keycolumns[m_keycol]->read() & 0x2) != 0) << 2 |  // row 1
+			((m_keycolumns[m_keycol]->read() & 0x8) != 0) << 3 |  // row 3
+			((m_cass->input() > 0.01 ? 1 : 0) << 7);
+	else if (offset == 1)
+		return m_ddr;
+	else
+		return 0;
+}
+
+void a2600_compumate_state::mem_w(offs_t offset, u8 data)
+{
+//  printf("memwrite: %x = %x\n",offset,data);
+	if (!m_ram_enable && m_write_enable && offset >= 0x800)
+		m_ram[offset - 0x800] = data;
+}
+
+//  u8 *m_ram_ptr, *m_rom_ptr, *m_cec_ptr;
+//m_rom_ptr = m_rom->base();
+
+u8 a2600_compumate_state::mem_r(offs_t offset)
+{
+	if (offset < 0x800) return *(m_rom->base() + m_rombank * 0x1000 + offset);
+	else
+	{   if (!m_ram_enable) return m_ram[offset - 0x800];
+		else return *(m_rom->base() + m_rombank * 0x1000 + offset);
+	}
+}
+
+u8 a2600_compumate_state::inp_r(offs_t offset)
+{
+	switch(offset)
+	{
+		case 0: return (BIT(m_controlkeys->read(),0) << 7);
+		case 1: return 0x80; break;  // not 1 it's 80
+		case 2: return 0x80; break;  // or it writes 0 to bank JSR
+		case 3: return (BIT(m_controlkeys->read(),1) << 7);
+		case 4: return ((m_keycolumns[m_keycol]->read() & 0x1) != 0) << 7;  // row 0
+		case 5: return ((m_keycolumns[m_keycol]->read() & 0x4) != 0) << 7;  // row 2
+		default: return 0;
+	}
+}
+
+/*
+0038r   INPT0   X....... Paddle input 0
+0039r   INPT1   X....... Paddle input 1
+003Ar   INPT2   X....... Paddle input 2
+003Br   INPT3   X....... Paddle input 3
+003Cr   INPT4   X....... Latched inputs (joystick buttons)
+003Dr   INPT5   X....... Latched inputs (joystick buttons)
+*/
+
+void a2600_compumate_state::memory_map(address_map &map) // 6507 has 13-bit address space, 0x0000 - 0x1fff
+{
+	map(0x0000, 0x007f).mirror(0x0f00).rw(m_tia, FUNC(tia_video_device::read), FUNC(tia_video_device::write));
+	map(0x0080, 0x00ff).mirror(0x0d00).ram().share("riot_ram");
+	map(0x0280, 0x029f).mirror(0x0d00).m("riot", FUNC(mos6532_device::io_map));
+	map(0x0280, 0x0281).mirror(0x0d00).rw(FUNC(a2600_compumate_state::joy_r),FUNC(a2600_compumate_state::joy_w));
+	map(0x0038, 0x003d).mirror(0x0d00).r(FUNC(a2600_compumate_state::inp_r));
+	map(0x1000, 0x1fff).rw(FUNC(a2600_compumate_state::mem_r),FUNC(a2600_compumate_state::mem_w));
+}
+
+void a2600_compumate_state::machine_start()
+{
+	a2600_base_state::machine_start();
+
+	m_rombank = 3;
+	m_ram_enable = 1;
+	m_write_enable = 1;
+	m_inc_keycol = 0;
+	m_ddr = 0;
+	m_porta = 0;
+	m_keycol = 0;
+
+	save_pointer(NAME(m_ram), 0x800);
+
+	save_item(NAME(m_rombank));
+	save_item(NAME(m_ram_enable));
+	save_item(NAME(m_inc_keycol));
+	save_item(NAME(m_ddr));
+	save_item(NAME(m_porta));
+	save_item(NAME(m_keycol));
+//
+}
+
+
+void a2600_compumate_state::a2600_compumate_common(machine_config &config)
+{
+	m_maincpu->set_addrmap(AS_PROGRAM, &a2600_compumate_state::memory_map);
+
+	CASSETTE(config, m_cass);
+	m_cass->set_formats(compumate_cassette_formats);
+	m_cass->set_default_state(CASSETTE_SPEAKER_ENABLED);
+	m_cass->add_route(ALL_OUTPUTS, "mono", 0.01);
+	m_cass->set_interface("compumate_cass");
+}
+
+void a2600_compumate_state::a2600_compumate(machine_config &config)
+{
+	a2600_base_ntsc(config);
+	a2600_compumate_common(config);
+}
+
+void a2600_compumate_state::a2600p_compumate(machine_config &config)
+{
+	a2600_base_pal(config);
+	a2600_compumate_common(config);
+}
+
+
+
+
+static INPUT_PORTS_START( a2600_compumate )
+
+	PORT_START("CONTROLKEYS")
+	PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_OTHER ) PORT_NAME("FUNC") PORT_CODE(KEYCODE_LCONTROL)
+	PORT_BIT( 0x02, IP_ACTIVE_HIGH, IPT_OTHER ) PORT_NAME("SHIFT") PORT_CODE(KEYCODE_LSHIFT)
+
+
+/*
+    keyboard column numbering:
+    column 0 = 7 U J M
+    column 1 = 6 Y H N
+    column 2 = 8 I K ,
+    column 3 = 2 W S X
+    column 4 = 3 E D C
+    column 5 = 0 P ENTER SPACE
+    column 6 = 9 O L .
+    column 7 = 5 T G B
+    column 8 = 1 Q A Z
+    column 9 = 4 R F V
+
+
+a=[[7 U J M
+6 Y H N
+8 I K ,
+2 W S X
+3 E D C
+0 P ENTER SPACE
+9 O L .
+5 T G B
+1 Q A Z
+4 R F V]]
+
+count=0 for w in a:gmatch("[^\n]+") do b = w print("PORT_START(\"".."COL"..count.."\")") count=count+1 ibit=1 for c in b:gmatch("%S+") do print("PORT_BIT("..string.format("0x%x",ibit)..", IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_"..c..") PORT_CHAR('"..c.."')") ibit=ibit*2 end print() end
+
+
+*/
+	PORT_START("COL0")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_7) PORT_CHAR('7')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_U) PORT_CHAR('U')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_J) PORT_CHAR('J')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_M) PORT_CHAR('M')
+
+	PORT_START("COL1")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_6) PORT_CHAR('6')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_Y) PORT_CHAR('Y')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_H) PORT_CHAR('H')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_N) PORT_CHAR('N')
+
+	PORT_START("COL2")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_8) PORT_CHAR('8')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_I) PORT_CHAR('I')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_K) PORT_CHAR('K')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_COMMA) PORT_CHAR(',')
+
+	PORT_START("COL3")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_2) PORT_CHAR('2')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_W) PORT_CHAR('W')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_S) PORT_CHAR('S')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_X) PORT_CHAR('X')
+
+	PORT_START("COL4")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_3) PORT_CHAR('3')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_E) PORT_CHAR('E')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_D) PORT_CHAR('D')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_C) PORT_CHAR('C')
+
+	PORT_START("COL5")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_0) PORT_CHAR('0')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_P) PORT_CHAR('P')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_ENTER) //PORT_CHAR('ENTER')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_SPACE) //PORT_CHAR('SPACE')
+
+	PORT_START("COL6")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_9) PORT_CHAR('9')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_O) PORT_CHAR('O')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_L) PORT_CHAR('L')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_STOP) PORT_CHAR('.')
+
+	PORT_START("COL7")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_5) PORT_CHAR('5')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_T) PORT_CHAR('T')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_G) PORT_CHAR('G')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_B) PORT_CHAR('B')
+
+	PORT_START("COL8")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_1) PORT_CHAR('1')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_Q) PORT_CHAR('Q')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_A) PORT_CHAR('A')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_Z) PORT_CHAR('Z')
+
+	PORT_START("COL9")
+	PORT_BIT(0x1, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_4) PORT_CHAR('4')
+	PORT_BIT(0x2, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_R) PORT_CHAR('R')
+	PORT_BIT(0x4, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_F) PORT_CHAR('F')
+	PORT_BIT(0x8, IP_ACTIVE_LOW, IPT_KEYBOARD)  PORT_CODE(KEYCODE_V) PORT_CHAR('V')
+
+	PORT_START("SWB")
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_OTHER ) PORT_NAME("Reset Game") PORT_CODE(KEYCODE_2_PAD)
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_OTHER ) PORT_NAME("Select Game") PORT_CODE(KEYCODE_1_PAD)
+	PORT_BIT ( 0x04, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_CONFNAME( 0x08, 0x08, "TV Type" ) PORT_CODE(KEYCODE_C) PORT_TOGGLE
+	PORT_CONFSETTING(    0x08, "Color" )
+	PORT_CONFSETTING(    0x00, "B&W" )
+	PORT_BIT ( 0x10, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_BIT ( 0x20, IP_ACTIVE_LOW, IPT_UNUSED )
+	PORT_CONFNAME( 0x40, 0x00, "Left Diff. Switch" ) PORT_CODE(KEYCODE_3) PORT_TOGGLE
+	PORT_CONFSETTING(    0x40, "A" )
+	PORT_CONFSETTING(    0x00, "B" )
+	PORT_CONFNAME( 0x80, 0x00, "Right Diff. Switch" ) PORT_CODE(KEYCODE_4) PORT_TOGGLE
+	PORT_CONFSETTING(    0x80, "A" )
+	PORT_CONFSETTING(    0x00, "B" )
+INPUT_PORTS_END
+
+
+
+
+
+ROM_START(a2600_compumate)
+	ROM_REGION(0x4000, "maincpu", ROMREGION_ERASEFF)
+	//<rom name="compumate (1983) (spectravideo) (sv-010) ~.bin" size="16384" crc="bbe1f661" sha1="1947b26419fadfc6b2c9b5d552fd3d2bd220bc61"/>
+	ROM_LOAD("compumate.bin", 0x0000, 0x4000, CRC(bbe1f661) SHA1(1947b26419fadfc6b2c9b5d552fd3d2bd220bc61))
+ROM_END
+
+ROM_START(a2600p_compumate)
+	ROM_REGION(0x4000, "maincpu", ROMREGION_ERASEFF)
+	//<rom name="compumate (1983) (spectravideo - universum) (sv-010) (pal).bin" size="16384" crc="bed37e4f" sha1="d85daed1b5397a779e8832628979f5396650090d"/>
+	ROM_LOAD("compumatep.bin", 0x0000, 0x4000, CRC(bed37e4f) SHA1(d85daed1b5397a779e8832628979f5396650090d))
+ROM_END
+
+
+
+
+
 ROM_START(a2600)
 	ROM_REGION(0x2000, "maincpu", ROMREGION_ERASEFF)
 ROM_END
@@ -778,6 +1238,11 @@ ROM_START(a2600_pop)
 	ROM_LOAD("c012008.d1", 0x29000, 0x1000, BAD_DUMP CRC(b0f20d31) SHA1(ac2aad2196c155c1d87d6f42fa88891825f4fde6)) // Prog ROM 41 SUPER BREAKOUT (CX2608)
 	ROM_LOAD("c012015.e1", 0x2a000, 0x1000, BAD_DUMP CRC(9b97c3da) SHA1(b45582de81c48b04c2bb758d69021e8088c70ce7)) // Prog ROM 42 DEMON/DIAMOND (CX2615)
 	// empty slots f1, j1, k1, l1, m1 ?
+	// Sears Video Game Selection Center adds 3 games in f1, j1, and k1
+	ROM_LOAD("subcommander.f1", 0x2b000, 0x1000, BAD_DUMP CRC(3262960a) SHA1(b22ba7cbde60a21ecbbe3953cc4a5c0bf007cc26)) // Prog ROM 43
+	ROM_LOAD("stellartrack.j1", 0x2c000, 0x1000, BAD_DUMP CRC(a76e93bf) SHA1(7d97d014c22a2ed3a5bc4b310f5a7be1b1d3520f)) // Prog ROM 44
+	ROM_LOAD("steeplechase.k1", 0x2d000, 0x800,  BAD_DUMP CRC(5f6c32c3) SHA1(e56ef1c0313d6d04e25446c4e34f9bb7eda8efac)) // Prog ROM 45
+	ROM_COPY("maincpu", 0x2d000, 0x2d800, 0x800)
 ROM_END
 
 ROM_START(tvboy)
@@ -829,3 +1294,10 @@ CONS( 199?, tvboy,   0,     0,      tvboy,   tvboy, tvboy_state,  empty_init, "S
 CONS( 199?, tvboyn,  tvboy, 0,      tvboyn,  tvboy, tvboy_state,  empty_init, "Nics",     "TV Boy (Nics, NTSC)",MACHINE_SUPPORTS_SAVE )
 CONS( 199?, tvboyii, tvboy, 0,      tvboy,   tvboy, tvboy_state,  empty_init, "Systema",  "TV Boy II (PAL)",    MACHINE_SUPPORTS_SAVE )
 CONS( 1995, stvboy,  0,     0,      tvboy,   tvboy, tvboy_state,  empty_init, "Akor",     "Super TV Boy (PAL)", MACHINE_SUPPORTS_SAVE )
+
+
+
+//GAME(YEAR, NAME, PARENT, MACHINE, INPUT, CLASS, INIT, MONITOR, COMPANY, FULLNAME, FLAGS)
+
+GAME( 1983, a2600_compumate, 0,                 a2600_compumate, a2600_compumate, a2600_compumate_state,   empty_init, ROT0, "SpectraVideo", "Atari 2600 Compumate NTSC", MACHINE_NOT_WORKING | MACHINE_SUPPORTS_SAVE )
+GAME( 1983, a2600p_compumate, a2600_compumate,  a2600p_compumate, a2600_compumate, a2600p_compumate_state, empty_init, ROT0, "SpectraVideo", "Atari 2600 Compumate PAL",  MACHINE_NOT_WORKING | MACHINE_SUPPORTS_SAVE )
