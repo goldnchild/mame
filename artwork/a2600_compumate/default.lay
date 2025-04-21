@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!--
+license:CC0-1.0
+copyright-holders:
+-->
+<mamelayout version="2" >
+<element name="rectcolor0" defstate="0" >
+<rect state="0" ><color red="0.875" green="0.557" blue="0.315" /></rect>
+</element>
+<element name="rectcolor1" defstate="0" >
+<rect state="0" ><color red="0.906" green="0.51" blue="0.278" /></rect>
+</element>
+<element name="rectcolor2" defstate="0" >
+<rect state="0" ><color red="0.839" green="0.408" blue="0.275" /></rect>
+</element>
+<element name="rectcolor3" defstate="0" >
+<rect state="0" ><color red="0.659" green="0.384" blue="0.29" /></rect>
+</element>
+<element name="text_1" ><text string="1" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_2" ><text string="2" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_3" ><text string="3" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_4" ><text string="4" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_5" ><text string="5" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_6" ><text string="6" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_7" ><text string="7" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_8" ><text string="8" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_9" ><text string="9" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_10" ><text string="0" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_11" ><text string="Q" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_12" ><text string="W" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_13" ><text string="E" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_14" ><text string="R" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_15" ><text string="T" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_16" ><text string="Y" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_17" ><text string="U" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_18" ><text string="I" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_19" ><text string="O" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_20" ><text string="P" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_21" ><text string="FUNC" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_22" ><text string="A" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_23" ><text string="S" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_24" ><text string="D" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_25" ><text string="F" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_26" ><text string="G" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_27" ><text string="H" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_28" ><text string="J" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_29" ><text string="K" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_30" ><text string="L" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_31" ><text string="ENTER" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_32" ><text string="SHIFT" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_33" ><text string="Z" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_34" ><text string="X" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_35" ><text string="C" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_36" ><text string="V" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_37" ><text string="B" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_38" ><text string="N" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_39" ><text string="M" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_40" ><text string="," ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_41" ><text string="." ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="text_42" ><text string="SPACE" ><color red="1.0" green="1.0" blue="1.0" /></text></element>
+<element name="button" ><disk state="0" ><bounds x="0" y="0" width="1.0" height="1.0" /><color red="1.0" green="0" blue="0" /></disk><disk state="1" ><bounds x="0.15" y="0.15" width="0.9" height="0.9" /><color red="0.7" green="0.5" blue="0" /></disk></element>
+<element name="rectbutton" ><rect state="0" ><bounds x="0" y="0" width="1.0" height="1.0" /><color red="1.0" green="0" blue="0" alpha="0.01" /></rect><rect state="1" ><bounds x="0.15" y="0.15" width="0.9" height="0.9" /><color red="0.7" green="0.5" blue="0" alpha="0.5" /></rect></element>
+<element name="keypadimage"><image file="compumate20.jpg"/></element>
+<view name="Compumate Keyboard Panel" >
+<element ref="keypadimage"><bounds x="0" y="0" width="1348" height="537" /></element>
+<!--
+<screen index="0" ><bounds x="0" y="-1050" width="1400" height="1050" /></screen>
+-->
+<screen index="0" ><bounds x="0" y="-550" width="800" height="550" /></screen>
+<element ref="rectbutton" inputtag="COL8" inputmask="0x1" ><bounds x="227.0" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL3" inputmask="0x1" ><bounds x="305.5" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL4" inputmask="0x1" ><bounds x="384.0" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL9" inputmask="0x1" ><bounds x="462.5" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL7" inputmask="0x1" ><bounds x="541.0" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL1" inputmask="0x1" ><bounds x="619.5" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL0" inputmask="0x1" ><bounds x="698.0" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL2" inputmask="0x1" ><bounds x="776.5" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL6" inputmask="0x1" ><bounds x="855.0" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL5" inputmask="0x1" ><bounds x="933.5" y="178" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL8" inputmask="0x2" ><bounds x="266.25" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL3" inputmask="0x2" ><bounds x="344.75" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL4" inputmask="0x2" ><bounds x="423.25" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL9" inputmask="0x2" ><bounds x="501.75" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL7" inputmask="0x2" ><bounds x="580.25" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL1" inputmask="0x2" ><bounds x="658.75" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL0" inputmask="0x2" ><bounds x="737.25" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL2" inputmask="0x2" ><bounds x="815.75" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL6" inputmask="0x2" ><bounds x="894.25" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL5" inputmask="0x2" ><bounds x="972.75" y="248" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="CONTROLKEYS" inputmask="0x1" ><bounds x="187.75" y="318" width="78.5" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL8" inputmask="0x4" ><bounds x="285.875" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL3" inputmask="0x4" ><bounds x="364.375" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL4" inputmask="0x4" ><bounds x="442.875" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL9" inputmask="0x4" ><bounds x="521.375" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL7" inputmask="0x4" ><bounds x="599.875" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL1" inputmask="0x4" ><bounds x="678.375" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL0" inputmask="0x4" ><bounds x="756.875" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL2" inputmask="0x4" ><bounds x="835.375" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL6" inputmask="0x4" ><bounds x="913.875" y="318" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL5" inputmask="0x4" ><bounds x="992.375" y="318" width="78.5" height="52.5" /></element>
+<element ref="rectbutton" inputtag="CONTROLKEYS" inputmask="0x2" ><bounds x="208.16" y="388" width="78.5" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL8" inputmask="0x8" ><bounds x="306.285" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL3" inputmask="0x8" ><bounds x="384.785" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL4" inputmask="0x8" ><bounds x="463.285" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL9" inputmask="0x8" ><bounds x="541.785" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL7" inputmask="0x8" ><bounds x="620.285" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL1" inputmask="0x8" ><bounds x="698.785" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL0" inputmask="0x8" ><bounds x="777.285" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL2" inputmask="0x8" ><bounds x="855.785" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL6" inputmask="0x8" ><bounds x="934.285" y="388" width="58.875" height="52.5" /></element>
+<element ref="rectbutton" inputtag="COL5" inputmask="0x8" ><bounds x="1012.785" y="388" width="78.5" height="52.5" /></element>
+</view>
+</mamelayout>
+
