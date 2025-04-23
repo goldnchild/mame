@@ -14,6 +14,9 @@
 #include "coleco_m.h"
 #include "bus/coleco/cartridge/exp.h"
 
+//#include "formats/compumate_cas.h"
+#include "imagedev/cassette.h"
+
 class coleco_state : public driver_device
 {
 public:
@@ -111,7 +114,8 @@ public:
 		coleco_state(mconfig, type, tag),
 		m_bank(*this, "bank"),
 		m_ram(*this, RAM_TAG),
-		m_io_keyboard(*this, {"ROW0", "ROW1", "ROW2", "ROW3", "ROW4", "ROW5", "ROW6", "ROW7"})
+		m_io_keyboard(*this, {"ROW0", "ROW1", "ROW2", "ROW3", "ROW4", "ROW5", "ROW6", "ROW7"}),
+		m_cass(*this, "cassette")
 	{ }
 
 	virtual void machine_start() override ATTR_COLD;
@@ -130,6 +134,7 @@ protected:
 	required_memory_bank m_bank;
 	required_device<ram_device> m_ram;
 	required_ioport_array<8> m_io_keyboard;
+	optional_device<cassette_image_device> m_cass;
 
 private:
 	void bit90_map(address_map &map) ATTR_COLD;
@@ -137,6 +142,8 @@ private:
 
 	uint8_t m_keyselect = 0U;
 	uint8_t m_unknown = 0U;
+
+	uint8_t paddle_2_r();
 };
 
 #endif // MAME_COLECO_COLECO_H
