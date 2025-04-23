@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+<!DOCTYPE softwarelist SYSTEM "softwarelist.dtd">
+
+<softwarelist name="compumate_cass" description="Compumate Cassettes" >
+
+<software name="cm" >
+<description>Spectravideo CompuMate Cassettes</description>
+<publisher>SpectraVideo</publisher>
+<year>1983</year>
+
+<part name="pm01" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 01"/>
+<dataarea name="cass" size="2052" >
+    <rom name="picturemate_01.bin" size="2052" crc="131c156c" sha1="4a4a6c8fc92ede427cb09d9ecd48f21faafde86c" />
+</dataarea>
+</part>
+<part name="pm02" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 02"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_02.bin" size="0x804" crc="7476f75e" sha1="a17d95282072b26aefffff0d15324a16264544b6" />
+</dataarea>
+</part>
+<part name="pm03" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 03"/>
+<dataarea name="cass" size="0x804" >
+   <rom name="PictureMate_03.bin" size="0x804" crc="d73a4d5e" sha1="3a748813a934f85d61cafa57158beb633234276f" />
+</dataarea>
+</part>
+
+<part name="pm04" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 04"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_04.bin" size="0x804" crc="d8dfe778" sha1="e52fabb09eaad69ca097efc2b60a2ff074c5f0ab" />
+</dataarea>
+</part>
+
+<part name="pm05" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 05"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_05.bin" size="0x804" crc="170723a2" sha1="31b3b3be2a5ce19a3a542e3385eb11aba6bec6a3" />
+</dataarea>
+</part>
+
+<part name="pm06" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 06"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_06.bin" size="0x804" crc="16ad7539" sha1="3174885fd022a5b3fc5f445aa0661eeb6404ce6f" />
+</dataarea>
+</part>
+
+<part name="pm07" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 07"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_07.bin" size="0x804" crc="399750c7" sha1="e11ce2c23e24bdf046a0d0ad89f279abcb6746b5" />
+</dataarea>
+</part>
+
+<part name="pm08" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 08"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_08.bin" size="0x804" crc="d66c2330" sha1="0aef63e9b624c95b1929d4bd15a5a869e4fe2eb1" />
+</dataarea>
+</part>
+
+<part name="pm09" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 09"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_09.bin" size="0x804" crc="e959a4a2" sha1="8d51a5eb158520d17113829ef15a5c292a9ba331" />
+</dataarea>
+</part>
+
+<part name="pm10" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 10"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_10.bin" size="0x804" crc="ab77ba12" sha1="072b87014f1cbc0ffdfcf30359a4ec05f2c3c3d7" />
+</dataarea>
+</part>
+
+<part name="pm11" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 11"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_11.bin" size="0x804" crc="ddfbe553" sha1="15279d58ee1e305abe8ab11f44ec9491837f5cf6" />
+</dataarea>
+</part>
+
+<part name="pm12" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 12"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_12.bin" size="0x804" crc="27fa144c" sha1="c5807366cfbe13ce5216936c7e60c5c5c28cacc7" />
+</dataarea>
+</part>
+
+<part name="pm13" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 13"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_13.bin" size="0x804" crc="190a4cb5" sha1="ef572146680a4cf2f158c078f6fade5277fd5b7a" />
+</dataarea>
+</part>
+
+<part name="pm14" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 14"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_14.bin" size="0x804" crc="07bd9e8f" sha1="a9960c1e7a974788be9f962fc383fa509a435f4c" />
+</dataarea>
+</part>
+
+<part name="pm15" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 15"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_15.bin" size="0x804" crc="fa4a90ce" sha1="c499ad434c4eecd53958dd94efb1ceaf0f3022e6" />
+</dataarea>
+</part>
+
+<part name="pm16" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 16"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_16.bin" size="0x804" crc="27896446" sha1="341e21402f42e17ba18d788f70809151e9bc8933" />
+</dataarea>
+</part>
+
+<part name="pm17" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 17"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_17.bin" size="0x804" crc="1653d348" sha1="a52351e989b417ddcc5e0ec128f1291eee46c9b4" />
+</dataarea>
+</part>
+
+<part name="pm18" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 18"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_18.bin" size="0x804" crc="b5778cfd" sha1="b6bdf16bdff8c73ba94cbfa853ca1b1874124f86" />
+</dataarea>
+</part>
+
+<part name="pm19" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 19"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_19.bin" size="0x804" crc="74261026" sha1="cc2d310d97fb9688e7dfb36a24bc50689b2fe5d5" />
+</dataarea>
+</part>
+
+<part name="pm20" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 20"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_20.bin" size="0x804" crc="926b18d0" sha1="93e811ab86f29665bef83c61a333ba14811f3f1d" />
+</dataarea>
+</part>
+
+<part name="pm21" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 21"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_21.bin" size="0x804" crc="9c9e06fe" sha1="e32a282e8e35201a3ab12d76e4aae9932c4de1ac" />
+</dataarea>
+</part>
+
+<part name="pm22" interface="compumate_cass" >
+<feature name="part_id" value="PictureMate 22"/>
+<dataarea name="cass" size="0x804" >
+    <rom name="PictureMate_22.bin" size="0x804" crc="850a8dee" sha1="57783eaa06b80f8983817b15d9d483fac3aa4ee0" />
+</dataarea>
+</part>
+
+
+<part name="sma1" interface="compumate_cass" >
+<feature name="part_id" value="SongMate A1"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_A1.bin" size="0x604" crc="f9f36b93" sha1="44f6903a16acb809e829ba5de367b5237c5a182a" />
+</dataarea>
+</part>
+
+<part name="sma2" interface="compumate_cass" >
+<feature name="part_id" value="SongMate A2"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_A2.bin" size="0x604" crc="7901f7a6" sha1="6bb291217bfcca9e127ee65c6b22e624d1e9cf13" />
+</dataarea>
+</part>
+
+<part name="sma3" interface="compumate_cass" >
+<feature name="part_id" value="SongMate A3"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_A3.bin" size="0x604" crc="70535057" sha1="ed93529e9461deefa0607138bb7f0751cbbba30b" />
+</dataarea>
+</part>
+
+<part name="sma4" interface="compumate_cass" >
+<feature name="part_id" value="SongMate A4"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_A4.bin" size="0x604" crc="eee54788" sha1="6cbef6a9f325e8e2a0f3eac4031acb4fed3555d9" />
+</dataarea>
+</part>
+
+<part name="sma5" interface="compumate_cass" >
+<feature name="part_id" value="SongMate A5"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_A5.bin" size="0x604" crc="138568d0" sha1="622d431548963755462412216bedb601f3e18edd" />
+</dataarea>
+</part>
+
+<part name="smb1" interface="compumate_cass" >
+<feature name="part_id" value="SongMate B1"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_B1.bin" size="0x604" crc="c84b2583" sha1="d6da52e998918c3c658cb44f9156026ad6b872c3" />
+</dataarea>
+</part>
+
+<part name="smb2" interface="compumate_cass" >
+<feature name="part_id" value="SongMate B2"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_B2.bin" size="0x604" crc="7f73f78a" sha1="cd454cfb6c0f3d7a50a43e38a2800ce58d52b2c1" />
+</dataarea>
+</part>
+
+<part name="smb3" interface="compumate_cass" >
+<feature name="part_id" value="SongMate B3"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_B3.bin" size="0x604" crc="bd7e9b11" sha1="e7d090d523890b8db66fc91c046753f706e775b5" />
+</dataarea>
+</part>
+
+<part name="smb4" interface="compumate_cass" >
+<feature name="part_id" value="SongMate B4"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_B4.bin" size="0x604" crc="3bfb0608" sha1="cf0650ef5f4192c72554bd133ff3468ef8023413" />
+</dataarea>
+</part>
+
+<part name="smb5" interface="compumate_cass" >
+<feature name="part_id" value="SongMate B5"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_B5.bin" size="0x604" crc="cd796c28" sha1="a4c9c4096dcd2b09e5a7af4909936c7fb4c0f5f2" />
+</dataarea>
+</part>
+
+<part name="smb6" interface="compumate_cass" >
+<feature name="part_id" value="SongMate B6"/>
+<dataarea name="cass" size="0x604" >
+    <rom name="SongMate_B6.bin" size="0x604" crc="2043ba93" sha1="688b81f65bf77ae7adfefee3f56b1bd9bbe7c3b1" />
+</dataarea>
+</part>
+</software>
+
+</softwarelist>
+

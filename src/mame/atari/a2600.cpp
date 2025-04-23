@@ -1010,6 +1010,8 @@ void a2600_compumate_state::a2600_compumate_common(machine_config &config)
 	m_cass->set_default_state(CASSETTE_SPEAKER_ENABLED);
 	m_cass->add_route(ALL_OUTPUTS, "mono", 0.01);
 	m_cass->set_interface("compumate_cass");
+
+	SOFTWARE_LIST(config, "compumate_cass").set_original("a2600_compumate");
 }
 
 void a2600_compumate_state::a2600_compumate(machine_config &config)
