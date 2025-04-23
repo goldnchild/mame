@@ -5,8 +5,8 @@
 
 <software name="cm" >
 <description>Spectravideo CompuMate Cassettes</description>
-<publisher>SpectraVideo</publisher>
 <year>1983</year>
+<publisher>SpectraVideo</publisher>
 
 <part name="pm01" interface="compumate_cass" >
 <feature name="part_id" value="PictureMate 01"/>
