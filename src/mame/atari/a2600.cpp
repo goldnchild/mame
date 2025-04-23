@@ -1009,9 +1009,9 @@ void a2600_compumate_state::a2600_compumate_common(machine_config &config)
 	m_cass->set_formats(compumate_cassette_formats);
 	m_cass->set_default_state(CASSETTE_SPEAKER_ENABLED);
 	m_cass->add_route(ALL_OUTPUTS, "mono", 0.01);
-	m_cass->set_interface("compumate_cass");
+	m_cass->set_interface("a2600_compumate_cass");  // name must matches the interface in the softlist
 
-	SOFTWARE_LIST(config, "compumate_cass").set_original("a2600_compumate");
+	SOFTWARE_LIST(config, "cass_list").set_original("a2600_compumate_cass");  // names the softlist file, softlist name must match filename
 }
 
 void a2600_compumate_state::a2600_compumate(machine_config &config)
