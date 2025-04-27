@@ -98,13 +98,14 @@ uint8_t coleco_state::paddle_2_r()
 	return m_joy_d7_state[1] | coleco_paddle_read(1, m_joy_mode, m_joy_analog_state[1]);
 }
 
-uint8_t bit90_state::paddle_2_r()  // bit90 has a simplified joystick port, supports digital inputs only
+uint8_t bit90_state::paddle_2_r()
 {
 	// Tape notes:
 	//     Signal is averaged to set the threshold voltage for a comparator
 	//     Output of the comparator goes to bit 7
-//  return m_joy_d7_state[1] | coleco_paddle_read(1, m_joy_mode, m_joy_analog_state[1]);
-	return (m_cass->input() > 0.1) << 7;
+
+	// bit90 has a simplified joystick port, supports digital inputs only
+	return ((m_cass->input() > 0.1) << 7) | (coleco_paddle_read(1, m_joy_mode, 0) & 0x7f);
 }
 
 void coleco_state::paddle_off_w(uint8_t data)
@@ -167,16 +168,8 @@ void bit90_state::u32_w(uint8_t data)
 	uint8_t temp = data & 0x03;
 	if (m_unknown != temp) {
 		m_unknown = temp;
-//      printf("tape = %x\n",m_unknown);
-// 0 1 2 3    4 bit waveform, equal divisions
-// 0 = -1.0
-// 1 = -.33
-// 2 = .33
-// 3 = 1.0
-//      const double output[] = {-1.0, -0.33, 0.33, 1.0};   // make it look like a sine wave
-//      const double output[] = {-0.75, -0.25, 0.25, 0.75};  // quieter sine wave
-//      const double output[] = {-0.60, -0.20, 0.20, 0.60};  // quieter sine wave
-		const double output[] = {-0.60, -0.60, 0.60, 0.60};  // seems to be better to make it look like a square wave
+//      const double output[] = {-0.60, -0.20, 0.20, 0.60};  // make it approximate a sine wave
+		const double output[] = {-0.60, -0.60, 0.60, 0.60};  // make it look like a square wave
 		m_cass->output(output[BIT(data, 0, 2)]);
 		LOG("m_unknown -> 0x%02x\n",m_unknown);
 	}
@@ -197,9 +190,12 @@ void bit90_state::bit90_map(address_map &map)
 	map(0x2000, 0x3fff).rom();
 	map(0x4000, 0x5fff).rom();  // Decoded through pin 5 of the Bit90 expansion port
 	map(0x6000, 0x67ff).ram().mirror(0x1800);
-	map(0x8000, 0xffff).rw(FUNC(coleco_state::cart_r), FUNC(coleco_state::cart_w));
-	map(0x8000, 0xffff).ram();  // for now, lets add the ram for basic's use (needed for demo program to load)
-} // according to the demo program, has 18kb of ram   (2kb + 16kb tms memory)
+	map(0x8000, 0xffff).view(m_cartram_view);
+	m_cartram_view[0](0x8000, 0xffff).rw(FUNC(coleco_state::cart_r), FUNC(coleco_state::cart_w));
+	m_cartram_view[1](0x8000, 0xffff).ram();
+//  map(0x8000, 0xffff).rw(FUNC(coleco_state::cart_r), FUNC(coleco_state::cart_w));
+//  map(0x8000, 0xffff).ram();  // for now, lets add the ram for basic's use (needed for demo program to load)
+}
 
 void coleco_state::coleco_io_map(address_map &map)
 {
@@ -236,7 +232,11 @@ void bit90_state::bit90_io_map(address_map &map)
 
 	// External/(Internal?) RAM Interface
 	//map(0x4e, 0x4f).w(FUNC(bit90_state::external_ram_control_w)); // 0x4e enable, 0x4f disable
+	// schematics say 4e enable 4f disable, seems to work with it this way
 	// RAM can appear here, starting at 0x8000 up to 0xffff
+//  map(0x4e, 0x4e).lw8([this](u8 data){ m_cartram_view.select(0); }, "disable ram");
+//  map(0x4f, 0x4f).lw8([this](u8 data){ m_cartram_view.select(1); }, "enable ram");
+	map(0x4e, 0x4f).lw8([this](offs_t offset, u8 data){ m_cartram_view.select(offset & 0x1); }, "select cart or ram");
 }
 
 void coleco_state::czz50_map(address_map &map)
@@ -566,6 +566,7 @@ void bit90_state::machine_start()
 	coleco_state::machine_start();
 	uint8_t *banked = memregion("banked")->base();
 	m_bank->configure_entries(0, 0x02, banked, 0x2000);
+	m_cartram_view.select(0);
 }
 
 void coleco_state::machine_reset()

@@ -115,7 +115,8 @@ public:
 		m_bank(*this, "bank"),
 		m_ram(*this, RAM_TAG),
 		m_io_keyboard(*this, {"ROW0", "ROW1", "ROW2", "ROW3", "ROW4", "ROW5", "ROW6", "ROW7"}),
-		m_cass(*this, "cassette")
+		m_cass(*this, "cassette"),
+		m_cartram_view(*this, "cartram_view")
 	{ }
 
 	virtual void machine_start() override ATTR_COLD;
@@ -135,6 +136,7 @@ protected:
 	required_device<ram_device> m_ram;
 	required_ioport_array<8> m_io_keyboard;
 	optional_device<cassette_image_device> m_cass;
+	memory_view m_cartram_view;
 
 private:
 	void bit90_map(address_map &map) ATTR_COLD;
