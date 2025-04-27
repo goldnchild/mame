@@ -105,7 +105,8 @@ uint8_t bit90_state::paddle_2_r()
 	//     Output of the comparator goes to bit 7
 
 	// bit90 has a simplified joystick port, supports digital inputs only
-	return ((m_cass->input() > 0.2) << 7) | (coleco_paddle_read(1, m_joy_mode, 0) & 0x7f);  // try 0.2 instead of 0.1
+	return ((m_cass->input() > 0.3) << 7) | (coleco_paddle_read(1, m_joy_mode, 0) & 0x7f);
+	// to handle initial biasing of cassettes, try 0.3 instead of 0.1
 }
 
 void coleco_state::paddle_off_w(uint8_t data)
