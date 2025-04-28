@@ -124,6 +124,8 @@ public:
 
 	void bit90(machine_config &config);
 
+	DECLARE_INPUT_CHANGED_MEMBER(reset_system);
+
 	uint8_t bankswitch_u4_r(address_space &space);
 	uint8_t bankswitch_u3_r(address_space &space);
 	uint8_t keyboard_r(address_space &space);

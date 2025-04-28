@@ -176,6 +176,14 @@ void bit90_state::u32_w(uint8_t data)
 	}
 }
 
+INPUT_CHANGED_MEMBER(bit90_state::reset_system)
+{
+	if (newval)
+	{
+		m_maincpu->pulse_input_line(INPUT_LINE_RESET, attotime::zero);  // reset cpu
+	}
+}
+
 /* Memory Maps */
 
 void coleco_state::coleco_map(address_map &map)
@@ -371,6 +379,9 @@ static INPUT_PORTS_START( bit90 )
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_NAME("CTRL") PORT_CODE(KEYCODE_LCONTROL) PORT_CHAR(UCHAR_SHIFT_2)
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_NAME("SPACE") PORT_CODE(KEYCODE_SPACE) PORT_CHAR(' ')
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_NAME("FCTN") PORT_CODE(KEYCODE_RCONTROL)
+
+	PORT_START("RESET")
+	PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_NAME("Reset") PORT_CODE(KEYCODE_PGUP) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(bit90_state::reset_system), 0)
 INPUT_PORTS_END
 
 /* Interrupts */
