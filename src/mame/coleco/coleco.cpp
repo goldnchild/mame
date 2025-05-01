@@ -269,17 +269,17 @@ void bit90_state::bit90_io_map(address_map &map)
 		if (data==0x50) m_printer_red = 1;
 	}, "write11");
 
-	map(0x12, 0x12).lw8([this](offs_t offset, u8 data)
+	map(0x12, 0x12).lw8([](offs_t offset, u8 data)
 	{
-		m_printer_red = m_printer_red; // does this make it stop complaining about unused this
+//		m_printer_red = m_printer_red; // does this make it stop complaining about unused this
 		printf("0x12 write %x\n",data);
 	}, "write12");
 
 
 
-	map(0x13, 0x13).lw8([this](offs_t offset, u8 data)
+	map(0x13, 0x13).lw8([](offs_t offset, u8 data)
 	{
-		m_printer_red = m_printer_red;  // does this make it stop complaining about unused this
+//		m_printer_red = m_printer_red;  // does this make it stop complaining about unused this
 		printf("0x13 write %x\n",data);
 	}, "write13");
 
