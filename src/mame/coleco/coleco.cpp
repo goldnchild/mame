@@ -199,6 +199,7 @@ void bit90_state::bit90_map(address_map &map)
 	map(0x2000, 0x3fff).rom();
 	map(0x4000, 0x5fff).rom();  // Decoded through pin 5 of the Bit90 expansion port
 	map(0x6000, 0x67ff).ram().mirror(0x1800);
+	map(0x7800, 0x7fff).rom().region("40colprinter", 0);
 	map(0x8000, 0xffff).view(m_cartram_view);
 	m_cartram_view[0](0x8000, 0xffff).rw(FUNC(coleco_state::cart_r), FUNC(coleco_state::cart_w));
 	m_cartram_view[1](0x8000, 0xffff).ram();
@@ -246,6 +247,68 @@ void bit90_state::bit90_io_map(address_map &map)
 //  map(0x4e, 0x4e).lw8([this](u8 data){ m_cartram_view.select(0); }, "disable ram");
 //  map(0x4f, 0x4f).lw8([this](u8 data){ m_cartram_view.select(1); }, "enable ram");
 	map(0x4e, 0x4f).lw8([this](offs_t offset, u8 data){ m_cartram_view.select(offset & 0x1); }, "select cart or ram");
+
+	map(0x10, 0x10).lw8([this](offs_t offset, u8 data)
+	{
+		for (int i=0;i<8;i++)
+		{
+			printf(BIT(data,i) ? "*" : "_");
+			if (!BIT(data,i) && i>0)
+				m_bitmap_printer->pix(
+						m_bitmap_printer->m_ypos + (7-i) * 1, // * 1 for no interleave at 72 vdpi
+						m_bitmap_printer->m_xpos    ) = m_printer_red ? 0xff0000 : 0;
+
+		}
+		printf("\n");
+	}, "write printhead");
+
+	map(0x11, 0x11).lw8([this](offs_t offset, u8 data)
+	{
+		printf("0x11 write %x\n",data);
+		if (data==0x50) printf("0x11               50\n");  // ok, it looks like it if it sends 50, then the rest of the line is red
+		if (data==0x50) m_printer_red = 1;
+	}, "write11");
+
+	map(0x12, 0x12).lw8([this](offs_t offset, u8 data)
+	{
+		printf("0x12 write %x\n",data);
+	}, "write12");
+
+
+
+	map(0x13, 0x13).lw8([this](offs_t offset, u8 data)
+	{
+		printf("0x13 write %x\n",data);
+	}, "write13");
+
+
+
+	map(0x12, 0x12).lr8([this](offs_t offset) -> u8
+	{
+		m_printer_counter += 1;
+		if (m_printer_counter >= 139)
+		{
+			m_printer_counter = 0;
+			m_bitmap_printer->m_xpos++;
+			if (m_bitmap_printer->m_xpos > 260+50)
+			{
+				m_bitmap_printer->m_xpos = 0;
+				m_bitmap_printer->m_ypos += 7;
+				m_printer_red = 0;
+	/*
+				m_bitmap_printer->update_cr_stepper(2);
+				m_bitmap_printer->update_cr_stepper(6);
+				m_bitmap_printer->update_cr_stepper(2);
+				m_bitmap_printer->update_pf_stepper(2);
+				m_bitmap_printer->update_pf_stepper(6);
+				m_bitmap_printer->update_pf_stepper(2);
+	*/
+			}
+		}
+//		m_test_printer_status ^= 0xc0;
+		m_test_printer_status = (((m_printer_counter % 20) < 10) ? 0x80 : 0x0) | ((m_bitmap_printer->m_xpos <50) ? 0x40 : 0x0);
+		return m_test_printer_status;
+	}, "test_return_printer_status");
 }
 
 void coleco_state::czz50_map(address_map &map)
@@ -698,6 +761,13 @@ void bit90_state::bit90(machine_config &config)
 	m_cass->set_interface("bit90_cass");  // give the cassette interface a name for use in the software list
 
 	SOFTWARE_LIST(config, "cass_list").set_original("bit90_cass");  // will look for a software list named bit90_cass.xml
+
+#define PAPER_WIDTH 320 // dots   256 dots across
+#define PAPER_HEIGHT (11*72)
+
+	BITMAP_PRINTER(config, m_bitmap_printer, PAPER_WIDTH, PAPER_HEIGHT, 120, 72);  // do 72 dpi
+	m_bitmap_printer->set_pf_stepper_ratio(1,6);  // pf stepper moves at 216 dpi so at 72dpi half steps
+	m_bitmap_printer->set_cr_stepper_ratio(1,1);
 }
 
 void coleco_state::czz50(machine_config &config)
@@ -811,6 +881,9 @@ ROM_START( bit90 )
 	ROMX_LOAD("bit90b3.u3", 0x2000, 0x2000, CRC(61fdccbb) SHA1(25cac13627c0916d3ed2b92f0b2218b405de5be4), ROM_BIOS(0))
 	ROMX_LOAD("d32351e.u4", 0x0000, 0x2000, CRC(d00c7137) SHA1(43328257136aff5a4984cceafdb5601200ac24b4), ROM_BIOS(1)) // BIT-99C1
 	ROMX_LOAD("d32521e.u3", 0x2000, 0x2000, CRC(f6401dd8) SHA1(78bc7f0fe4f5eb114773d654c92598512481abec), ROM_BIOS(1)) // MONITOR2
+
+	ROM_REGION( 0x800, "40colprinter", 0)
+	ROM_LOAD("bit90_printer_rom90201.bin", 0x0000, 0x800, CRC(de6fd3f8) SHA1(b90c80ed65f3064b6656f04a7620613e87a02c62))
 ROM_END
 
 /* System Drivers */

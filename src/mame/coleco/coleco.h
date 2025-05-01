@@ -14,6 +14,7 @@
 #include "coleco_m.h"
 #include "bus/coleco/cartridge/exp.h"
 
+#include "machine/bitmap_printer.h"
 //#include "formats/compumate_cas.h"
 #include "imagedev/cassette.h"
 
@@ -115,6 +116,7 @@ public:
 		m_bank(*this, "bank"),
 		m_ram(*this, RAM_TAG),
 		m_io_keyboard(*this, {"ROW0", "ROW1", "ROW2", "ROW3", "ROW4", "ROW5", "ROW6", "ROW7"}),
+		m_bitmap_printer(*this, "bitmap_printer"),
 		m_cass(*this, "cassette"),
 		m_cartram_view(*this, "cartram_view")
 	{ }
@@ -137,6 +139,7 @@ protected:
 	required_memory_bank m_bank;
 	required_device<ram_device> m_ram;
 	required_ioport_array<8> m_io_keyboard;
+	required_device<bitmap_printer_device> m_bitmap_printer;
 	optional_device<cassette_image_device> m_cass;
 	memory_view m_cartram_view;
 
@@ -146,6 +149,11 @@ private:
 
 	uint8_t m_keyselect = 0U;
 	uint8_t m_unknown = 0U;
+
+	u8 m_test_printer_status = 0;
+
+	u8 m_printer_counter = 0;
+	u8 m_printer_red = 0;
 
 	uint8_t paddle_2_r();
 };
