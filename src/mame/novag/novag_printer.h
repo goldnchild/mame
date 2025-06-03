@@ -58,7 +58,6 @@ private:
 	u8 m_headpos = 0;
 	emu_timer *m_cr_timer;
 	u8 m_motor = 0;
-	u8 col;
 	u8 m_timingpos = 0;
 	u8 m_pf_stepper_index = 0;
 
