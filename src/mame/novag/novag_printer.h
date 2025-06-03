@@ -30,6 +30,13 @@ public:
 		drawpix(data, headnum);
 	}
 
+	template <u8 headnumvalue>  // template makes it easier to call from address map
+	void writehead(u8 data) // headnum numbered from right side
+	{
+		m_motor = BIT(data, 5);
+		drawpix(data, headnumvalue);
+	}
+
 	u8 read() // returns m_timing wheel rotary encoder data
 	{
 		return m_timing[m_timingpos];

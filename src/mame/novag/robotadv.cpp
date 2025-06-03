@@ -462,10 +462,10 @@ void robotadv_state::io_map(address_map &map)
 	map.global_mask(0xff);
 	map(0xc0, 0xc0).w(FUNC(robotadv_state::control1_w));
 	map(0xc1, 0xc1).w(FUNC(robotadv_state::control2_w));
-	map(0xc2, 0xc2).lw8([this](u8 data){ m_novag_printer->write(data, 1); }, "c2 write"); // printer
+	map(0xc2, 0xc2).w(m_novag_printer, FUNC(novag_printer_device::writehead<1>));
 	map(0xc3, 0xc3).r(FUNC(robotadv_state::limits_r));
 	map(0xc4, 0xc4).w(FUNC(robotadv_state::latch_w));
-	map(0xc5, 0xc5).lw8([this](u8 data){ m_novag_printer->write(data, 0); }, "c5 write"); // printer
+	map(0xc5, 0xc5).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
 	map(0xc6, 0xc6).r(FUNC(robotadv_state::input_r));
 	map(0xc7, 0xc7).r(FUNC(robotadv_state::counters_r));
 }

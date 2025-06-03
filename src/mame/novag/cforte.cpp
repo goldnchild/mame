@@ -188,8 +188,8 @@ u8 cforte_state::input2_r()
 void cforte_state::main_map(address_map &map)
 {
 	map(0x0000, 0x0fff).ram().share("nvram");
-	map(0x1c00, 0x1c00).lw8([this](offs_t offset, u8 data){ m_novag_printer->write(data, 1); }, "1c00 write"); // printer
-	map(0x1d00, 0x1d00).lw8([this](offs_t offset, u8 data){ m_novag_printer->write(data, 0); }, "1d00 write"); // printer
+	map(0x1c00, 0x1c00).w("novag_printer", FUNC(novag_printer_device::writehead<1>));
+	map(0x1d00, 0x1d00).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
 	map(0x1e00, 0x1e00).rw(FUNC(cforte_state::input2_r), FUNC(cforte_state::mux_w));
 	map(0x1f00, 0x1f00).rw(FUNC(cforte_state::input1_r), FUNC(cforte_state::control_w));
 	map(0x2000, 0xffff).rom();

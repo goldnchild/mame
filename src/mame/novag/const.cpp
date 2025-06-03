@@ -240,8 +240,8 @@ u8 const_state::input2_r()
 void const_state::ssensor4_map(address_map &map)
 {
 	map(0x0000, 0x03ff).ram().share("nvram");
-	map(0x2000, 0x2000).lw8([this](offs_t offset, u8 data){ m_novag_printer->write(data, 1); }, "2000 write"); // printer
-	map(0x4000, 0x4000).lw8([this](offs_t offset, u8 data){ m_novag_printer->write(data, 0); }, "4000 write"); // printer
+	map(0x2000, 0x2000).w("novag_printer", FUNC(novag_printer_device::writehead<1>));
+	map(0x4000, 0x4000).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
 	map(0x6000, 0x6000).rw(FUNC(const_state::input2_r), FUNC(const_state::mux_w));
 	map(0x8000, 0x8000).rw(FUNC(const_state::input1_r), FUNC(const_state::control_w));
 	map(0xc000, 0xdfff).r("exrom", FUNC(generic_slot_device::read_rom));
@@ -259,8 +259,8 @@ void const_state::const_map(address_map &map)
 void const_state::sconst_map(address_map &map)
 {
 	map(0x0000, 0x0fff).ram().share("nvram");
-	map(0x1c00, 0x1c00).lw8([this](offs_t offset, u8 data){ m_novag_printer->write(data, 1); }, "1c00 write"); // printer
-	map(0x1d00, 0x1d00).lw8([this](offs_t offset, u8 data){ m_novag_printer->write(data, 0); }, "1d00 write"); // printer
+	map(0x1c00, 0x1c00).w("novag_printer", FUNC(novag_printer_device::writehead<1>));
+	map(0x1d00, 0x1d00).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
 	map(0x1e00, 0x1e00).rw(FUNC(const_state::input2_r), FUNC(const_state::mux_w));
 	map(0x1f00, 0x1f00).rw(FUNC(const_state::input1_r), FUNC(const_state::control_w));
 	map(0x2000, 0xffff).rom();

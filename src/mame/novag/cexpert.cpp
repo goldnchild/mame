@@ -155,8 +155,8 @@ u8 cexpert_state::input2_r()
 void cexpert_state::main_map(address_map &map)
 {
 	map(0x0000, 0x0fff).ram().share("nvram");
-	map(0x1000, 0x1000).lw8([this](u8 data) { m_novag_printer->write(data, 1); }, "1000 write"); // printer
-	map(0x1100, 0x1100).lw8([this](u8 data) { m_novag_printer->write(data, 0); }, "1100 write"); // printer
+	map(0x1000, 0x1000).w("novag_printer", FUNC(novag_printer_device::writehead<1>));
+	map(0x1100, 0x1100).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
 	map(0x1200, 0x1200).rw(FUNC(cexpert_state::input2_r), FUNC(cexpert_state::mux_w));
 	map(0x1300, 0x1300).rw(FUNC(cexpert_state::input1_r), FUNC(cexpert_state::control_w));
 	map(0x1800, 0xffff).rom();
