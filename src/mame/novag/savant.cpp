@@ -25,6 +25,7 @@ anymore in original working order.
 
 #include "emu.h"
 
+#include "novag_printer.h"
 #include "cpu/z80/z80.h"
 #include "cpu/f8/f8.h"
 #include "machine/f3853.h"
@@ -56,6 +57,7 @@ public:
 		m_display(*this, "display"),
 		m_board(*this, "board"),
 		m_dac(*this, "dac"),
+		m_novag_printer(*this, "novag_printer"),
 		m_nvram(*this, "nvram"),
 		m_inputs(*this, "IN.%u", 0)
 	{ }
@@ -77,6 +79,7 @@ private:
 	required_device<pwm_display_device> m_display;
 	required_device<sensorboard_device> m_board;
 	required_device<dac_1bit_device> m_dac;
+	required_device<novag_printer_device> m_novag_printer;
 	required_shared_ptr<u8> m_nvram;
 	required_ioport_array<3> m_inputs;
 
@@ -279,10 +282,10 @@ void savant_state::main_io(address_map &map)
 {
 	map(0xc0, 0xc0).mirror(0x0038).select(0xff00).rw(FUNC(savant_state::stall_r), FUNC(savant_state::stall_w));
 	map(0xc1, 0xc1).mirror(0xff38).nopw(); // clock
-	map(0xc2, 0xc2).mirror(0xff38).nopw(); // printer
-	map(0xc3, 0xc3).mirror(0xff38).nopr(); // printer
+	map(0xc2, 0xc2).mirror(0xff38).lw8([this](u8 data){ m_novag_printer->write(data, 0); }, "c2 write"); // printer
+	map(0xc3, 0xc3).mirror(0xff38).lr8([this]() -> u8 { return ~m_novag_printer->read(); }, "c3 read");  // printer
 	map(0xc4, 0xc4).mirror(0xff38).r(FUNC(savant_state::mcustatus_r));
-	map(0xc5, 0xc5).mirror(0xff38).nopw(); // printer
+	map(0xc5, 0xc5).mirror(0xff38).lw8([this](u8 data){ m_novag_printer->write(data, 1); }, "c5 write"); // printer
 }
 
 void savant_state::mcu_map(address_map &map)
@@ -389,6 +392,8 @@ void savant_state::savant(machine_config &config)
 	// sound hardware
 	SPEAKER(config, "speaker").front_center();
 	DAC_1BIT(config, m_dac).add_route(ALL_OUTPUTS, "speaker", 0.25);
+
+	NOVAG_PRINTER(config, m_novag_printer);
 }
 
 

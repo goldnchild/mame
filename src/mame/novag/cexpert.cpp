@@ -26,6 +26,7 @@ contents as the newer version.
 
 #include "emu.h"
 
+#include "novag_printer.h"
 #include "cpu/m6502/r65c02.h"
 #include "machine/clock.h"
 #include "machine/nvram.h"
@@ -50,6 +51,7 @@ public:
 		m_display(*this, "display"),
 		m_board(*this, "board"),
 		m_beeper(*this, "beeper"),
+		m_novag_printer(*this, "novag_printer"),
 		m_inputs(*this, "IN.%u", 0)
 	{ }
 
@@ -66,6 +68,7 @@ private:
 	required_device<pwm_display_device> m_display;
 	required_device<sensorboard_device> m_board;
 	required_device<beep_device> m_beeper;
+	required_device<novag_printer_device> m_novag_printer;
 	required_ioport_array<8> m_inputs;
 
 	u8 m_inp_mux = 0;
@@ -137,7 +140,10 @@ u8 cexpert_state::input2_r()
 			data |= m_inputs[i]->read() << 6;
 
 	// other: ?
-	return ~data;
+	data = ~data;
+
+	data = (data & 0xf8) |  bitswap<3>(~m_novag_printer->read(),2,1,0);
+	return data;
 }
 
 
@@ -149,8 +155,8 @@ u8 cexpert_state::input2_r()
 void cexpert_state::main_map(address_map &map)
 {
 	map(0x0000, 0x0fff).ram().share("nvram");
-	map(0x1000, 0x1000).nopw(); // accessory?
-	map(0x1100, 0x1100).nopw(); // "
+	map(0x1000, 0x1000).lw8([this](u8 data) { m_novag_printer->write(data, 1); }, "1000 write"); // printer
+	map(0x1100, 0x1100).lw8([this](u8 data) { m_novag_printer->write(data, 0); }, "1100 write"); // printer
 	map(0x1200, 0x1200).rw(FUNC(cexpert_state::input2_r), FUNC(cexpert_state::mux_w));
 	map(0x1300, 0x1300).rw(FUNC(cexpert_state::input1_r), FUNC(cexpert_state::control_w));
 	map(0x1800, 0xffff).rom();
@@ -232,6 +238,8 @@ void cexpert_state::cexpert(machine_config &config)
 	SPEAKER(config, "mono").front_center();
 	BEEP(config, m_beeper, 15440 / 16); // 965Hz
 	m_beeper->add_route(ALL_OUTPUTS, "mono", 0.25);
+
+	NOVAG_PRINTER(config, m_novag_printer);
 }
 
 

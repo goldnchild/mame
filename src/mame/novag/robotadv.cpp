@@ -36,6 +36,7 @@ TODO:
 
 #include "emu.h"
 
+#include "novag_printer.h"
 #include "cpu/z80/z80.h"
 #include "machine/clock.h"
 #include "machine/nvram.h"
@@ -60,6 +61,7 @@ public:
 		m_display(*this, "display"),
 		m_board(*this, "board"),
 		m_sn(*this, "sn"),
+		m_novag_printer(*this, "novag_printer"),
 		m_inputs(*this, "IN.%u", 0),
 		m_piece_hand(*this, "cpu_hand"),
 		m_out_motor(*this, "motor%u", 0U),
@@ -77,6 +79,7 @@ private:
 	required_device<pwm_display_device> m_display;
 	required_device<sensorboard_device> m_board;
 	required_device<sn76489a_device> m_sn;
+	required_device<novag_printer_device> m_novag_printer;
 	required_ioport_array<3> m_inputs;
 	output_finder<> m_piece_hand;
 	output_finder<6> m_out_motor;
@@ -403,7 +406,7 @@ u8 robotadv_state::limits_r()
 	// d1-d4: limit switches
 	// d5-d7: printer
 	refresh();
-	return m_limits << 1;
+	return ((m_limits << 1) & 0x1f) | (bitswap<3>(~m_novag_printer->read(), 0, 1, 2) << 5);
 }
 
 u8 robotadv_state::input_r()
@@ -459,10 +462,10 @@ void robotadv_state::io_map(address_map &map)
 	map.global_mask(0xff);
 	map(0xc0, 0xc0).w(FUNC(robotadv_state::control1_w));
 	map(0xc1, 0xc1).w(FUNC(robotadv_state::control2_w));
-	map(0xc2, 0xc2).nopw(); // printer
+	map(0xc2, 0xc2).lw8([this](u8 data){ m_novag_printer->write(data, 1); }, "c2 write"); // printer
 	map(0xc3, 0xc3).r(FUNC(robotadv_state::limits_r));
 	map(0xc4, 0xc4).w(FUNC(robotadv_state::latch_w));
-	map(0xc5, 0xc5).nopw(); // printer
+	map(0xc5, 0xc5).lw8([this](u8 data){ m_novag_printer->write(data, 0); }, "c5 write"); // printer
 	map(0xc6, 0xc6).r(FUNC(robotadv_state::input_r));
 	map(0xc7, 0xc7).r(FUNC(robotadv_state::counters_r));
 }
@@ -538,6 +541,8 @@ void robotadv_state::robotadv(machine_config &config)
 	// sound hardware
 	SPEAKER(config, "speaker").front_center();
 	SN76489A(config, m_sn, 6_MHz_XTAL / 2).add_route(ALL_OUTPUTS, "speaker", 1.0);
+
+	NOVAG_PRINTER(config, m_novag_printer);
 }
 
 
