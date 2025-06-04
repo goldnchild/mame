@@ -37,9 +37,15 @@ public:
 		drawpix(data, headnumvalue);
 	}
 
+
 	u8 read() // returns m_timing wheel rotary encoder data
 	{
 		return m_timing[m_timingpos];
+	}
+
+	u8 readinvert()
+	{
+		return BIT(~m_timing[m_timingpos], 0, 3);
 	}
 
 protected:

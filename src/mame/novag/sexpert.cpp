@@ -38,6 +38,7 @@ TODO:
 
 #include "emu.h"
 
+#include "novag_printer.h"
 #include "bus/rs232/rs232.h"
 #include "cpu/m6502/w65c02.h"
 #include "machine/clock.h"
@@ -75,6 +76,7 @@ public:
 		m_acia(*this, "acia"),
 		m_rs232(*this, "rs232"),
 		m_beeper(*this, "beeper"),
+		m_novag_printer(*this, "novag_printer"),
 		m_inputs(*this, "IN.%u", 0)
 	{ }
 
@@ -100,6 +102,7 @@ protected:
 	required_device<mos6551_device> m_acia;
 	required_device<rs232_port_device> m_rs232;
 	required_device<beep_device> m_beeper;
+	required_device<novag_printer_device> m_novag_printer;
 	required_ioport_array<8> m_inputs;
 
 	u8 m_inp_mux = 0;
@@ -264,13 +267,14 @@ u8 sexpert_state::input2_r()
 	u8 data = 0;
 
 	// d0-d2: printer port
+	data |= m_novag_printer->read();
 
 	// d5-d7: multiplexed inputs (side panel)
 	for (int i = 0; i < 8; i++)
 		if (BIT(m_inp_mux, i))
 			data |= m_inputs[i]->read() << 5;
 
-	return ~data & 0xe0;
+	return ~data;
 }
 
 
@@ -317,8 +321,8 @@ void sexpert_state::sexpert_map(address_map &map)
 	map(0x1ff0, 0x1fff).unmaprw(); // 8KB RAM, but RAM CE pin is deactivated on $1ff0-$1fff
 	map(0x1ff0, 0x1ff0).r(FUNC(sexpert_state::input1_r));
 	map(0x1ff1, 0x1ff1).r(FUNC(sexpert_state::input2_r));
-	map(0x1ff2, 0x1ff2).nopw(); // printer
-	map(0x1ff3, 0x1ff3).nopw(); // printer
+	map(0x1ff2, 0x1ff2).w("novag_printer", FUNC(novag_printer_device::writehead<1>));
+	map(0x1ff3, 0x1ff3).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
 	map(0x1ff4, 0x1ff4).w(FUNC(sexpert_state::leds_w));
 	map(0x1ff5, 0x1ff5).w(FUNC(sexpert_state::mux_w));
 	map(0x1ff6, 0x1ff6).w(FUNC(sexpert_state::lcd_control_w));
@@ -452,6 +456,8 @@ void sexpert_state::sexpert(machine_config &config)
 	RS232_PORT(config, m_rs232, default_rs232_devices, nullptr);
 	m_rs232->rxd_handler().set("acia", FUNC(mos6551_device::write_rxd));
 	m_rs232->dsr_handler().set("acia", FUNC(mos6551_device::write_dsr));
+
+	NOVAG_PRINTER(config, m_novag_printer);
 }
 
 void sexpert_state::sexpertb(machine_config &config)

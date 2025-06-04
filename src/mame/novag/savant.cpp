@@ -282,10 +282,10 @@ void savant_state::main_io(address_map &map)
 {
 	map(0xc0, 0xc0).mirror(0x0038).select(0xff00).rw(FUNC(savant_state::stall_r), FUNC(savant_state::stall_w));
 	map(0xc1, 0xc1).mirror(0xff38).nopw(); // clock
-	map(0xc2, 0xc2).mirror(0xff38).w("novag_printer", FUNC(novag_printer_device::writehead<1>));
-	map(0xc3, 0xc3).mirror(0xff38).r("novag_printer", FUNC(novag_printer_device::read));
+	map(0xc2, 0xc2).mirror(0xff38).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
+	map(0xc3, 0xc3).mirror(0xff38).r("novag_printer", FUNC(novag_printer_device::readinvert));
 	map(0xc4, 0xc4).mirror(0xff38).r(FUNC(savant_state::mcustatus_r));
-	map(0xc5, 0xc5).mirror(0xff38).w("novag_printer", FUNC(novag_printer_device::writehead<0>));
+	map(0xc5, 0xc5).mirror(0xff38).w("novag_printer", FUNC(novag_printer_device::writehead<1>));
 }
 
 void savant_state::mcu_map(address_map &map)
