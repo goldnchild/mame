@@ -4,10 +4,23 @@
 
    Saitek Kasparov PC Auto Chessboard Emulation
 
+   8x8 Reed Switch Matrix
+
+   rows connected to 74HCT157 Quad 2-1 data selector
+   columns connected to 74HCT137 decoder
+   single column selected at a time
+   active low when piece is above reed switch
+   4 rows read at a time via parallel port inputs
+
+   8x8 LED Matrix
+
+   rows connected to 74HCT259 8 bit addressable latch
+   columns connected to 74HCT137 decoder
+
 **********************************************************************/
 
-#ifndef MAME_BUS_CENTRONICS_PC_AUTOBOARD_H
-#define MAME_BUS_CENTRONICS_PC_AUTOBOARD_H
+#ifndef MAME_BUS_CENTRONICS_AUTOBOARD_H
+#define MAME_BUS_CENTRONICS_AUTOBOARD_H
 
 #pragma once
 
@@ -79,7 +92,7 @@ protected:
 
 private:
 	required_device<hct259_device> m_259;
-//  required_device<hct137_device> m_137;  // there are two 74137 multiplexers used for the columns in the led and switch matrixes
+//  required_device<hct137_device> m_137;  // there are two 74137 decoders used for the columns in the led and switch matrixes
 //  required_device<hct157_device> m_157_reed;
 	required_device<sensorboard_device> m_board;
 	required_device<pwm_display_device> m_display;
@@ -92,4 +105,4 @@ private:
 
 DECLARE_DEVICE_TYPE(CENTRONICS_AUTOCHESSBOARD, pc_autoboard_device)
 
-#endif // MAME_BUS_CENTRONICS_PC_AUTOBOARD_H
+#endif // MAME_BUS_CENTRONICS_AUTOBOARD_H
