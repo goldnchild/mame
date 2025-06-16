@@ -3302,6 +3302,8 @@ if (BUSES["CENTRONICS"]~=null) then
 	files {
 		MAME_DIR .. "src/devices/bus/centronics/adaptator.cpp",
 		MAME_DIR .. "src/devices/bus/centronics/adaptator.h",
+		MAME_DIR .. "src/devices/bus/centronics/autoboard.cpp",
+		MAME_DIR .. "src/devices/bus/centronics/autoboard.h",
 		MAME_DIR .. "src/devices/bus/centronics/ctronics.cpp",
 		MAME_DIR .. "src/devices/bus/centronics/ctronics.h",
 		MAME_DIR .. "src/devices/bus/centronics/chessmec.cpp",
@@ -3339,6 +3341,7 @@ if (BUSES["CENTRONICS"]~=null) then
 	}
 
 	dependency {
+		{ MAME_DIR .. "src/devices/bus/centronics/autoboard.cpp",    GEN_DIR .. "emu/layout/autoboard.lh" },
 		{ MAME_DIR .. "src/devices/bus/centronics/epson_ex800.cpp",  GEN_DIR .. "emu/layout/ex800.lh" },
 		{ MAME_DIR .. "src/devices/bus/centronics/epson_lx800.cpp",  GEN_DIR .. "emu/layout/lx800.lh" },
 		{ MAME_DIR .. "src/devices/bus/centronics/epson_lx810l.cpp", GEN_DIR .. "emu/layout/lx800.lh" },
@@ -3346,6 +3349,7 @@ if (BUSES["CENTRONICS"]~=null) then
 	}
 
 	custombuildtask {
+		layoutbuildtask("emu/layout", "autoboard"),
 		layoutbuildtask("emu/layout", "ex800"),
 		layoutbuildtask("emu/layout", "lx800"),
 		layoutbuildtask("emu/layout", "smartboard"),
