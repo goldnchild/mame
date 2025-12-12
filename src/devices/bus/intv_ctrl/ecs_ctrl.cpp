@@ -188,8 +188,8 @@ static INPUT_PORTS_START( intvecs_keybd )
 	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_ESC)     PORT_CHAR(UCHAR_MAMEKEY(ESC))
 	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_P)       PORT_CHAR('P')
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_COLON)   PORT_CHAR(';') PORT_CHAR(':')
-	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_STOP)    PORT_CHAR('.')
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_LEFT)    PORT_CHAR(UCHAR_MAMEKEY(LEFT)) PORT_CHAR('%')
+	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_STOP)    PORT_CHAR('.') PORT_CHAR('>')
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_LEFT)    PORT_CHAR(UCHAR_MAMEKEY(LEFT)) PORT_CHAR('%') PORT_CODE(KEYCODE_BACKSPACE)
 
 	PORT_START("ROW.1")
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_L)       PORT_CHAR('L')
@@ -199,7 +199,7 @@ static INPUT_PORTS_START( intvecs_keybd )
 	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_I)       PORT_CHAR('I')
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_K)       PORT_CHAR('K')
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_M)       PORT_CHAR('M')
-	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_COMMA)   PORT_CHAR(',')
+	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_COMMA)   PORT_CHAR(',') PORT_CHAR('<')
 
 	PORT_START("ROW.2")
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_J)       PORT_CHAR('J')
@@ -292,20 +292,22 @@ uint8_t intvecs_keybd_device::read_portB()
 
 uint8_t intvecs_keybd_device::read_portA()
 {
-	uint8_t val = 0x0;
+	uint8_t val = 0x0;  // use "positive logic" as it's a bit easier to handle
 	// return correct result if more than one bit of 0xFE is set    A = 0xFE, B = 0xFF
-	for (int row = 0; row < 7; row++)  // 7 rows
+	for (int row = 0; row < 7; row++)  // 7 rows to process 0..6
 	{
-		u8 rowdata = m_keybd[row]->read(); // read one row
-		for (int col = 0; col < 8; col++)  // 8 columns
-			if (BIT(m_psg_portB, col)) // if bit set, then enable this column
+		u8 rowdata = m_keybd[row]->read(); // read one row at a time
+		for (int col = 0; col < 8; col++)  // 8 columns (column bits are the "drivers", selecting a particular column)
+			if (BIT(m_psg_portB, col)) // if bit set in port B, then enable this column to affect the output bit for this row
 			{
 				//printf("a=%x b=%x    portB=%x   m_keybd[a]=%x     vaL=%x\n",a,b,m_psg_portB, m_keybd[a]->read(),val);
 				val = val | (!BIT(rowdata, col) << row);  // OR bits for keys that are down in this col and row
+				// reason we use "<< row" is that each row connects to a single bit in port A.
+				// so any keys active in this row will only affect this single bit.
 			}
 	}
 	//printf("reading port A = %x   B=%x      %s\n",0xff-val,m_psg_portB,machine().describe_context().c_str());
-	return 0xff - val; // invert the value returned
+	return 0xff - val; // invert the value returned for active low
 }
 
 void intvecs_keybd_device::write_portA(uint8_t data)

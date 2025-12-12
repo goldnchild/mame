@@ -90,14 +90,10 @@ private:
 	void ram16_w(offs_t offset, uint16_t data);
 	uint8_t intvkb_iocart_r(offs_t offset);
 
-	uint16_t ram16_8000_r(offs_t offset) { return ram8000[offset]; };
-	void ram16_8000_w(offs_t offset, uint16_t data) { ram8000[offset] = data; };
-
-	//uint8_t ram_8000_r(offs_t offset) { return ram8000[offset]; };
-	//void ram_8000_w(offs_t offset, uint8_t data) { ram8000[offset] = data; };
+	uint16_t ram16_8000_r(offs_t offset) { return ram8000[offset & 0x1fff]; };
+	void ram16_8000_w(offs_t offset, uint16_t data) { ram8000[offset & 0x1fff] = data; };
 
 	uint16_t ram8000[0x2000] = {0};
-	//uint8_t ram8000[0x2000] = {0};
 
 	//uint16_t intv_ecs_uart_r(offs_t offset);
 	uint8_t intv_ecs_uart_r(offs_t offset);

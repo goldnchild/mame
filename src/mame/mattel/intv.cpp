@@ -441,8 +441,6 @@ void intv_state::intveecs_mem(address_map &map)
 //	map(0x8000, 0x8fff).r("ecs", FUNC(intv_ecs_device::read_rom80));
 //	map(0x9000, 0x9fff).r("ecs", FUNC(intv_ecs_device::read_rom90));
 
-	//map(0x8000, 0x9fff).ram();
-	//map(0x8000, 0x9fff).rw(FUNC(intv_state::ram_8000_r), FUNC(intv_state::ram_8000_w));
 	map(0x8000, 0x9fff).rw(FUNC(intv_state::ram16_8000_r), FUNC(intv_state::ram16_8000_w));
 
 	map(0xa000, 0xafff).r("ecs", FUNC(intv_ecs_device::read_roma0));
