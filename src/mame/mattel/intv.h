@@ -55,9 +55,11 @@ public:
 	void intv2(machine_config &config);
 	void intvoice(machine_config &config);
 	void intvecs(machine_config &config);
+	void intveecs(machine_config &config);
 	void intv(machine_config &config);
 
 	void init_intvecs();
+	void init_intveecs();
 	void init_intvkbd();
 	void init_intv();
 
@@ -87,6 +89,21 @@ private:
 	uint16_t ram16_r(offs_t offset);
 	void ram16_w(offs_t offset, uint16_t data);
 	uint8_t intvkb_iocart_r(offs_t offset);
+
+	uint16_t ram16_8000_r(offs_t offset) { return ram8000[offset]; };
+	void ram16_8000_w(offs_t offset, uint16_t data) { ram8000[offset] = data; };
+
+	//uint8_t ram_8000_r(offs_t offset) { return ram8000[offset]; };
+	//void ram_8000_w(offs_t offset, uint8_t data) { ram8000[offset] = data; };
+
+	uint16_t ram8000[0x2000] = {0};
+	//uint8_t ram8000[0x2000] = {0};
+
+	//uint16_t intv_ecs_uart_r(offs_t offset);
+	uint8_t intv_ecs_uart_r(offs_t offset);
+	void intv_ecs_uart_w(offs_t offset, uint8_t data);
+
+	u8 m_printer = 0;
 
 	uint8_t m_bus_copy_mode = 0;
 	uint8_t m_backtab_row = 0;
@@ -130,6 +147,7 @@ private:
 	void intv2_mem(address_map &map) ATTR_COLD;
 	void intv_mem(address_map &map) ATTR_COLD;
 	void intvecs_mem(address_map &map) ATTR_COLD;
+	void intveecs_mem(address_map &map) ATTR_COLD;
 	void intvkbd2_mem(address_map &map) ATTR_COLD;
 	void intvkbd_mem(address_map &map) ATTR_COLD;
 	void intvoice_mem(address_map &map) ATTR_COLD;

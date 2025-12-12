@@ -32,6 +32,7 @@ public:
 	virtual uint8_t read_portA() { return 0xff; }
 	virtual uint8_t read_portB() { return 0xff; }
 	virtual void write_portA(uint8_t data) { }
+	virtual void write_portB(uint8_t data) { }
 
 protected:
 	device_intvecs_control_port_interface(const machine_config &mconfig, device_t &device);
@@ -61,6 +62,7 @@ public:
 	uint8_t porta_r() { return m_device ? m_device->read_portA() : 0; }
 	uint8_t portb_r() { return m_device ? m_device->read_portB() : 0; }
 	void porta_w(uint8_t data) { if (m_device) m_device->write_portA(data); }
+	void portb_w(uint8_t data) { if (m_device) m_device->write_portB(data); }
 
 protected:
 	// device-level overrides
@@ -126,8 +128,13 @@ protected:
 	virtual uint8_t read_portB() override;
 	virtual void write_portA(uint8_t data) override;
 
+	virtual uint8_t read_portA() override;
+	virtual void write_portB(uint8_t data) override;
+
+
 private:
 	uint8_t m_psg_portA;
+	uint8_t m_psg_portB;
 	required_ioport_array<7> m_keybd;
 };
 

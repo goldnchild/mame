@@ -102,6 +102,7 @@ void intv_ecs_device::device_add_mconfig(machine_config &config)
 	m_snd->port_a_read_callback().set("ctrl_port", FUNC(intvecs_control_port_device::porta_r));
 	m_snd->port_b_read_callback().set("ctrl_port", FUNC(intvecs_control_port_device::portb_r));
 	m_snd->port_a_write_callback().set("ctrl_port", FUNC(intvecs_control_port_device::porta_w));
+	m_snd->port_b_write_callback().set("ctrl_port", FUNC(intvecs_control_port_device::portb_w));  // omigosh forgot to set it to port b
 	m_snd->add_route(ALL_OUTPUTS, "mono_ecs", 0.33);
 
 	INTVECS_CONTROL_PORT(config, "ctrl_port", intvecs_control_port_devices, "keybd");

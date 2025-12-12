@@ -178,6 +178,7 @@ static INPUT_PORTS_START( intvecs_keybd )
  Shifted keys that differ from pc:
  Key        : 1 2 5 6 7 (left) (right) (up) (down)
  Shift + key: = " + - /  %      '       ^    ?
+
  */
 
 	PORT_START("ROW.0")
@@ -214,7 +215,8 @@ static INPUT_PORTS_START( intvecs_keybd )
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_G)       PORT_CHAR('G')
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_T)       PORT_CHAR('T')
 	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_4)       PORT_CHAR('4') PORT_CHAR('$')
-	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_5)       PORT_CHAR('5') PORT_CHAR('%')
+	//PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_5)       PORT_CHAR('5') PORT_CHAR('%')
+	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_5)       PORT_CHAR('5') PORT_CHAR('+')
 	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_R)       PORT_CHAR('R')
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_F)       PORT_CHAR('F')
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_CODE(KEYCODE_C)       PORT_CHAR('C')
@@ -266,11 +268,13 @@ intvecs_keybd_device::intvecs_keybd_device(const machine_config &mconfig, const 
 void intvecs_keybd_device::device_start()
 {
 	save_item(NAME(m_psg_portA));
+	save_item(NAME(m_psg_portB));
 }
 
 void intvecs_keybd_device::device_reset()
 {
 	m_psg_portA = 0;
+	m_psg_portB = 0;
 }
 
 uint8_t intvecs_keybd_device::read_portB()
@@ -282,15 +286,39 @@ uint8_t intvecs_keybd_device::read_portB()
 		if (BIT(m_psg_portA, i))
 			val &= m_keybd[i]->read();
 	}
+	//printf("reading port B = %x    portA=%x     %s\n",val,m_psg_portA,machine().describe_context().c_str());
 	return val;
+}
+
+uint8_t intvecs_keybd_device::read_portA()
+{
+	uint8_t val = 0x0;
+	// return correct result if more than one bit of 0xFE is set    A = 0xFE, B = 0xFF
+	for (int row = 0; row < 7; row++)  // 7 rows
+	{
+		u8 rowdata = m_keybd[row]->read(); // read one row
+		for (int col = 0; col < 8; col++)  // 8 columns
+			if (BIT(m_psg_portB, col)) // if bit set, then enable this column
+			{
+				//printf("a=%x b=%x    portB=%x   m_keybd[a]=%x     vaL=%x\n",a,b,m_psg_portB, m_keybd[a]->read(),val);
+				val = val | (!BIT(rowdata, col) << row);  // OR bits for keys that are down in this col and row
+			}
+	}
+	//printf("reading port A = %x   B=%x      %s\n",0xff-val,m_psg_portB,machine().describe_context().c_str());
+	return 0xff - val; // invert the value returned
 }
 
 void intvecs_keybd_device::write_portA(uint8_t data)
 {
 	m_psg_portA = (~data) & 0xff;
+	//printf("WRITE port A = %x      %s\n",m_psg_portA,machine().describe_context().c_str());
 }
 
-
+void intvecs_keybd_device::write_portB(uint8_t data)
+{
+	m_psg_portB = (~data) & 0xff;
+	//printf("WRITE port B = %x      %s\n",m_psg_portB,machine().describe_context().c_str());
+}
 
 //-------------------------------------------------
 //  ECS_SYNTH - Synth

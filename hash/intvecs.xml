@@ -3,7 +3,31 @@
 <!--
 license:CC0-1.0
 -->
+
+
 <softwarelist name="intvecs" description="Mattel Intellivision ECS cartridges">
+
+	<software name="intveecs">
+		<description>Extended ECS Basic</description>
+		<year>2025</year>
+		<publisher>Nanochess Electronics</publisher>
+		<info name="serial" value="4536"/>
+		<info name="usage" value="Requires ECS and Keyboard"/>
+		<part name="cart" interface="intv_cart">
+			<feature name="slot" value="intv_rom" />
+			<dataarea name="5000" size="0x2000">
+				<rom name="5000basic.bin" size="0x2000" crc="cafe5f1b" sha1="658483b7bf5eb8783887da8640ac2ca4530ac47d"/>
+			</dataarea>
+			<dataarea name="6000" size="0x1f4a">
+				<rom name="6000basic.bin" size="0x1f4a" crc="36745864" sha1="bdac062484dae105d9ed42505efca77794df1b1a"/>
+			</dataarea>
+			<dataarea name="d000" size="0x15f6">
+				<rom name="d000basic.bin" size="0x15f6" crc="cde0c9f4" sha1="db500bc5f8f5c0a1adacb385fe6bcbc7e70dcf49"/>
+			</dataarea>
+		</part>
+	</software>
+
+
 
 	<software name="jetsons">
 		<description>The Jetsons - Ways With Words</description>

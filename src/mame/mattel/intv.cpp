@@ -357,11 +357,41 @@ void intv_state::intv2_mem(address_map &map)
 	map(0xf000, 0xffff).r(m_cart, FUNC(intv_cart_slot_device::read_romf0));
 }
 
+
+//uint16_t intv_state::intv_ecs_uart_r(offs_t offset)
+uint8_t intv_state::intv_ecs_uart_r(offs_t offset)
+{
+	printf("READING offset=%x\n",offset);
+	return 0x02;  // if you make it a uint16_t you can return a 16 bit value
+//	static int mystate = 0;
+	if (offset==0 && m_printer)  // reading e0
+	{
+//		if (printer) return 2;
+//		mystate = (mystate + 1) %2;
+//		printf("OFFSET %x return %x\n",offset,mystate);
+		return 2;
+//		return mystate; // this is the printer ready
+	}
+
+	else return 0;
+}
+void intv_state::intv_ecs_uart_w(offs_t offset, uint8_t data)
+{
+
+	printf("OFFSET  %x  = %x    CHAR = %c\n",offset,data,(data > 32) ? data : '.');
+
+	if (offset==1)
+	{
+		if (data == 0x23) m_printer = 1;
+	}
+
+}
+
 void intv_state::intvecs_mem(address_map &map)
 {
 	map(0x0000, 0x003f).rw(FUNC(intv_state::stic_r), FUNC(intv_state::stic_w));
 	map(0x0080, 0x0081).rw("speech", FUNC(sp0256_device::spb640_r), FUNC(sp0256_device::spb640_w)); /* Intellivoice */
-	// map(0x00e0, 0x00e3).rw(FUNC(intv_state::intv_ecs_uart_r), FUNC(intv_state::intv_ecs_uart_w));
+//	map(0x00e0, 0x00e3).rw(FUNC(intv_state::intv_ecs_uart_r), FUNC(intv_state::intv_ecs_uart_w));
 	map(0x00f0, 0x00ff).rw("ecs", FUNC(intv_ecs_device::read_ay), FUNC(intv_ecs_device::write_ay)); /* ecs psg */
 	map(0x0100, 0x01ef).rw(FUNC(intv_state::ram8_r), FUNC(intv_state::ram8_w));
 	map(0x01f0, 0x01ff).rw(m_sound, FUNC(ay8914_device::read), FUNC(ay8914_device::write)).umask16(0x00ff);
@@ -386,6 +416,44 @@ void intv_state::intvecs_mem(address_map &map)
 	map(0xe000, 0xefff).rw("ecs", FUNC(intv_ecs_device::read_rome0), FUNC(intv_ecs_device::write_rome0));
 	map(0xf000, 0xffff).rw("ecs", FUNC(intv_ecs_device::read_romf0), FUNC(intv_ecs_device::write_romf0));
 }
+
+void intv_state::intveecs_mem(address_map &map)
+{
+	map(0x0000, 0x003f).rw(FUNC(intv_state::stic_r), FUNC(intv_state::stic_w));
+	map(0x0080, 0x0081).rw("speech", FUNC(sp0256_device::spb640_r), FUNC(sp0256_device::spb640_w)); /* Intellivoice */
+//	map(0x00e0, 0x00e3).rw(FUNC(intv_state::intv_ecs_uart_r), FUNC(intv_state::intv_ecs_uart_w));
+	map(0x00f0, 0x00ff).rw("ecs", FUNC(intv_ecs_device::read_ay), FUNC(intv_ecs_device::write_ay)); /* ecs psg */
+	map(0x0100, 0x01ef).rw(FUNC(intv_state::ram8_r), FUNC(intv_state::ram8_w));
+	map(0x01f0, 0x01ff).rw(m_sound, FUNC(ay8914_device::read), FUNC(ay8914_device::write)).umask16(0x00ff);
+	map(0x0200, 0x035f).rw(FUNC(intv_state::ram16_r), FUNC(intv_state::ram16_w));
+	map(0x0400, 0x04ff).r("ecs", FUNC(intv_ecs_device::read_rom04));
+	map(0x1000, 0x1fff).rom().region("maincpu", 0x1000<<1); /* Exec ROM, 10-bits wide */
+	map(0x2000, 0x2fff).rw("ecs", FUNC(intv_ecs_device::read_rom20), FUNC(intv_ecs_device::write_rom20));
+	map(0x3000, 0x37ff).r(m_stic, FUNC(stic_device::grom_read)); /* GROM,     8-bits wide */
+	map(0x3800, 0x39ff).rw(FUNC(intv_state::gram_r), FUNC(intv_state::gram_w));       /* GRAM,     8-bits wide */
+	map(0x3a00, 0x3bff).rw(FUNC(intv_state::gram_r), FUNC(intv_state::gram_w));       /* GRAM Alias,     8-bits wide */
+	map(0x4000, 0x47ff).rw("ecs", FUNC(intv_ecs_device::read_ram), FUNC(intv_ecs_device::write_ram));
+	map(0x4800, 0x4fff).r("ecs", FUNC(intv_ecs_device::read_rom48));
+	map(0x5000, 0x5fff).r("ecs", FUNC(intv_ecs_device::read_rom50));
+	map(0x6000, 0x6fff).r("ecs", FUNC(intv_ecs_device::read_rom60));
+	map(0x7000, 0x7fff).rw("ecs", FUNC(intv_ecs_device::read_rom70), FUNC(intv_ecs_device::write_rom70));
+
+//	map(0x8000, 0x8fff).r("ecs", FUNC(intv_ecs_device::read_rom80));
+//	map(0x9000, 0x9fff).r("ecs", FUNC(intv_ecs_device::read_rom90));
+
+	//map(0x8000, 0x9fff).ram();
+	//map(0x8000, 0x9fff).rw(FUNC(intv_state::ram_8000_r), FUNC(intv_state::ram_8000_w));
+	map(0x8000, 0x9fff).rw(FUNC(intv_state::ram16_8000_r), FUNC(intv_state::ram16_8000_w));
+
+	map(0xa000, 0xafff).r("ecs", FUNC(intv_ecs_device::read_roma0));
+	map(0xb000, 0xbfff).r("ecs", FUNC(intv_ecs_device::read_romb0));
+	map(0xc000, 0xcfff).r("ecs", FUNC(intv_ecs_device::read_romc0));
+	map(0xd000, 0xdfff).r("ecs", FUNC(intv_ecs_device::read_romd0));
+	map(0xe000, 0xefff).rw("ecs", FUNC(intv_ecs_device::read_rome0), FUNC(intv_ecs_device::write_rome0));
+	map(0xf000, 0xffff).rw("ecs", FUNC(intv_ecs_device::read_romf0), FUNC(intv_ecs_device::write_romf0));
+}
+
+
 
 void intv_state::intvkbd_mem(address_map &map)
 {
@@ -516,6 +584,30 @@ void intv_state::intvecs(machine_config &config)
 	SOFTWARE_LIST(config, "intv_list").set_compatible("intv");
 }
 
+void intv_state::intveecs(machine_config &config)
+{
+	intv(config);
+	m_maincpu->set_addrmap(AS_PROGRAM, &intv_state::intveecs_mem);
+
+	config.device_remove("cartslot");
+	INTV_ROM_ECS(config, "ecs", 0);
+
+	sp0256_device &speech(SP0256(config, "speech", 3120000));
+	/* The Intellivoice uses a speaker with its own volume control so the relative volumes to use are subjective */
+	speech.add_route(ALL_OUTPUTS, "mono", 1.00);
+
+	/* cassette */
+	//CASSETTE(config, "cassette");
+
+	/* software lists */
+	config.device_remove("ecs_list");
+	SOFTWARE_LIST(config.replace(), "cart_list").set_original("intvecs");
+	SOFTWARE_LIST(config, "intv_list").set_compatible("intv");
+}
+
+
+
+
 void intv_state::intvkbd(machine_config &config)
 {
 	intv(config);
@@ -573,6 +665,17 @@ ROM_START(intvecs) // the intv1 exec rom should be two roms: RO-3-9502-011.U5 an
 	/* SP0256-012 Speech chip w/2KiB mask rom */
 	ROM_LOAD( "sp0256-012.bin",   0x1000, 0x0800, CRC(0de7579d) SHA1(618563e512ff5665183664f52270fa9606c9d289) )
 ROM_END
+
+
+ROM_START(intveecs) // the intv1 exec rom should be two roms: RO-3-9502-011.U5 and RO-3-9504-021.U6
+	ROM_REGION(0x10000<<1,"maincpu", ROMREGION_ERASEFF)
+	ROM_LOAD16_WORD( "exec.bin", (0x1000<<1)+0, 0x2000, CRC(cbce86f7) SHA1(5a65b922b562cb1f57dab51b73151283f0e20c7a))
+
+	ROM_REGION( 0x10000<<1, "speech", 0 )
+	/* SP0256-012 Speech chip w/2KiB mask rom */
+	ROM_LOAD( "sp0256-012.bin",   0x1000, 0x0800, CRC(0de7579d) SHA1(618563e512ff5665183664f52270fa9606c9d289) )
+ROM_END
+
 
 /*
 Intellivision Keyboard Component - Prototype
@@ -649,3 +752,6 @@ CONS( 1982, intv2,    intv,   0,      intv2,    0,       intv_state, init_intv, 
 // made up, user friendlier machines with pre-mounted passthu expansions
 COMP( 1982, intvoice, intv,   0,      intvoice, 0,       intv_state, init_intv,    "Mattel Electronics", "Intellivision w/IntelliVoice expansion", MACHINE_SUPPORTS_SAVE )
 COMP( 1983, intvecs,  intv,   0,      intvecs,  0,       intv_state, init_intv,    "Mattel Electronics", "Intellivision w/Entertainment Computer System + Intellivoice expansions", MACHINE_SUPPORTS_SAVE )
+
+// hack to get extended ecs basic working, ram at 0x8000-0x9fff
+COMP( 1983, intveecs,  intv,   0,      intveecs,  0,       intv_state, init_intv,    "Mattel Electronics", "Intellivision w/Entertainment Computer System + Extended ECS Basic + Intellivoice expansions", MACHINE_SUPPORTS_SAVE )
