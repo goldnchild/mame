@@ -497,3 +497,49 @@ void emulator_info::layout_script_cb(layout_file &file, const char *script)
 }
 
 bool emulator_info::standalone() { return false; }
+
+uint64_t emulator_info::execute_lua_ret(const char *script, bool *validptr, std::string *loaderrstrptr, std::string *invokeerrstrptr)
+{
+	auto &l(*mame_machine_manager::instance()->lua());
+
+	//sol::protected_function_result result = l.invoke(l.load_string(script).get<sol::protected_function>());
+
+	sol::load_result load_result = l.load_string(script);
+	if (!load_result.valid())
+	{
+		sol::error err = load_result;
+		printf("LOAD ERROR = %s\n",err.what());
+		// seems to help having the + operator, does it make a copy? otherwise string can end up empty
+		if (loaderrstrptr != nullptr) *loaderrstrptr = "LOAD ERROR what = " + std::string(err.what());
+	}
+	sol::protected_function spf = load_result.get<sol::protected_function>();
+	sol::protected_function_result result = l.invoke(spf);
+
+	if (result.valid())
+	{
+		if (validptr) *validptr = 1;
+		return result;
+	}
+	else
+	{
+		sol::error err = result;
+		if (invokeerrstrptr != nullptr) *invokeerrstrptr = "RUN/INVOKE ERROR what = " + std::string(err.what());
+		printf("RUN/INVOKE ERROR = %s\n",err.what());
+		if (validptr) *validptr = 0;
+		return 0;
+	}
+}
+
+u64 emulator_info::get_lua_var(const char* varname)
+{
+	u64 retval = 0xffffffff;
+	std::string execstring = std::string("return ") + std::string(varname + 3);
+	retval = execute_lua_ret(execstring.c_str());
+	return retval;
+}
+
+void emulator_info::set_lua_var(const char* varname, u64 value)
+{
+	std::string execstring = std::string(varname + 3) + std::string("=") + std::to_string(value);
+	[[maybe_unused]] u64 retval = execute_lua_ret(execstring.c_str());
+}

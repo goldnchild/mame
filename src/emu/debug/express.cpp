@@ -37,7 +37,7 @@
 #include <cctype>
 #include <locale>
 
-
+#include "main.h"
 
 /***************************************************************************
     DEBUGGING
@@ -1531,6 +1531,11 @@ void parsed_expression::parse_symbol_or_number(parse_token &token, const char *&
 			}
 			return;
 		}
+		else if (strncmp(buffer.c_str(),"lua", 3) == 0 && buffer.length() >= 4)
+		{
+			token.configure_symbol_lua(buffer.c_str());
+			return;
+		}
 
 		// attempt to parse as a number in the default base
 		parse_number(token, buffer.c_str(), m_default_base, expression_error::UNKNOWN_SYMBOL);
@@ -1930,11 +1935,10 @@ inline void parsed_expression::pop_token(parse_token &token)
 //  and ensure that it is a proper lval
 //-------------------------------------------------
 
-inline void parsed_expression::pop_token_lval(parse_token &token)
+inline void parsed_expression::pop_token_lval(parse_token &token)   // inline is why we don't see it in backtrace
 {
 	// start with normal pop
 	pop_token(token);
-
 	// if we're not an lval, throw an error
 	if (!token.is_lval())
 		throw expression_error(expression_error::NOT_LVAL, token.offset());
@@ -2255,7 +2259,14 @@ u64 parsed_expression::parse_token::get_lval_value(symbol_table &table)
 {
 	// get the value of a symbol
 	if (is_symbol())
-		return m_symbol->value();
+	{
+		if (is_symbol_lua())
+		{
+			return emulator_info::get_lua_var(m_luavar.c_str());
+		}
+		else
+			return m_symbol->value();
+	}
 
 	// or get the value from the memory callbacks
 	else if (is_memory())
@@ -2274,7 +2285,14 @@ inline void parsed_expression::parse_token::set_lval_value(symbol_table &table, 
 {
 	// set the value of a symbol
 	if (is_symbol())
-		m_symbol->set_value(value);
+	{
+		if (is_symbol_lua())
+		{
+			emulator_info::set_lua_var(m_luavar.c_str(), value);
+		}
+		else
+			m_symbol->set_value(value);
+	}
 
 	// or set the value via the memory callbacks
 	else if (is_memory())

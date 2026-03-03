@@ -309,9 +309,10 @@ private:
 		bool is_string() const { return (m_type == STRING); }
 		bool is_memory() const { return (m_type == MEMORY); }
 		bool is_symbol() const { return (m_type == SYMBOL); }
+		bool is_symbol_lua() const { return (m_type == SYMBOL) && (m_symbol == nullptr); }
 		bool is_operator() const { return (m_type == OPERATOR); }
 		bool is_operator(u8 type) const { return (m_type == OPERATOR && optype() == type); }
-		bool is_lval() const { return ((m_type == SYMBOL && m_symbol->is_lval()) || m_type == MEMORY); }
+		bool is_lval() const { return (is_symbol_lua()  || (m_type == SYMBOL && m_symbol->is_lval()) || m_type == MEMORY); }
 
 		u64 value() const { assert(m_type == NUMBER); return m_value; }
 		const char *string() const { assert(m_type == STRING); return m_string; }
@@ -334,6 +335,8 @@ private:
 		parse_token &configure_string(const char *string) { m_type = STRING; m_string = string; return *this; }
 		parse_token &configure_memory(u32 address, parse_token &memoryat) { m_type = MEMORY; m_value = address; m_flags = memoryat.m_flags; m_string = memoryat.m_string; return *this; }
 		parse_token &configure_symbol(symbol_entry &symbol) { m_type = SYMBOL; m_symbol = &symbol; return *this; }
+		//parse_token &configure_symbol_lua(const char *string) { m_type = SYMBOL; m_symbol = nullptr; m_string = string; return *this; }
+		parse_token &configure_symbol_lua(const char *string) { m_type = SYMBOL; m_symbol = nullptr; m_string = string; m_luavar = std::string(string); return *this; }
 		parse_token &configure_operator(u8 optype, u8 precedence)
 			{ m_type = OPERATOR; m_flags = ((optype << TIN_OPTYPE_SHIFT) & TIN_OPTYPE_MASK) | ((precedence << TIN_PRECEDENCE_SHIFT) & TIN_PRECEDENCE_MASK); return *this; }
 
@@ -356,6 +359,7 @@ private:
 		u32                     m_flags;            // additional flags/info
 		const char *            m_string;           // associated string
 		symbol_entry *          m_symbol;           // symbol pointer
+		std::string             m_luavar;           // lua variable name
 	};
 
 	// internal helpers

@@ -61,6 +61,10 @@ public:
 	static void sound_hook(const std::map<std::string, std::vector<std::pair<const float *, int>>> &sound); // Can't use sound_stream::sample_t sadly
 	static void layout_script_cb(layout_file &file, const char *script);
 	static bool standalone();
+
+	static uint64_t execute_lua_ret(const char *script, bool *validptr = nullptr, std::string *errstrptr = nullptr, std::string *invokeerrstrptr = nullptr);
+	static uint64_t get_lua_var(const char* varname);
+	static void set_lua_var(const char* varname, uint64_t value);
 };
 
 

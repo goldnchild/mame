@@ -36,7 +36,7 @@
 #include <locale>
 #include <sstream>
 
-
+#include "main.h"
 
 /***************************************************************************
     CONSTANTS
@@ -186,6 +186,8 @@ debugger_commands::debugger_commands(running_machine& machine, debugger_cpu& cpu
 	m_console.register_command("help",      CMDFLAG_NONE, 0, 1, std::bind(&debugger_commands::execute_help, this, _1));
 	m_console.register_command("print",     CMDFLAG_NONE, 1, MAX_COMMAND_PARAMS, std::bind(&debugger_commands::execute_print, this, _1));
 	m_console.register_command("printf",    CMDFLAG_NONE, 1, MAX_COMMAND_PARAMS, std::bind(&debugger_commands::execute_printf, this, _1));
+	m_console.register_command("lua",       CMDFLAG_NONE, 1, MAX_COMMAND_PARAMS, std::bind(&debugger_commands::execute_printflua, this, _1));
+	m_console.register_command("printflua", CMDFLAG_NONE, 1, MAX_COMMAND_PARAMS, std::bind(&debugger_commands::execute_printflua, this, _1));
 	m_console.register_command("logerror",  CMDFLAG_NONE, 1, MAX_COMMAND_PARAMS, std::bind(&debugger_commands::execute_logerror, this, _1));
 	m_console.register_command("tracelog",  CMDFLAG_NONE, 1, MAX_COMMAND_PARAMS, std::bind(&debugger_commands::execute_tracelog, this, _1));
 	m_console.register_command("tracesym",  CMDFLAG_NONE, 1, MAX_COMMAND_PARAMS, std::bind(&debugger_commands::execute_tracesym, this, _1));
@@ -692,6 +694,28 @@ void debugger_commands::execute_printf(const std::vector<std::string_view> &para
 	buffer.imbue(std::locale::classic());
 	if (mini_printf(buffer, params))
 		m_console.printf("%s\n", std::move(buffer).str());
+}
+
+void debugger_commands::execute_printflua(const std::vector<std::string_view> &params)
+{
+	// then do a printf
+	std::ostringstream buffer;
+	buffer.imbue(std::locale::classic());
+	if (mini_printf(buffer, params))
+	{
+		bool valid = 0;
+		std::string loaderrstr;
+		std::string invokeerrstr;
+		[[maybe_unused]] u64 retval = emulator_info::execute_lua_ret(buffer.str().c_str(), &valid, &loaderrstr, &invokeerrstr);
+		m_console.printf("%s\n", std::move(buffer).str());
+		if (!valid)
+		{
+			m_console.printf("%s%s\n", "Error: invalid lua script : ",std::move(buffer).str());
+			m_console.printf("%s%s\n", "Lua load return : ", loaderrstr.c_str());
+			m_console.printf("%s%s\n", "Lua invoke return : ", invokeerrstr.c_str());
+			printf("INVALID lua script\n");
+		}
+	}
 }
 
 
