@@ -857,6 +857,13 @@ static int completeLine(struct current *current) {
                     i = (i+1) % (lc.len+1);
                     if (i == lc.len) beep();
                     break;
+				case 15: /* ctrl+o */
+					if (i == 0) {
+						i = lc.len; beep();
+					}
+					else
+						i = (i-1) % (lc.len+1);
+					break;
                 case CHAR_ESCAPE: /* escape */
                     /* Re-show original buffer */
                     if (i < lc.len) {

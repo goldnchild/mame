@@ -40,7 +40,9 @@ function console.startplugin()
 	-- linenoise isn't thread safe but that means history can handled here
 	-- that also means that bad things will happen if anything outside lua tries to use it
 	-- especially the completion callback
-	ln.historysetmaxlen(50)
+	ln.historysetmaxlen(500)
+function hex(x) return string.format("%02x",x) end
+function printt(t) if type(t)=="nil" then print("nil") return end print("TYPE="..type(t)) if type(t)=="number" then print("0x"..hex(t)) end print(t) if type(t) ~= "number" and type(t) ~= "string" then for i,j in pairs(t) do print(i,j) end  end end
 	local scr = [[
 		local ln = require('linenoise')
 		ln.setcompletion(
@@ -79,15 +81,21 @@ function console.startplugin()
 		-- variable can be inserted. Local variables cannot be listed!
 		local function  add_globals()
 			for _, k in ipairs(keywords) do
-				add(k)
+--              add(k)
 			end
 			for k in pairs(_G) do
+				if not k:match("^sol%.") then
 				add(k)
+				end
 			end
 		end
 
+		local function checkpairs(t) local p = pairs(t)  end
+		local function checkfor(t) for k,v in pairs(t) do end end
+
 		if expr and expr ~= "" then
 			local v = load("local STRING = {'" .. table.concat(strs,"','") .. "'} return " .. expr)
+			-- print("LOADED STRING =".."local STRING = {'" .. table.concat(strs,"','") .. "'} return " .. expr)
 			if v then
 				err, v = pcall(v)
 				if (not err) or (not v) then
@@ -97,24 +105,44 @@ function console.startplugin()
 				local t = type(v)
 				if sep == '.' or sep == ':' then
 					if t == 'table' then
+						local mysorttable = {}
 						for k, v in pairs(v) do
 							if type(k) == 'string' and (sep ~= ':' or type(v) == "function") then
-								add(k)
+								table.insert(mysorttable, k)
+								-- add(k)
 							end
 						end
+						table.sort(mysorttable)
+						for k,v in pairs(mysorttable) do add(v) end
 					elseif t == 'userdata' then
-						for k, v in pairs(getmetatable(v)) do
-							if type(k) == 'string' and (sep ~= ':' or type(v) == "function") then
-								add(k)
+						if pcall(checkfor,getmetatable(v)) then
+							local mysorttable = {}
+							for k, v in pairs(getmetatable(v)) do
+								if type(k) == 'string' and (sep ~= ':' or type(v) == "function") then
+									table.insert(mysorttable, k)
+									-- add(k)
+								end
 							end
+							table.sort(mysorttable)
+							for k,v in pairs(mysorttable) do add(v) end
 						end
 					end
-				elseif sep == '[' then
-					if t == 'table' then
-						for k in pairs(v) do
-							if type(k) == 'number' then
-								add(k .. "]")
+				elseif sep == '[' or sep == "\"" then
+					-- print("SEPTYPE="..t)
+					if t == 'table' or t=='userdata' then
+						if pcall(checkpairs,v) then
+							local mysorttable = {}
+							for k in pairs(v) do
+								if type(k) == 'number' then
+									-- add(k .."]")
+									table.insert(mysorttable, k .. "]")
+								end
+								if type(k) == 'string'then
+									-- add("\""..k .. "\"]")
+									table.insert(mysorttable, "\"" .. k .. "\"]")
+								end
 							end
+							table.sort(mysorttable) for k,v in pairs(mysorttable) do add(v) end
 						end
 						if word ~= "" then add_globals() end
 					end
@@ -186,15 +214,17 @@ function console.startplugin()
 		end
 		-- crop string at unmatched open paran
 		expr = find_unmatch(expr, "%(", "%b()")
-		expr = find_unmatch(expr, "%[", "%b[]")
+--      expr = find_unmatch(expr, "%[", "%b[]")
 		--expr = expr:gsub("%b()"," PAREN ") -- Remove groups of parentheses
 		expr = expr:gsub("%b{}"," TABLE ") -- Remove table constructors
 		-- Avoid two consecutive words without operator
 		expr = expr:gsub("(%w)%s+(%w)","%1|%2")
 		expr = expr:gsub("%s+", "") -- Remove now useless spaces
 		-- This main regular expression looks for table indexes and function calls.
-		return curstring, strs, expr:match("([%.:%w%(%)%[%]_]-)([:%.%[%(])" .. word .. "$")
+		return curstring, strs, expr:match("([%.:%w%(%)%[%]_]-)([%:%.%[%(])" .. word .. "$")
 	end
+
+function strnil(s) if s==nil then return "NIL" else return s end end
 
 	local function get_completions(line)
 		matches = {}
@@ -205,8 +235,12 @@ function console.startplugin()
 		else
 			word = word or ""
 		end
+		-- print("word = "..word)
 
 		local str, strs, expr, sep = simplify_expression(line, word)
+
+		-- print("str="..strnil(str),"expr="..strnil(expr),"sep="..strnil(sep))
+		-- printt(strs)
 		contextual_list(expr, sep, str, word, strs)
 		if #matches == 0 then
 			return line
