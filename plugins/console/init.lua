@@ -81,13 +81,18 @@ function printt(t) if type(t)=="nil" then print("nil") return end print("TYPE=".
 		-- variable can be inserted. Local variables cannot be listed!
 		local function  add_globals()
 			for _, k in ipairs(keywords) do
---              add(k)
+				-- add(k)
 			end
+			local mysorttable = {}
 			for k in pairs(_G) do
 				if not k:match("^sol%.") then
-				add(k)
+					table.insert(mysorttable, k)
+					-- add(k)
 				end
 			end
+			table.sort(mysorttable)
+			for k,v in pairs(mysorttable) do add(v) end
+			add("<Globals>  shift+tab to exit completions")
 		end
 
 		local function checkpairs(t) local p = pairs(t)  end
