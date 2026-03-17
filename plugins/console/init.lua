@@ -40,9 +40,7 @@ function console.startplugin()
 	-- linenoise isn't thread safe but that means history can handled here
 	-- that also means that bad things will happen if anything outside lua tries to use it
 	-- especially the completion callback
-	ln.historysetmaxlen(500)
-function hex(x) return string.format("%02x",x) end
-function printt(t) if type(t)=="nil" then print("nil") return end print("TYPE="..type(t)) if type(t)=="number" then print("0x"..hex(t)) end print(t) if type(t) ~= "number" and type(t) ~= "string" then for i,j in pairs(t) do print(i,j) end  end end
+	ln.historysetmaxlen(50)
 	local scr = [[
 		local ln = require('linenoise')
 		ln.setcompletion(
@@ -83,16 +81,15 @@ function printt(t) if type(t)=="nil" then print("nil") return end print("TYPE=".
 			for _, k in ipairs(keywords) do
 				-- add(k)
 			end
-			local mysorttable = {}
+			local sorttable = {}
 			for k in pairs(_G) do
 				if not k:match("^sol%.") then
-					table.insert(mysorttable, k)
-					-- add(k)
+					table.insert(sorttable, k)
 				end
 			end
-			table.sort(mysorttable)
-			for k,v in pairs(mysorttable) do add(v) end
-			add("<Globals>  shift+tab to exit completions")
+			table.sort(sorttable)
+			for k,v in pairs(sorttable) do add(v) end
+			add("<Globals>  Esc to exit completions")
 		end
 
 		local function checkpairs(t) local p = pairs(t)  end
@@ -100,7 +97,6 @@ function printt(t) if type(t)=="nil" then print("nil") return end print("TYPE=".
 
 		if expr and expr ~= "" then
 			local v = load("local STRING = {'" .. table.concat(strs,"','") .. "'} return " .. expr)
-			-- print("LOADED STRING =".."local STRING = {'" .. table.concat(strs,"','") .. "'} return " .. expr)
 			if v then
 				err, v = pcall(v)
 				if (not err) or (not v) then
@@ -108,46 +104,45 @@ function printt(t) if type(t)=="nil" then print("nil") return end print("TYPE=".
 					return
 				end
 				local t = type(v)
+				--print('SEP='..sep)
 				if sep == '.' or sep == ':' then
 					if t == 'table' then
-						local mysorttable = {}
-						for k, v in pairs(v) do
-							if type(k) == 'string' and (sep ~= ':' or type(v) == "function") then
-								table.insert(mysorttable, k)
-								-- add(k)
+						if pcall(checkfor, v) then
+							local sorttable = {}
+							for k, v in pairs(v) do
+								if type(k) == 'string' and (sep ~= ':' or type(v) == "function") then
+									table.insert(sorttable, k)
+								end
 							end
+							table.sort(sorttable)
+							for k,v in pairs(sorttable) do add(v) end
 						end
-						table.sort(mysorttable)
-						for k,v in pairs(mysorttable) do add(v) end
 					elseif t == 'userdata' then
 						if pcall(checkfor,getmetatable(v)) then
-							local mysorttable = {}
+							local sorttable = {}
 							for k, v in pairs(getmetatable(v)) do
 								if type(k) == 'string' and (sep ~= ':' or type(v) == "function") then
-									table.insert(mysorttable, k)
-									-- add(k)
+									table.insert(sorttable, k)
 								end
 							end
-							table.sort(mysorttable)
-							for k,v in pairs(mysorttable) do add(v) end
+							table.sort(sorttable)
+							for k,v in pairs(sorttable) do add(v) end
 						end
 					end
-				elseif sep == '[' or sep == "\"" then
-					-- print("SEPTYPE="..t)
-					if t == 'table' or t=='userdata' then
+				elseif sep == '[' then
+					if t == 'table' or t == 'userdata' then
 						if pcall(checkpairs,v) then
-							local mysorttable = {}
+							local sorttable = {}
 							for k in pairs(v) do
 								if type(k) == 'number' then
-									-- add(k .."]")
-									table.insert(mysorttable, k .. "]")
+									table.insert(sorttable, k .. "]")
 								end
-								if type(k) == 'string'then
-									-- add("\""..k .. "\"]")
-									table.insert(mysorttable, "\"" .. k .. "\"]")
+								if type(k) == 'string' then
+									table.insert(sorttable, "\"" .. k .. "\"]")
 								end
 							end
-							table.sort(mysorttable) for k,v in pairs(mysorttable) do add(v) end
+							table.sort(sorttable)
+							for k,v in pairs(sorttable) do add(v) end
 						end
 						if word ~= "" then add_globals() end
 					end
@@ -229,9 +224,72 @@ function printt(t) if type(t)=="nil" then print("nil") return end print("TYPE=".
 		return curstring, strs, expr:match("([%.:%w%(%)%[%]_]-)([%:%.%[%(])" .. word .. "$")
 	end
 
-function strnil(s) if s==nil then return "NIL" else return s end end
+	function printt(t)
+		print("TYPE = "..tostring(type(t)))
+		-- if type(t)=="number" or type(t)=="boolean" or type(t)=="string" or type(t)==nil then
+		print(tostring(t))
+		if type(t)=="string" then print('"' .. tostring(t) .. '"') end
+		if type(t)=="userdata" or type(t)=="table" then
+			print("{")
+			for i,j in pairs(t) do print(i,j) end
+			print("}")
+		end
+	end
+
+
+	local function print_line_eval(line)
+		print()
+		if not line:match("^%s*emu[%?%=]%s*$") then
+			print("Evaluating print( " .. line:sub(1,-2) .. " )")
+			local func, err = load("printt(" .. line:sub(1,-2) .. ")")
+			local status, result
+			if func then
+				status, result = pcall(func)
+				if not status then print("Run error= "..tostring(result))
+				else
+	--              print(tostring(result))
+				end
+				return line
+			else
+				print("Cannot execute "..line:sub(1,-2))
+				print("Load error="..tostring(err))
+				return line
+			end
+		else
+			local sorttable = {}
+			for k in pairs(emu) do
+				table.insert(sorttable, k)
+			end
+			table.sort(sorttable)
+			for k, i in pairs(sorttable) do
+				if i~="expression_error" and i~= "attotime" then print(i, emu[i]) else print(i, "<<<segfault warning>>>") end
+			end
+			--print("emu= will cause a crash")
+		end
+	end
+
+	local function print_columns(printtable)
+		local ncols = 4
+		local colwidth = 30
+		local numitems = #printtable
+		local numlines = (numitems // ncols) + 1
+		for l = 1,numlines do
+		  for i = l,l+numlines*ncols,numlines do
+			if printtable[i] then
+				io.write(tostring(printtable[i]) ..
+					string.rep(" ", (colwidth-2) - string.len(tostring(printtable[i]))) .. "  ")
+			end
+		  end
+		  print()
+		end
+	end
+
 
 	local function get_completions(line)
+		if line:match("[%?%=]$") then
+			print_line_eval(line)
+			return line
+		end
 		matches = {}
 		local start, word = line:match("^(.*[ \t\n\"\\'><=;:%+%-%*/%%^~#{}%(%)%[%].,])(.-)$")
 		if not start then
@@ -240,12 +298,8 @@ function strnil(s) if s==nil then return "NIL" else return s end end
 		else
 			word = word or ""
 		end
-		-- print("word = "..word)
 
 		local str, strs, expr, sep = simplify_expression(line, word)
-
-		-- print("str="..strnil(str),"expr="..strnil(expr),"sep="..strnil(sep))
-		-- printt(strs)
 		contextual_list(expr, sep, str, word, strs)
 		if #matches == 0 then
 			return line
@@ -253,11 +307,13 @@ function strnil(s) if s==nil then return "NIL" else return s end end
 			return start .. matches[1]
 		end
 		print("")
-		result = { }
+		local result = { }
+		local printtable = {}
 		for k, v in pairs(matches) do
-			print(v)
+			table.insert(printtable, v)
 			table.insert(result, start .. v)
 		end
+		print_columns(printtable)
 		return table.concat(result, '\001')
 	end
 
