@@ -224,14 +224,40 @@ function console.startplugin()
 		return curstring, strs, expr:match("([%.:%w%(%)%[%]_]-)([%:%.%[%(])" .. word .. "$")
 	end
 
+	local function number_then_string_sort(a, b)
+		if type(a) == type(b) then
+			return a < b -- Use default comparison if types match
+		elseif type(a) == "number" then
+			return true -- Numbers come before strings
+		else
+			return false -- Strings come after numbers
+		end
+	end
+
 	function printt(t)
 		print("TYPE = "..tostring(type(t)))
 		-- if type(t)=="number" or type(t)=="boolean" or type(t)=="string" or type(t)==nil then
 		print(tostring(t))
 		if type(t)=="string" then print('"' .. tostring(t) .. '"') end
+		if type(t)=="number" then
+			if math.type(t)=="float" then
+				print(math.type(t) .. "=" .. tostring(t))
+			else
+				print(math.type(t) .. "=" .. tostring(t) .. "   hex=" .. string.format("0x%x",t))
+			end
+		end
 		if type(t)=="userdata" or type(t)=="table" then
+			local sorttable = {}
+			for i,j in pairs(t) do table.insert(sorttable,i) end
+			table.sort(sorttable, number_then_string_sort)
 			print("{")
-			for i,j in pairs(t) do print(i,j) end
+			for i,j in pairs(sorttable) do
+				if type(j)=="string" then io.write('["' .. j .. '"]')
+				elseif type(j)=="number" then io.write('[' .. j .. ']')
+				end
+				print(" =  "..tostring(t[j])..",")
+				--print(j,t[j])
+			end
 			print("}")
 		end
 	end
@@ -239,7 +265,7 @@ function console.startplugin()
 
 	local function print_line_eval(line)
 		print()
-		if not line:match("^%s*emu[%?%=]%s*$") then
+		if not line:match("^%s*emu%s*[%?%=]%s*$") then
 			print("Evaluating print( " .. line:sub(1,-2) .. " )")
 			local func, err = load("printt(" .. line:sub(1,-2) .. ")")
 			local status, result
@@ -273,14 +299,14 @@ function console.startplugin()
 		local colwidth = 30
 		local numitems = #printtable
 		local numlines = (numitems // ncols) + 1
-		for l = 1,numlines do
-		  for i = l,l+numlines*ncols,numlines do
-			if printtable[i] then
-				io.write(tostring(printtable[i]) ..
-					string.rep(" ", (colwidth-2) - string.len(tostring(printtable[i]))) .. "  ")
+		for l = 1, numlines do
+			for i = l, l + numlines * ncols, numlines do
+				if printtable[i] then
+					io.write(tostring(printtable[i]) ..
+						string.rep(" ", (colwidth - 2) - string.len(tostring(printtable[i]))) .. "  ")
+				end
 			end
-		  end
-		  print()
+			print()
 		end
 	end
 
