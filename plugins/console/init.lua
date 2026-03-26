@@ -37,6 +37,15 @@ function console.startplugin()
 	print("        / _/                             \n")
 	print(emu.app_name() .. " " .. emu.app_version(), "\nCopyright (C) Nicola Salmoria and the MAME team\n");
 	print(_VERSION, "\nCopyright (C) Lua.org, PUC-Rio\n");
+	print([[
+TAB completion:
+
+  pressing TAB with = or ? at the end of the line will evaluate and print
+      example:  emu.time()=  {1,2,3}=  os.date("*t")=   utf8.char(0x1f600)=
+
+  pressing TAB with [ at the end of the line will do table completion
+      example:  manager.machine.devices[
+]])
 	-- linenoise isn't thread safe but that means history can handled here
 	-- that also means that bad things will happen if anything outside lua tries to use it
 	-- especially the completion callback
@@ -219,7 +228,7 @@ function console.startplugin()
 		expr = expr:gsub("%b{}"," TABLE ") -- Remove table constructors
 		-- Avoid two consecutive words without operator
 		expr = expr:gsub("(%w)%s+(%w)","%1|%2")
-		expr = expr:gsub("%s+", "") -- Remove now useless spaces
+		-- expr = expr:gsub("%s+", "") -- Remove now useless spaces
 		-- This main regular expression looks for table indexes and function calls.
 		return curstring, strs, expr:match("([%.:%w%(%)%[%]_]-)([%:%.%[%(])" .. word .. "$")
 	end
@@ -310,6 +319,16 @@ function console.startplugin()
 		end
 	end
 
+	local function strnil(s)
+		if type(s)=="table" then
+			local ret = ""
+			for i,j in pairs(s) do
+				ret=ret..strnil(j)
+			end
+			return ret
+		end
+		if not s then return "nil" else return s end
+	end
 
 	local function get_completions(line)
 		if line:match("[%?%=]$") then
@@ -317,7 +336,9 @@ function console.startplugin()
 			return line
 		end
 		matches = {}
+		local debug_completions = nil
 		local start, word = line:match("^(.*[ \t\n\"\\'><=;:%+%-%*/%%^~#{}%(%)%[%].,])(.-)$")
+		if debug_completions then print ("line="..strnil(line)) print ("start="..strnil(start).."  word="..strnil(word)) end
 		if not start then
 			start = ""
 			word = word or line
@@ -326,6 +347,7 @@ function console.startplugin()
 		end
 
 		local str, strs, expr, sep = simplify_expression(line, word)
+		if debug_completions then print ("expr="..strnil(expr).." sep="..strnil(sep).." word="..strnil(word).." strs="..strnil(strs)) end
 		contextual_list(expr, sep, str, word, strs)
 		if #matches == 0 then
 			return line
