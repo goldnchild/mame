@@ -76,15 +76,16 @@ protected:
 
 private:
 	required_device<screen_device> m_screen;
+public:
 	required_device<stepper_device> m_pf_stepper;
 	required_device<stepper_device> m_cr_stepper;
-
+private:
 	required_ioport m_top_margin_ioport;
 	required_ioport m_bottom_margin_ioport;
 	required_ioport m_draw_marks_ioport;
-
+public:
 	bitmap_rgb32 m_page_bitmap; // page bitmap
-
+private:
 	static constexpr int PAPER_SCREEN_HEIGHT = 384; // match the height of the apple II driver
 	static constexpr int m_distfrombottom = 50;  // print position from bottom of screen
 	static constexpr int MAX_LEDS = 5;
