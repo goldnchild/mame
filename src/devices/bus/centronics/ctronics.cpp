@@ -129,7 +129,6 @@ device_centronics_peripheral_interface::~device_centronics_peripheral_interface(
 #include "epson_mx80.h"
 #include "epson_rx80.h"
 #include "hasp_savquest.h"
-#include "neomania_adapter.h"
 #include "mz1p16.h"
 #include "nec_p72.h"
 #include "nlq401.h"
@@ -148,8 +147,8 @@ void centronics_devices(device_slot_interface &device)
 	device.option_add("lx810l", EPSON_LX810L);
 	device.option_add("ap2000", EPSON_AP2000);
 	device.option_add("mx80", EPSON_MX80);
-	device.option_add("mx80_iii", EPSON_MX80_III);
-	device.option_add("mx80dots", EPSON_MX80DOTS);
+	device.option_add("mx80iii", EPSON_MX80_III);
+	device.option_add("mx80dots", EPSON_MX80_DOTS);
 	device.option_add("rx80", EPSON_RX80);
 	device.option_add("p72", NEC_P72);
 	device.option_add("printer", CENTRONICS_PRINTER);
@@ -163,6 +162,4 @@ void centronics_devices(device_slot_interface &device)
 	device.option_add("mz1p16", MZ1P16);
 
 	device.option_add_internal("hasp_savquest", HASP_SAVQUEST);
-	// TODO: will become option_add_internal when misc/neomania.cpp will have a working chipset
-	device.option_add("neomania", NEOMANIA_ADAPTER);
 }

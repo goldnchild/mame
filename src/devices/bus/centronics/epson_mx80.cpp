@@ -11,6 +11,7 @@
 
     Documentation reference:
         Epson MX-80 Technical Manual
+        Epson MX-100 Technical Manual
         Sams Computerfacts CP1 MX-80 IIIF/T
         Sams Computerfacts CP2 MX-100
         Sams Computerfacts CP3 IBM 5152-002
@@ -19,8 +20,37 @@
  Slave CPU is an 8041 running at 6 Mhz.
  --
 
-PRAV = Paper Advance?
-DIRAV = Direction Advance?
+From the MX-100 Technical manual:
+
+The ROM size is a total of 6k bytes. The following three combinations of CPU and
+ROM(s) are available.
+(a) 8049 (2-k M-ROM) + 2332 (4-k M-ROM) (1B)
+(b) 8039 (2-k M-ROM) + 2716 (1B) + 2716 (2B)
+(c) 8049 (2-k UM-ROM) + 2716 (1B) + 2716 (2B) + 2716 (3B)
+
+(what does UM-ROM mean?  unused? unprogrammed?)
+
+NOTES: 1. 18, 2B and 3B represent the socket numbers indicated on the PCB.
+2. 2716 is a 2-k PROM.
+3. ROM types may vary depending on the user's specifications. Care must
+be taken with respect to the compatibility of ROMs.
+
+8049 Program Memory: 2K x 8 Internal Mask ROM
+
+Jumper J1 to select mask rom/external rom on EA pin (External Access)
+
+Active LOW (EA = Gnd): The 8049 accesses internal memory. It automatically switches to external memory only when the program counter exceeds the internal 2K boundary (address 07FFh).
+
+
+Ports P20 to P23 in the 8041 are used to send the status signals of the printer to the CPU
+8049. P20 (PRAV) is sent out after the carriage has finished acceleration and informs the
+CPU 8049 of the start of print data transfer. P21 (DIRAV) is sent out whenever the printing
+operation is finished and is used by the CPU 8049 to decide the next printing direction.
+P22 (DIR) represents a signal indicating the moving direction of the carriage. If it is High,
+the carriage will move from left to right. If it is Low, the carriage will move from right to left.
+P23 (ERR) signals the CPU 8049 that there is a malfunction in the carriage stepper motor
+or the LSI 8041.
+
 
 
 ================
@@ -53,10 +83,8 @@ public:
 	{
 	}
 
-	// why would xpos be an integer?  could be anything
 	void update(double xpos, double m_spring_k, double m_spring_damping, double m_mass, bool init = false)
 	{
-//      printf("xpos = %f\n", xpos);
 		if (m_position <= -3000) m_position = xpos;
 		if (m_position >= 3000) m_position = xpos;
 		static constexpr double quantum = 50E-6; // 25 usec
@@ -64,10 +92,6 @@ public:
 
 		for (int i = 0; i < (timetotal / quantum); i++)
 		{
-	//      m_spring_k       = ioport("SPRINGCONSTANT")->read() / 100.0;
-	//      m_spring_damping = ioport("SPRINGDAMPING")->read() / 100.0;
-	//      m_mass           = ioport("SPRINGMASS")->read() / 100.0;
-
 			m_force = - m_spring_k * (m_position - xpos) - m_spring_damping * m_velocity;
 			m_acceleration = m_force / m_mass;
 			m_velocity = m_velocity + (m_acceleration * quantum);
@@ -80,9 +104,6 @@ public:
 	double m_velocity = 0;
 	double m_acceleration;
 };
-
-
-
 
 
 //**************************************************************************
@@ -115,6 +136,9 @@ public:
 
 
 protected:
+	// constructor to pass along a device type
+	epson_mx80_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
+
 	// device-level overrides
 	virtual void device_start() override ATTR_COLD;
 	virtual void device_reset() override ATTR_COLD;
@@ -206,7 +230,7 @@ protected:
 	void update_busy(){ output_busy(((m_centronics_data_latched) | BIT(m_8049_p1, 6)) ^ ioport("INVERTBUSY")->read()); };
 	void update_ack(){ output_ack(((m_centronics_data_latched) | BIT(m_8049_p1, 5)) ^ ioport("INVERTACK")->read()); };
 
-	[[maybe_unused]] uint8_t pts_r_new();  // tried to convert it to using "in between steps" but it seemed to have problems with slow movement
+
 	uint8_t pts_r();
 
 	// uint8_t centronics_data_r(offs_t offset);  // NOT USED
@@ -223,7 +247,7 @@ protected:
 
 public:
 	void trackcrpos();  // call this after each update to the cr stepper
-	double calccrpos(); // calculate interim positions in between discrete cr stepper steps
+[[maybe_unused]]    double calccrpos(); // calculate interim positions in between discrete cr stepper steps
 protected:
 
 	u8 m_8049_p1 = 0;
@@ -263,9 +287,10 @@ class epson_mx80dots_device : public epson_mx80_device
 public:
 	// construction/destruction
 	epson_mx80dots_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-		epson_mx80_device(mconfig, tag, owner, clock)
+		epson_mx80_device(mconfig, EPSON_MX80_DOTS, tag, owner, clock)
 	{
 	}
+
 protected:
 	virtual const tiny_rom_entry *device_rom_region() const override ATTR_COLD;
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
@@ -281,12 +306,13 @@ protected:
 	uint8_t m_prog_line = 1;  // status of prog_line
 };
 
+
 class epson_mx80_iii_device : public epson_mx80_device
 {
 public:
 	// construction/destruction
 	epson_mx80_iii_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-		epson_mx80_device(mconfig, tag, owner, clock)
+		epson_mx80_device(mconfig, EPSON_MX80_III,  tag, owner, clock)
 	{
 	}
 
@@ -312,34 +338,44 @@ protected:
 //  ROM( epson_mx80 )
 //-------------------------------------------------
 
+
+
+
+
 ROM_START( epson_mx80 )
-	ROM_REGION(0x800, "mx80_rom_1", 0)
+	ROM_REGION(0x1800, "mx80_rom", 0)
 	ROM_LOAD("mx80_graftrax_rom_1.bin", 0x0000, 0x800, CRC(0843ea56) SHA1(23948acb55760ddbfc59c57c1553b2e733983201))
-
-	ROM_REGION(0x800, "mx80_rom_2", 0)
-	ROM_LOAD("mx80_graftrax_rom_2.bin", 0x0000, 0x800, CRC(8435f945) SHA1(c1f0a74bf66d114d0f349bec27c7756997352602))
-
-	ROM_REGION(0x800, "mx80_rom_3", 0)
-	ROM_LOAD("mx80_graftrax_rom_3.bin", 0x0000, 0x800, CRC(f1d1c0e7) SHA1(1f4e24575c412368f0b628d2a276c9943debd0ae))
+	ROM_LOAD("mx80_graftrax_rom_2.bin", 0x0800, 0x800, CRC(8435f945) SHA1(c1f0a74bf66d114d0f349bec27c7756997352602))
+	ROM_LOAD("mx80_graftrax_rom_3.bin", 0x1000, 0x800, CRC(f1d1c0e7) SHA1(1f4e24575c412368f0b628d2a276c9943debd0ae))
 
 	ROM_REGION(0x400, "i8041_slave", 0)
 	ROM_LOAD("8041_mx80.bin", 0x0000, 0x400, CRC(5844ef51) SHA1(1025d34b3ab684a06589b5890c604ce114399d23))
 ROM_END
 
-	// this is a rom dumped from the internal 2k of an 8049 as the main cpu (instead of an 8039)
-	//ROM_REGION(0x800, "mx80_8049", 0)
-	//ROM_LOAD("d8049.bin", 0x0000, 0x800, CRC(49805aa3) SHA1(a88295079eb1e1e6097bed51e0161e51f524afe2))
+
+
+
+uint8_t epson_mx80_device::prog_mem_r(offs_t offset)
+{
+	u8 *mx80_rom_ptr = memregion("mx80_rom")->base();
+
+	[[maybe_unused]] auto offset_low = offset & ((1 << 11) - 1); // get low 11 bits  not 1<<12 - 1 but 1<<11 - 1
+	auto offset_upper = (offset & (0xf800)) >> 11;
+
+	u8 retval = (offset_upper == 0) ?
+		mx80_rom_ptr[ offset_low | 0x800 * 2] :
+			(m_8049_p2 & 0x10) ?
+				mx80_rom_ptr[offset_low | 0x0] : mx80_rom_ptr[offset_low | 0x800];
+	return retval;
+}
 
 
 ROM_START( epson_mx80_iii )
-	ROM_REGION(0x800, "mx80_rom_1", 0)
+
+	ROM_REGION(0x1800, "mx80_rom", 0)
 	ROM_LOAD("a2_ha1_1b.bin", 0x0000, 0x800, CRC(5a8a8dec) SHA1(c7f7505e0e6a5916fe17c0a614207a5d1c97e130))
-
-	ROM_REGION(0x800, "mx80_rom_2", 0)
-	ROM_LOAD("a1_ha2_2b.bin", 0x0000, 0x800, CRC(a6b448bc) SHA1(bbe8c211b726fbd2fcc92891b8fd475120678e34))
-
-	ROM_REGION(0x800, "mx80_rom_3", 0)
-	ROM_LOAD("a2_ha3_3b.bin", 0x0000, 0x800, CRC(a9a2ac25) SHA1(4f66bf77b628c6ca8e61373d49efd28133463228))
+	ROM_LOAD("a1_ha2_2b.bin", 0x0800, 0x800, CRC(a6b448bc) SHA1(bbe8c211b726fbd2fcc92891b8fd475120678e34))
+	ROM_LOAD("a2_ha3_3b.bin", 0x1000, 0x800, CRC(a9a2ac25) SHA1(4f66bf77b628c6ca8e61373d49efd28133463228))
 
 	// seems to work (at least with the 8041 dump from the mx80)
 	ROM_REGION(0x400, "i8041_slave", 0)
@@ -368,12 +404,6 @@ const tiny_rom_entry *epson_mx80_device::device_rom_region() const
 {
 	return ROM_NAME( epson_mx80 );
 }
-/*
-const tiny_rom_entry *epson_mx80alt_device::device_rom_region() const
-{
-    return ROM_NAME( epson_mx80alt );
-}
-*/
 
 const tiny_rom_entry *epson_mx80_iii_device::device_rom_region() const
 {
@@ -406,14 +436,6 @@ void epson_mx80_device::mx80_prog_mem(address_map &map)
 {
 	map(0x000, 0xfff).r(FUNC(epson_mx80_device::prog_mem_r));  // can't do more than 12 bits
 }
-/*
-
-void epson_mx80alt_device::mx80alt_prog_mem(address_map &map)
-{
-    map(0x000, 0x7ff).rom();
-    map(0x800, 0xfff).r(FUNC(epson_mx80alt_device::alt_prog_mem_r));  // can't do more than 12 bits
-}
-*/
 
 void epson_mx80dots_device::mx80dots_prog_mem(address_map &map)
 {
@@ -788,8 +810,6 @@ INPUT_CHANGED_MEMBER(epson_mx80_device::reset_switch)
 INPUT_PORTS_START( epson_mx80_common )
 	PORT_START("ONLINE")
 	PORT_BIT(0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD) PORT_NAME("ON LINE") PORT_CODE(KEYCODE_0_PAD) PORT_CHANGED_MEMBER(DEVICE_SELF, FUNC(epson_mx80_device::online_switch), 0)
-//  PORT_BIT(0x01, IP_ACTIVE_HIGH, IPT_KEYBOARD) PORT_NAME("ON LINE") PORT_CODE(KEYCODE_0_PAD) PORT_CHANGED_MEMBER(DEVICE_SELF, epson_mx80_device, online_switch, 0)
-
 
 	PORT_START("FORMFEED")
 	PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD) PORT_NAME("Form Feed") PORT_CODE(KEYCODE_7_PAD)
@@ -985,7 +1005,13 @@ ioport_constructor epson_mx80dots_device::device_input_ports() const
 //-------------------------------------------------
 
 epson_mx80_device::epson_mx80_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
-	device_t(mconfig, EPSON_MX80, tag, owner, clock),
+	epson_mx80_device(mconfig, EPSON_MX80, tag, owner, clock)
+{
+}
+
+// constructor that passes device type
+epson_mx80_device::epson_mx80_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock) :
+	device_t(mconfig, type, tag, owner, clock),
 	device_centronics_peripheral_interface(mconfig, *this),
 	m_maincpu(*this, "maincpu"),
 	m_slavecpu(*this, "i8041_slave"),
@@ -1338,31 +1364,6 @@ uint8_t epson_mx80dots_device::dots_perfect_prog_mem_r(offs_t offset)
 //  logerror("READ_DOTS_PERFECT %s with offset %x low=%x high=%x, memmap=%x retval=%x\n",  machine().describe_context(), offset, offset_low,offset_upper, dots_perfect_memory_map[offset_upper], retval);
 	return retval;
 }
-/*
-uint8_t epson_mx80alt_device::alt_prog_mem_r(offs_t offset)
-{
-    u8 *alt_ptr = memregion("mx80_2332")->base();
-    u8 retval = alt_ptr[offset | ((BIT(m_8049_p2, 4) ? 0 : 1) * 0x800)];
-    return retval;
-}
-*/
-
-
-
-uint8_t epson_mx80_device::prog_mem_r(offs_t offset)
-{
-//  printf("read prog mem\n");
-	u8 *mx80_rom_1_ptr = memregion("mx80_rom_1")->base();
-	u8 *mx80_rom_2_ptr = memregion("mx80_rom_2")->base();
-	u8 *mx80_rom_3_ptr = memregion("mx80_rom_3")->base();
-
-	[[maybe_unused]] auto offset_low = offset & ((1 << 11) - 1); // get low 11 bits  not 1<<12 - 1 but 1<<11 - 1
-	auto offset_upper = (offset & (0xf800)) >> 11;
-	u8 retval = (offset_upper == 0) ? mx80_rom_3_ptr[offset_low] : (m_8049_p2 & 0x10) ? mx80_rom_1_ptr[offset_low] : mx80_rom_2_ptr[offset_low];
-// if (offset_upper)    logerror("READ_MX80 %s with offset %x low=%x high=%x retval=%x  m_8049_p2=%x\n",  machine().describe_context(), offset, offset_low,offset_upper, retval, m_8049_p2);
-	return retval;
-}
-
 
 
 //-------------------------------------------------
@@ -1404,32 +1405,6 @@ void  epson_mx80_device::input_init (int state)
 }
 
 
-
-uint8_t epson_mx80_device::pts_r_new() // print timing sensor
-{
-/*
-    double fracpart, intpart;
-//  double multiplier = fix16(ioport("MULTIPLIER")->read()); // try 2.0
-    double multiplier =  ioport("MULTIPLIER")->read(); // try 2.0
-    double multiplier1 = ioport("MULTIPLIERDIV")->read(); // try 2.0
-    double low  = ioport("PTS0")->read() / 100.0; // try 2.0
-    double high = ioport("PTS1")->read() / 100.0; // try 2.0
-//  fracpart = modf(m_cr_stepper.m_position * ((multiplier < 0) ? (multiplier1 / (-multiplier)) : (multiplier / multiplier1)), &intpart);
-
-
-    fracpart = modf(m_cr_stepper.m_position * (multiplier / multiplier1), &intpart);
-    return (fracpart > low && fracpart < high);
-*/
-	double fracpart, intpart;
-//  fracpart = modf(calccrpos() * (multiplier / multiplier1), &intpart);
-	fracpart = modf(calccrpos(), &intpart);
-	//fracpart *= 2;
-	//return m_bitmap_printer->m_xpos % 2;
-	double low  = ioport("PTS0")->read() / 100.0; // try 2.0
-	double high = ioport("PTS1")->read() / 100.0; // try 2.0
-	return (fracpart > low && fracpart < high);  // inverting doesn't help
-}
-
 uint8_t epson_mx80_device::pts_r() // print timing sensor
 {
 	double fracpart, intpart;
@@ -1442,9 +1417,6 @@ uint8_t epson_mx80_device::pts_r() // print timing sensor
 	fracpart = modf(m_cr_stepper.m_position * (multiplier / multiplier1), &intpart);
 	return (fracpart > low && fracpart < high);
 }
-
-
-
 
 uint8_t epson_mx80_device::slave_r(offs_t offset)
 {
@@ -1478,6 +1450,6 @@ TIMER_CALLBACK_MEMBER(epson_mx80_device::slave_write_command_sync)
 // GLOBAL
 
 DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80, device_centronics_peripheral_interface, epson_mx80_device, "epson_mx80", "Epson MX-80 (with graftrax)")
-DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80DOTS, device_centronics_peripheral_interface, epson_mx80dots_device, "epson_mx80dots", "Epson MX-80 (with Dots Perfect Upgrade)")
+DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80_DOTS, device_centronics_peripheral_interface, epson_mx80dots_device, "epson_mx80_dots", "Epson MX-80 (with Dots Perfect Upgrade)")
 DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80_III, device_centronics_peripheral_interface, epson_mx80_iii_device, "epson_mx80_iii", "Epson MX-80 III")
 
