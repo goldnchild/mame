@@ -5,16 +5,25 @@
     Epson MX-80 Dot Matrix printer
 
 
- Vertical alignment isn't consistent between lines so graphics printouts look poor.
+Vertical alignment isn't consistent between lines so graphics printouts look poor.
 
- This code is ugly but I thought I'd put it up in case my hard drive fails.
 
-    Documentation reference:
-        Epson MX-80 Technical Manual
-        Epson MX-100 Technical Manual
-        Sams Computerfacts CP1 MX-80 IIIF/T
-        Sams Computerfacts CP2 MX-100
-        Sams Computerfacts CP3 IBM 5152-002
+The internal rom versions don't work properly for some reason.  I've tried all of the
+available roms combinations and different banks but it still doesn't work properly.
+
+
+This code is ugly but I thought I'd put it up in case my hard drive fails.
+
+The centronics interface is a bit of a hack, it is supposed to use the 8155,
+perhaps that's why the internal rom versions don't work.
+
+Documentation reference:
+    Epson MX-80 Technical Manual
+    Epson MX-100 Technical Manual
+    Sams Computerfacts CP1 MX-80 IIIF/T
+    Sams Computerfacts CP2 MX-100
+    Sams Computerfacts CP3 IBM 5152-002
+    Graftrax-80_1981_Epson_America.pdf
 
  Main CPU is a 8049/8039 running at 6 MHz.
  Slave CPU is an 8041 running at 6 Mhz.
@@ -39,7 +48,8 @@ be taken with respect to the compatibility of ROMs.
 
 Jumper J1 to select mask rom/external rom on EA pin (External Access)
 
-Active LOW (EA = Gnd): The 8049 accesses internal memory. It automatically switches to external memory only when the program counter exceeds the internal 2K boundary (address 07FFh).
+Active LOW (EA = Gnd): The 8049 accesses internal memory. It automatically switches to
+external memory only when the program counter exceeds the internal 2K boundary (address 07FFh).
 
 
 Ports P20 to P23 in the 8041 are used to send the status signals of the printer to the CPU
@@ -50,6 +60,76 @@ P22 (DIR) represents a signal indicating the moving direction of the carriage. I
 the carriage will move from left to right. If it is Low, the carriage will move from right to left.
 P23 (ERR) signals the CPU 8049 that there is a malfunction in the carriage stepper motor
 or the LSI 8041.
+
+The 8041 not only generates drive signals (A phase to D phase) for the two stepper
+motors, but also controls the voltages to be applied to the respective motors. When the
+motors are not running, +14V DC is supplied to them through 1201 resistor. When the
+motors run, the 8041 controls the supply voltage +24V DC for both the motors and the
++14V DC for the carriage stepper motor to secure the required current to drive.
+Ports P20 to P23 in the 8041 are used to send the status signals of the printer to the CPU
+8049. P20 (PRAV) is sent out after the carriage has finished acceleration and informs the
+CPU 8049 of the start of print data transfer. P21 (DIRAV) is sent out whenever the printing
+operation is finished and is used by the CPU 8049 to decide the next printing direction.
+P22 (DIR) represents a signal indicating the moving direction of the carriage. If it is High,
+the carriage will move from left to right. If it is Low, the carriage will move from right to left.
+P23 (ERR) signals the CPU 8049 that there is a malfunction in the carriage stepper motor
+or the LSI 8041.
+
+
+128 bytes of ram inside the 8039/8049
+256 bytes of ram inside the 8155 (used to store the line buffer)
+    As characters are sent to the printer, they are put into the 8155 ram,
+    For example, char 0x41 "A" is stored as 0x21 in the buffer,
+    char 0x20 is entered as 0x0.
+
+
+from wikipedia:
+
+Graftrax was a set of three[24] EPROMs offered by Epson for the MX-80, enhancing the printer's
+functionality and behavior. The original Graftrax 80, released in 1981, added a high-resolution
+graphical printing mode with the ability to control each pin of the printhead arbitrarily to
+produce complex bitmap graphics. In addition, the Graftrax 80 added italics character sets
+for each font weight and width; software-redefinable escape characters, allowing end users
+to use the MX-80 with software meant for other printers; the ability to control the line height
+by increments of 1/216th of an inch; and the ability to change the formatting of text in the
+middle of a line, instead of having the entire line affected.[25]
+
+In 1982, Epson introduced Graftrax Plus, which dropped support for the TRS-80 block characters
+in favor of the ability to backspace, or to move the printhead backward the length of one
+character to (for example) doublestrike arbitrarily; added superscript, subscript, and true
+underline formatting (as opposed to typewriter-convention underlining, wherein the users
+doublestrikes letters with the underscore characters, often clashing with descenders);
+and added special international symbols such as the tilde (~), the unofficial franc symbol (₣),
+and the umlaut (¨).[26]
+
+From COMPUTE! ISSUE 37 / JUNE 1983 / PAGE 10
+READERS' FEEDBACK
+Epson Printer's Graftrax
+Several readers have inquired about the review of the Graftrax-80, published in the December 1982
+issue of COMPUTE!. Specifically, they want to know if it is possible to redefine the MX-80 codes
+to approximate those of the Centronics 737. That way, software written for the 737 could run without
+modification.
+
+The Epson MX-80 with Graftrax-80 can redefine its escape codes. These are printer functions
+controlled by sending the escape character, CHR$(27), and then a letter such as "E" for Enhanced
+printing. There are many other functions, however, that are controlled by sending an ASCII value
+less than 32 (a control character), such as CHR$(14), which signals double-wide characters. These
+functions cannot be redefined.
+
+Current MX-80 printers are being shipped with Graftrax Plus. While Graftrax Plus improves on
+Graftrax-80 by adding underlining, super- and sub scripting, and faster graphics, some function
+of Graftrax-80 were dropped to make room for the enhancements. Epson feels that those functions
+were not used very often anyway. Specifically, these functions do not carry over from Graftrax-80
+to Graftrax Plus: TRS-80 graphics, Vertical Tab, and escape code redefinition.
+
+You can find out which version you have by sending the printer a CHR$(129) With something like
+LPRINT CHR$(129). I f you get a small graphic box, you've got Graftrax-80. If you don't know
+whether you have any kind of Graftrax, send the printer:
+
+LPRINT CHR$(27);"4 Hello there!"
+
+If you get italics, you've got Graftrax.
+
 
 
 
@@ -165,7 +245,7 @@ protected:
 
 
 	void mx80_io_mem(address_map &map);
-	void mx80_data_mem(address_map &map);
+[[maybe_unused]] void mx80_data_mem(address_map &map);
 	void mx80_prog_mem(address_map &map);
 
 	uint8_t data_r(offs_t offset);
@@ -320,7 +400,23 @@ protected:
 	virtual const tiny_rom_entry *device_rom_region() const override ATTR_COLD;
 };
 
+class epson_mx80int_device : public epson_mx80_device
+{
+public:
+	// construction/destruction
+	epson_mx80int_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock) :
+		epson_mx80_device(mconfig, EPSON_MX80_INT, tag, owner, clock)
+	{
+	}
 
+protected:
+	virtual const tiny_rom_entry *device_rom_region() const override ATTR_COLD;
+	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
+//  virtual ioport_constructor device_input_ports() const override ATTR_COLD;
+
+	void mx80int_prog_mem(address_map &map);    // address map for program memory
+	uint8_t mx80int_prog_mem_r(offs_t offset);  // program memory read
+};
 
 
 
@@ -363,11 +459,46 @@ uint8_t epson_mx80_device::prog_mem_r(offs_t offset)
 	auto offset_upper = (offset & (0xf800)) >> 11;
 
 	u8 retval = (offset_upper == 0) ?
-		mx80_rom_ptr[ offset_low | 0x800 * 2] :
+		mx80_rom_ptr[ offset_low | (0x800 * 2)] :
 			(m_8049_p2 & 0x10) ?
 				mx80_rom_ptr[offset_low | 0x0] : mx80_rom_ptr[offset_low | 0x800];
 	return retval;
 }
+
+
+
+ROM_START( epson_mx80int )  // with internal memory, currently doesn't work correctly
+// this is a rom dumped from the internal 2k of an 8049 as the main cpu (instead of an 8039)
+	ROM_REGION(0x1800, "mx80_rom", 0)
+
+// this combination seems to init the carriage, PR#1 will cause some movement
+
+	ROM_LOAD("8049_mx80.bin", 0x0000, 0x0800, CRC(a9a2ac25) SHA1(4f66bf77b628c6ca8e61373d49efd28133463228))
+	//ROM_LOAD("d8049.bin", 0x0000, 0x800, CRC(49805aa3) SHA1(a88295079eb1e1e6097bed51e0161e51f524afe2))  // carriage will initialize
+
+	ROM_LOAD("mx80_2332.bin", 0x0800, 0x1000, CRC(ae0b1948) SHA1(9271db99577484268b78921fc07edb26557e1519))
+	//ROM_LOAD("ibm_5152_socket_1b.bin", 0x0800, 0x1000, CRC(2cb88c93) SHA1(46a76b09f217b7b2f0d975d9a15c005acf500cb4))
+
+	ROM_REGION(0x400, "i8041_slave", 0)
+	ROM_LOAD("8041_mx80.bin", 0x0000, 0x400, CRC(5844ef51) SHA1(1025d34b3ab684a06589b5890c604ce114399d23))
+ROM_END
+
+uint8_t epson_mx80int_device::mx80int_prog_mem_r(offs_t offset)
+{
+	u8 *mx80_rom_ptr = memregion("mx80_rom")->base();
+
+	[[maybe_unused]] auto offset_low = offset & ((1 << 11) - 1); // get low 11 bits  not 1<<12 - 1 but 1<<11 - 1
+	auto offset_upper = (offset & (0xf800)) >> 11;
+
+	//mx80int
+	u8 retval = (offset_upper == 0) ?
+		mx80_rom_ptr[ offset_low | 0x0] :
+			(m_8049_p2 & 0x10) ?
+				mx80_rom_ptr[offset_low | 0x800] : mx80_rom_ptr[offset_low | 0x1000];  // swapping this makes it not init the carriage
+	return retval;
+}
+
+
 
 
 ROM_START( epson_mx80_iii )
@@ -417,6 +548,11 @@ const tiny_rom_entry *epson_mx80dots_device::device_rom_region() const
 	return ROM_NAME( epson_mx80dots );
 }
 
+const tiny_rom_entry *epson_mx80int_device::device_rom_region() const
+{
+	return ROM_NAME( epson_mx80int );
+}
+
 
 //-------------------------------------------------
 //  ADDRESS_MAP( mx80_mem )
@@ -436,6 +572,10 @@ void epson_mx80_device::mx80_prog_mem(address_map &map)
 {
 	map(0x000, 0xfff).r(FUNC(epson_mx80_device::prog_mem_r));  // can't do more than 12 bits
 }
+void epson_mx80int_device::mx80int_prog_mem(address_map &map)
+{
+	map(0x000, 0xfff).r(FUNC(epson_mx80int_device::mx80int_prog_mem_r));  // can't do more than 12 bits
+}
 
 void epson_mx80dots_device::mx80dots_prog_mem(address_map &map)
 {
@@ -453,7 +593,7 @@ void epson_mx80_device::device_add_mconfig(machine_config &config)
 	i8039_device &main(I8039(config, m_maincpu, 6000000)); // 6 Mhz can be 8039 or 8049 according to schematic
 
 	main.set_addrmap(AS_PROGRAM, &epson_mx80_device::mx80_prog_mem);
-	main.set_addrmap(AS_DATA, &epson_mx80_device::mx80_data_mem);
+	//main.set_addrmap(AS_DATA, &epson_mx80_device::mx80_data_mem);  // maybe we don't need to set the data mem, as it's internal?
 	main.set_addrmap(AS_IO, &epson_mx80_device::mx80_io_mem);
 
 	main.p1_in_cb().set(FUNC(epson_mx80_device::port1_r));
@@ -526,6 +666,15 @@ void epson_mx80dots_device::device_add_mconfig(machine_config &config)
 	m_maincpu->set_addrmap(AS_PROGRAM, &epson_mx80dots_device::mx80dots_prog_mem);
 	m_maincpu->prog_out_cb().set(FUNC(epson_mx80dots_device::prog_w));  // prog output to switch banks (dots perfect)
 }
+
+
+void epson_mx80int_device::device_add_mconfig(machine_config &config)
+{
+	epson_mx80_device::device_add_mconfig(config);
+	m_maincpu->set_addrmap(AS_PROGRAM, &epson_mx80int_device::mx80int_prog_mem);
+}
+
+
 
 
 uint8_t epson_mx80_device::i8155_pa_r()  // this is a hack for testing
@@ -1298,19 +1447,7 @@ void  epson_mx80_device::co0_w (int state)
 
 void  epson_mx80_device::co0_w (int state)
 {
-/*
-u32 ribbon[] = {
-                    0x000000, // black
-                    0xff00ff, // magenta (invert g)
-                    0x00ffff, // cyan    (invert r)
-                    0xffff00, // yellow  (invert b)
-                };
 
-    s32 ribbon_index = (m_ribbon_stepper->get_absolute_position() / 60);
-    ribbon_index = std::max(ribbon_index,0);
-    ribbon_index = std::min(ribbon_index,3);
-    u32 ribboncolor = ribbon[ribbon_index];
-*/
 	int rightward_offset = fix16(ioport("RIGHTOFFSET")->read());
 
 	if (!state)
@@ -1450,6 +1587,8 @@ TIMER_CALLBACK_MEMBER(epson_mx80_device::slave_write_command_sync)
 // GLOBAL
 
 DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80, device_centronics_peripheral_interface, epson_mx80_device, "epson_mx80", "Epson MX-80 (with graftrax)")
+DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80_INT, device_centronics_peripheral_interface, epson_mx80int_device, "epson_mx80_int", "Epson MX-80 Internal Rom")
+
 DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80_DOTS, device_centronics_peripheral_interface, epson_mx80dots_device, "epson_mx80_dots", "Epson MX-80 (with Dots Perfect Upgrade)")
 DEFINE_DEVICE_TYPE_PRIVATE(EPSON_MX80_III, device_centronics_peripheral_interface, epson_mx80_iii_device, "epson_mx80_iii", "Epson MX-80 III")
 

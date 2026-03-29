@@ -148,6 +148,7 @@ void centronics_devices(device_slot_interface &device)
 	device.option_add("ap2000", EPSON_AP2000);
 	device.option_add("mx80", EPSON_MX80);
 	device.option_add("mx80iii", EPSON_MX80_III);
+	device.option_add("mx80int", EPSON_MX80_INT);
 	device.option_add("mx80dots", EPSON_MX80_DOTS);
 	device.option_add("rx80", EPSON_RX80);
 	device.option_add("p72", NEC_P72);

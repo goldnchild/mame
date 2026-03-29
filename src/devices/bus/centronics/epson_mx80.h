@@ -13,6 +13,7 @@
 
 // device type declaration
 DECLARE_DEVICE_TYPE(EPSON_MX80, device_centronics_peripheral_interface)
+DECLARE_DEVICE_TYPE(EPSON_MX80_INT, device_centronics_peripheral_interface)
 DECLARE_DEVICE_TYPE(EPSON_MX80_DOTS, device_centronics_peripheral_interface)
 DECLARE_DEVICE_TYPE(EPSON_MX80_III, device_centronics_peripheral_interface)
 
