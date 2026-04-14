@@ -9,6 +9,7 @@
 #include "ctronics.h"
 #include "cpu/upd7810/upd7810.h"
 #include "machine/input_merger.h"
+#include "machine/bitmap_printer.h"
 
 class pc6022_device : public device_t,
 					public device_centronics_peripheral_interface
@@ -20,6 +21,7 @@ public:
 	pc6022_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
 
 	void ack_w(int state);
+	void pen_ctrl_w(int state);
 
 protected:
 	virtual const tiny_rom_entry *device_rom_region() const override ATTR_COLD;
@@ -42,17 +44,23 @@ protected:
 private:
 	required_device<upd7801_device> m_cpu;
 	required_device<input_merger_any_high_device> m_busy;
+	required_device<bitmap_printer_device> m_bitmap_printer;
 
 	void io_map(address_map &map) ATTR_COLD;
-
-	void pa_w(u8 data);
 
 	u8 data_r();
 
 	u8 m_data;
-	u8 m_last_pa;
+	u8 m_pen_ctrl;
+	u8 m_pen_down;
 	u8 m_ack;
 	u8 m_strobe;
+	void pa_w(u8 data);
+	u8 pa_r();
+	u8 m_pa = 0;
+
+	static constexpr int PAPER_WIDTH = 72 * 4;     // 72 dpi * 4 and 1/8 inches
+	static constexpr int PAPER_HEIGHT = (11*72); //  72 dpi * 11 inches
 };
 
 // device type definition
