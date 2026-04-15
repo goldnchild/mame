@@ -64,6 +64,9 @@ public:
 	int m_xpos;
 	int m_ypos;
 
+	bitmap_rgb32& page_bitmap(){ return m_page_bitmap; }
+	required_device<stepper_device>& cr_stepper() { return m_cr_stepper; }
+	required_device<stepper_device>& pf_stepper() { return m_pf_stepper; }
 protected:
 	bitmap_printer_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
 
@@ -74,11 +77,14 @@ protected:
 	virtual ioport_constructor device_input_ports() const override ATTR_COLD;
 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
 
+	
+
 private:
 	required_device<screen_device> m_screen;
+public:  // wanted to provide direct access to the steppers for set_absolute_positgion
 	required_device<stepper_device> m_pf_stepper;
 	required_device<stepper_device> m_cr_stepper;
-
+private:
 	required_ioport m_top_margin_ioport;
 	required_ioport m_bottom_margin_ioport;
 	required_ioport m_draw_marks_ioport;

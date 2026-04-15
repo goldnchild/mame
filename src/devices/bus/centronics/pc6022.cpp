@@ -59,7 +59,7 @@ INPUT_PORTS_START( pc6022 )
 	PORT_BIT( 0x04, IP_ACTIVE_LOW,  IPT_UNKNOWN ) // TODO
 	PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_DEVICE_MEMBER("busy", FUNC(input_merger_device::in_w<1>))
 	PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::ack_w));
-	PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::pen_ctrl_w));
+	PORT_BIT( 0x60, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::pen_ctrl_w));
 	PORT_BIT( 0x80, IP_ACTIVE_LOW,  IPT_UNKNOWN ) // TODO
 
 INPUT_PORTS_END
@@ -119,6 +119,7 @@ void pc6022_device::device_start()
 	save_item(NAME(m_pen_down));
 	save_item(NAME(m_ack));
 	save_item(NAME(m_strobe));
+	m_bitmap_printer->pf_stepper()->set_absolute_position(100);
 }
 
 void pc6022_device::device_reset()
@@ -174,37 +175,46 @@ u8 pc6022_device::data_r()
 
 void pc6022_device::pa_w(u8 data)
 {
-if (m_pa != data)
-{
-	printf("PA WRITE = %x   xpos=%x  ypos=%x %s\n",data,m_bitmap_printer->m_xpos,m_bitmap_printer->m_ypos,machine().describe_context().c_str());
-	printf("Head position = %x\n",m_cpu->space(AS_PROGRAM).read_word(0xff88));
-}
-
+	if (m_pa != data)
+	{
+		printf("PA WRITE = %x   xpos=%x  ypos=%x %s\n",data,m_bitmap_printer->m_xpos,
+			m_bitmap_printer->m_ypos, machine().describe_context().c_str());
+		printf("Head position = %x\n",m_cpu->space(AS_PROGRAM).read_word(0xff88));
+	}
 
 	m_pa = data;
-/*
-    m_bitmap_printer->update_cr_stepper(
-        ( BIT(data, 0) << 3) |
-        ( BIT(data, 1) << 2) |
-        ( BIT(data, 2) << 1) |
-        ( BIT(data, 3) << 0));
 
-    proper direction for cr
-*/
+	[[maybe_unused]] int oldx = m_bitmap_printer->m_xpos;
+	[[maybe_unused]] int oldy = m_bitmap_printer->m_ypos;
+
 // using reverse direction because currently the xpos gets reset internally in the cpu and the printhead
 // doesn't stay on the visible page area
 
-		m_bitmap_printer->update_cr_stepper(
-		( BIT(data, 3) << 3) |
-		( BIT(data, 2) << 2) |
-		( BIT(data, 1) << 1) |
-		( BIT(data, 0) << 0));
-	data = data >> 4;
-	m_bitmap_printer->update_pf_stepper(
-		( BIT(data, 3) << 3) |
-		( BIT(data, 2) << 2) |
-		( BIT(data, 1) << 1) |
-		( BIT(data, 0) << 0));
+	m_bitmap_printer->update_cr_stepper(bitswap<4>(BIT(data,0,4),0,1,2,3));
+	m_bitmap_printer->update_pf_stepper(bitswap<4>(BIT(data,4,4),3,2,1,0));
+
+	[[maybe_unused]] int newx = m_bitmap_printer->m_xpos;
+	[[maybe_unused]] int newy = m_bitmap_printer->m_ypos;
+
+	if (m_pen_down)
+	{
+		drawline(oldx, oldy, newx, newy, m_colors[m_pencolor]);
+	}
+
+	if (newx < m_penchangethreshold && oldx >= m_penchangethreshold) // only change once
+	{
+		m_penposition++;
+		if (m_penposition >= 4*3) m_penposition = 0;
+		m_pencolor = m_penposition / 3;
+		m_bitmap_printer->set_printhead_color(m_colors[m_pencolor],0x0);
+	}
+
+	if (m_bitmap_printer->m_xpos < -20)
+	{
+		//fix
+		m_bitmap_printer->m_cr_stepper->set_absolute_position(-20);
+		m_bitmap_printer->m_xpos = -20;
+	}
 }
 
 u8 pc6022_device::pa_r()
