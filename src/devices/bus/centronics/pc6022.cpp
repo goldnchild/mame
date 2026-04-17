@@ -39,6 +39,9 @@ public:
 
 	void ack_w(int state);
 	void pen_ctrl_w(int state);
+	void set_stop_led(int state){
+	printf("SET_STOP_LED %x  %s\n",state,machine().describe_context().c_str());
+	m_bitmap_printer->set_led_state(bitmap_printer_device::LED_ONLINE, state); }
 
 protected:
 	virtual const tiny_rom_entry *device_rom_region() const override ATTR_COLD;
@@ -133,6 +136,8 @@ private:
 
 	public:
 	void drawline(int x0, int y0, int x1, int y1, u32 pixelval) { drawline( m_bitmap_printer->page_bitmap(), x0, y0, x1, y1, pixelval); }
+
+
 };
 
 
@@ -150,6 +155,7 @@ const tiny_rom_entry *pc6022_device::device_rom_region() const
 INPUT_PORTS_START( pc6022 )
 	PORT_START("PA")
 	PORT_BIT( 0x0f, IP_ACTIVE_HIGH, IPT_OUTPUT ) // X stepper (pattern is 5, 6, A, 9 for positive/rightward movement)
+	PORT_WRITE_LINE_DEVICE_MEMBER("bitmap_printer",FUNC(bitmap_printer_device::update_cr_stepper))
 	PORT_BIT( 0xf0, IP_ACTIVE_HIGH, IPT_OUTPUT ) // Y stepper (page feed)
 
 	PORT_START("PB")
@@ -167,14 +173,13 @@ INPUT_PORTS_START( pc6022 )
 	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_KEYPAD ) PORT_NAME("Pen Change") PORT_CODE(KEYCODE_P)
 
 	PORT_START("PC")
-	PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_OUTPUT )  // TODO (stop/online LED?)
+	PORT_BIT( 0x01, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::set_stop_led));
 	PORT_BIT( 0x02, IP_ACTIVE_LOW,  IPT_KEYPAD )  PORT_NAME("Stop") PORT_CODE(KEYCODE_0_PAD)
 	PORT_BIT( 0x04, IP_ACTIVE_LOW,  IPT_UNKNOWN ) // TODO
 	PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_DEVICE_MEMBER("busy", FUNC(input_merger_device::in_w<1>))
 	PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::ack_w));
 	PORT_BIT( 0x60, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::pen_ctrl_w));
 	PORT_BIT( 0x80, IP_ACTIVE_LOW,  IPT_UNKNOWN ) // TODO
-
 INPUT_PORTS_END
 
 ioport_constructor pc6022_device::device_input_ports() const
@@ -234,7 +239,6 @@ void pc6022_device::device_start()
 	save_item(NAME(m_pen_down));
 	save_item(NAME(m_ack));
 	save_item(NAME(m_strobe));
-	m_bitmap_printer->pf_stepper()->set_absolute_position(100);
 }
 
 void pc6022_device::device_reset()
@@ -285,7 +289,7 @@ void pc6022_device::pen_ctrl_w(int state)
 
 u8 pc6022_device::data_r()
 {
-	return m_data;
+	return m_data;  // read centronics data
 }
 
 void pc6022_device::pa_w(u8 data)
@@ -301,9 +305,6 @@ void pc6022_device::pa_w(u8 data)
 
 	[[maybe_unused]] int oldx = m_bitmap_printer->m_xpos;
 	[[maybe_unused]] int oldy = m_bitmap_printer->m_ypos;
-
-// using reverse direction because currently the xpos gets reset internally in the cpu and the printhead
-// doesn't stay on the visible page area
 
 	m_bitmap_printer->update_cr_stepper(bitswap<4>(BIT(data,0,4),0,1,2,3));
 	m_bitmap_printer->update_pf_stepper(bitswap<4>(BIT(data,4,4),3,2,1,0));
@@ -321,12 +322,11 @@ void pc6022_device::pa_w(u8 data)
 		m_penposition++;
 		if (m_penposition >= 4*3) m_penposition = 0;
 		m_pencolor = m_penposition / 3;
-		m_bitmap_printer->set_printhead_color(m_colors[m_pencolor],0x0);
+		m_bitmap_printer->set_printhead_color(m_colors[m_pencolor],0x448844);
 	}
 
 	if (m_bitmap_printer->m_xpos < -20)
 	{
-		//fix
 		m_bitmap_printer->m_cr_stepper->set_absolute_position(-20);
 		m_bitmap_printer->m_xpos = -20;
 	}
