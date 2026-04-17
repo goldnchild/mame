@@ -39,9 +39,12 @@ public:
 
 	void ack_w(int state);
 	void pen_ctrl_w(int state);
-	void set_stop_led(int state){
-	printf("SET_STOP_LED %x  %s\n",state,machine().describe_context().c_str());
-	m_bitmap_printer->set_led_state(bitmap_printer_device::LED_ONLINE, state); }
+	void set_stop_led(int state)
+	{
+		printf("SET_STOP_LED %x  %s\n",state,machine().describe_context().c_str());
+		m_bitmap_printer->set_led_state(bitmap_printer_device::LED_ONLINE, state);
+	}
+	u8 penpos_r() { return !(m_penposition == 0); }
 
 protected:
 	virtual const tiny_rom_entry *device_rom_region() const override ATTR_COLD;
@@ -87,17 +90,12 @@ private:
 	static constexpr int PAPER_WIDTH = 600  * 2;     // 72 dpi * 4 and 1/8 inches
 	static constexpr int PAPER_HEIGHT = (11*72) * 2; //  72 dpi * 11 inches
 
-	//u8 pen_sensor() { return (m_penposition == 0) && (m_bitmap_printer->m_xpos < 140); }
-
-	u8 m_penchangethreshold = 100;
+	u8 m_penchangethreshold = 0;
 
 	u8 m_pencolor = 0;
 	u8 m_penposition = 0;  // pencolor = penposition / 3
 	//                      black          b           g           r
 	u32 m_colors[4] = {   0x00000000 , 0x000000ff, 0x0000ff00, 0x00ff0000 };
-	//int m_leftmostposition=2048;
-
-
 
 	void drawline(bitmap_rgb32 &bitmap, int x0, int y0, int x1, int y1, u32 pixelval)
 	//routine copied from void hp9845ct_base_state::draw_line(unsigned x0 , unsigned y0 , unsigned x1 , unsigned y1)
@@ -179,7 +177,7 @@ INPUT_PORTS_START( pc6022 )
 	PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_DEVICE_MEMBER("busy", FUNC(input_merger_device::in_w<1>))
 	PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::ack_w));
 	PORT_BIT( 0x60, IP_ACTIVE_HIGH, IPT_OUTPUT )  PORT_WRITE_LINE_MEMBER(FUNC(pc6022_device::pen_ctrl_w));
-	PORT_BIT( 0x80, IP_ACTIVE_LOW,  IPT_UNKNOWN ) // TODO
+	PORT_BIT( 0x80, IP_ACTIVE_HIGH,  IPT_CUSTOM ) PORT_READ_LINE_MEMBER(FUNC(pc6022_device::penpos_r))
 INPUT_PORTS_END
 
 ioport_constructor pc6022_device::device_input_ports() const
@@ -317,12 +315,13 @@ void pc6022_device::pa_w(u8 data)
 		drawline(oldx, oldy, newx, newy, m_colors[m_pencolor]);
 	}
 
-	if (newx < m_penchangethreshold && oldx >= m_penchangethreshold) // only change once
+	if (newx < m_penchangethreshold && oldx >= m_penchangethreshold) // only change one step per crossing the threshold
 	{
 		m_penposition++;
 		if (m_penposition >= 4*3) m_penposition = 0;
 		m_pencolor = m_penposition / 3;
 		m_bitmap_printer->set_printhead_color(m_colors[m_pencolor],0x448844);
+		printf("PENPOSITION = %x\n", m_penposition);
 	}
 
 	if (m_bitmap_printer->m_xpos < -20)
