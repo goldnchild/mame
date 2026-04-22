@@ -41,9 +41,10 @@ public:
 	void pen_ctrl_w(int state);
 	void set_stop_led(int state)
 	{
-		printf("SET_STOP_LED %x  %s\n",state,machine().describe_context().c_str());
+		// printf("SET_STOP_LED %x  %s\n",state,machine().describe_context().c_str());
 		m_bitmap_printer->set_led_state(bitmap_printer_device::LED_ONLINE, state);
 		m_bitmap_printer->set_led_state(bitmap_printer_device::LED_ERROR, state);
+		m_output_stop_led = state;
 	}
 	u8 penpos_r() { return !(m_penposition == 0); }
 
@@ -74,6 +75,10 @@ private:
 	required_device<upd7801_device> m_cpu;
 	required_device<input_merger_any_high_device> m_busy;
 	required_device<bitmap_printer_device> m_bitmap_printer;
+
+	output_finder<> m_output_stop_led;
+	output_finder<> m_output_pen_color;
+	output_finder<> m_output_pen_pos;
 
 	void io_map(address_map &map) ATTR_COLD;
 
@@ -135,8 +140,6 @@ private:
 
 	public:
 	void drawline(int x0, int y0, int x1, int y1, u32 pixelval) { drawline( m_bitmap_printer->page_bitmap(), x0, y0, x1, y1, pixelval); }
-
-
 };
 
 
@@ -162,10 +165,10 @@ INPUT_PORTS_START( pc6022 )
 	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_KEYPAD ) PORT_NAME("Pen Left") PORT_CODE(KEYCODE_4_PAD)
 	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_KEYPAD ) PORT_NAME("Pen Down / Paper Feed") PORT_CODE(KEYCODE_2_PAD)
 	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_KEYPAD ) PORT_NAME("Pen Up") PORT_CODE(KEYCODE_8_PAD)
-	PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_OTHER ) PORT_TOGGLE PORT_NAME("Step")
+	PORT_BIT( 0x10, IP_ACTIVE_HIGH, IPT_OTHER ) PORT_TOGGLE PORT_NAME("Step") PORT_CODE(KEYCODE_7_PAD)
 	PORT_DIPSETTING( 0x00, "1" )
 	PORT_DIPSETTING( 0x10, "2" )
-	PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_OTHER ) PORT_TOGGLE PORT_NAME("Character Set")
+	PORT_BIT( 0x20, IP_ACTIVE_HIGH, IPT_OTHER ) PORT_TOGGLE PORT_NAME("Character Set") PORT_CODE(KEYCODE_9_PAD)
 	PORT_DIPSETTING( 0x00, "Hiragana" )
 	PORT_DIPSETTING( 0x20, "Katakana" )
 	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_KEYPAD ) PORT_NAME("Color Change") PORT_CODE(KEYCODE_1_PAD)
@@ -192,7 +195,10 @@ pc6022_device::pc6022_device(const machine_config &mconfig, const char *tag, dev
 	device_centronics_peripheral_interface(mconfig, *this),
 	m_cpu(*this, "cpu"),
 	m_busy(*this, "busy"),
-	m_bitmap_printer(*this, "bitmap_printer")
+	m_bitmap_printer(*this, "bitmap_printer"),
+	m_output_stop_led(*this, "stop_led"),
+	m_output_pen_color(*this, "pen_color"),
+	m_output_pen_pos(*this, "pen_pos")
 {
 }
 
@@ -200,7 +206,7 @@ void pc6022_device::io_map(address_map &map)
 {
 	map.global_mask(0x00ff);
 	// TODO: does the address actually matter?
-	map(0x00, 0x00).r(FUNC(pc6022_device::data_r));
+	map(0x00, 0x00).r(FUNC(pc6022_device::data_r));  // reads centronics data with 07F3: IN $00
 }
 
 void pc6022_device::device_add_mconfig(machine_config &config)
@@ -219,8 +225,6 @@ void pc6022_device::device_add_mconfig(machine_config &config)
 	m_busy->output_handler().set(FUNC(pc6022_device::output_busy));
 
 	BITMAP_PRINTER(config, m_bitmap_printer, PAPER_WIDTH, PAPER_HEIGHT, 120, 72);  // do 72 dpi  paper width = 480px
-	//m_bitmap_printer->set_pf_stepper_ratio(1,2);
-	//m_bitmap_printer->set_cr_stepper_ratio(1,2); 2 half steps per pixel
 	m_bitmap_printer->set_pf_stepper_ratio(1,1); // 1 half step per pixel
 	m_bitmap_printer->set_cr_stepper_ratio(1,1);
 }
@@ -238,6 +242,10 @@ void pc6022_device::device_start()
 	save_item(NAME(m_pen_down));
 	save_item(NAME(m_ack));
 	save_item(NAME(m_strobe));
+
+	m_output_stop_led.resolve();
+	m_output_pen_color.resolve();
+	m_output_pen_pos.resolve();
 }
 
 void pc6022_device::device_reset()
@@ -273,13 +281,13 @@ void pc6022_device::pen_ctrl_w(int state)
 	if (BIT(state & ~m_pen_ctrl, 0))
 	{
 		m_pen_down = 0;
-		printf("PEN UP\n");
+		//printf("PEN UP\n");
 		LOG("pen up\n");
 	}
 	else if (BIT(state & ~m_pen_ctrl, 1))
 	{
 		m_pen_down = 1;
-		printf("PEN DOWN\n");
+		//printf("PEN DOWN\n");
 		LOG("pen down\n");
 	}
 
@@ -288,16 +296,17 @@ void pc6022_device::pen_ctrl_w(int state)
 
 u8 pc6022_device::data_r()
 {
-	return m_data;  // read centronics data
+	//printf("Centronics Data = %x %s\n", m_data, machine().describe_context().c_str());
+	return m_data;  // read centronics data at 07F3: IN $00
 }
 
 void pc6022_device::pa_w(u8 data)
 {
 	if (m_pa != data)
 	{
-		printf("PA WRITE = %x   xpos=%x  ypos=%x %s\n",data,m_bitmap_printer->m_xpos,
-			m_bitmap_printer->m_ypos, machine().describe_context().c_str());
-		printf("Head position = %x\n",m_cpu->space(AS_PROGRAM).read_word(0xff88));
+		// printf("PA WRITE = %x   xpos=%x  ypos=%x %s\n",data,m_bitmap_printer->m_xpos,
+		//  m_bitmap_printer->m_ypos, machine().describe_context().c_str());
+		// printf("Head position = %x\n",m_cpu->space(AS_PROGRAM).read_word(0xff88));
 	}
 
 	m_pa = data;
@@ -321,8 +330,10 @@ void pc6022_device::pa_w(u8 data)
 		m_penposition++;
 		if (m_penposition >= 4*3) m_penposition = 0;
 		m_pencolor = m_penposition / 3;
-		m_bitmap_printer->set_printhead_color(m_colors[m_pencolor],0x448844);
-		printf("PENPOSITION = %x\n", m_penposition);
+		m_bitmap_printer->set_printhead_color(m_colors[m_pencolor],0xff8800);
+		//printf("PENPOSITION = %x\n", m_penposition);
+		m_output_pen_color = m_pencolor;
+		m_output_pen_pos = m_penposition;
 	}
 
 	if (m_bitmap_printer->m_xpos < -20)
