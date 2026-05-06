@@ -1,0 +1,815 @@
+<?xml version="1.0"?>
+<!--
+license:CC0-1.0
+-->
+<mamelayout version="2">
+
+<!-- define elements -->
+
+<element name="whiterect">
+<rect>
+	<color red="1.0" blue="1.0" green="1.0" />
+	<bounds left="0.0" top="0.0" right="1.0" bottom="1.0" />
+</rect>
+</element>
+
+<element name="button">
+	<rect state="0">
+		    <color red="0.5" green="0.5" blue="0.5" />
+	</rect>
+	<rect state="1">
+		    <color red="0.7" green="1.0" blue="1.0" />
+	</rect>
+</element>
+
+<element name="led">
+	<disk>
+	<bounds left="0.0" top="0.0" bottom="1.0" right="1.0" />
+		    <color red="0.0" green="0.0" blue="0.0" />
+	</disk>
+	<disk state="0">
+	<bounds left="0.1" top="0.1" bottom="0.9" right="0.9" />
+		    <color red="0.2" green="0.2" blue="0.2" />
+	</disk>
+	<disk state="1">
+	<bounds left="0.1" top="0.1" bottom="0.9" right="0.9" />
+		    <color red="0.7" green="0.3" blue="0.3" />
+	</disk>
+</element>
+
+ <element name="onled">
+	<disk>
+	<bounds left="0.0" top="0.0" bottom="1.0" right="1.0" />
+		    <color red="0.0" green="0.0" blue="0.0" />
+	</disk>
+	<disk>
+	<bounds left="0.1" top="0.1" bottom="0.9" right="0.9" />
+		    <color red="0.7" green="0.3" blue="0.3" />
+	</disk>
+</element>
+
+<element name="switch0bottom">
+	 <rect>
+	 <bounds left="0.0" top="0.0" bottom="1.0" right="1.0" />
+		        <color red="0.75" green="0.75" blue="0.75" />
+		</rect>
+		<rect>
+		<bounds left="0.1" top="0.1" bottom="0.9" right="0.9" />
+		        <color red="0.2" green="0.2" blue="0.2" />
+		</rect>
+		<rect>
+		<bounds state="1" left="0.15" top="0.15" bottom="0.5" right="0.85" />   <!-- 1 is on the bottom -->
+		<bounds state="0" left="0.15" top="0.5" bottom="0.85" right="0.85" />   <!-- 0 is on the bottom -->
+		        <color red="0.75" green="0.75" blue="0.75" />
+		</rect>
+</element>
+
+<element name="keycap">
+<!-- <image file="keycap_white.svg"> -->
+<image><data><![CDATA[
+	<svg >
+     <rect
+       style="fill:#e8e8e8;fill-opacity:1;stroke:#c9c9c9;stroke-width:0.420168;stroke-opacity:1"
+       id="rect1-7"
+       width="51.72472"
+       height="52.916534"
+       x="2.8895206"
+       y="3.6878514"
+       ry="10.975281" />
+       <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#848484;stroke-width:0.2883;stroke-opacity:1"
+       id="rect1"
+       width="33.704613"
+       height="38.233505"
+       x="11.89921"
+       y="1.9071316"
+       ry="7.9299116" />
+       <path
+       style="fill:#e8e8e8;fill-opacity:1;stroke:#c2c2c2;stroke-width:0.230074;stroke-opacity:1"
+       d="M 7.8270847,53.382654 14.517475,39.078844"
+       id="path3" />
+       <path
+       style="fill:#e8e8e8;fill-opacity:1;stroke:#b4b4b4;stroke-width:0.20781;stroke-opacity:1"
+       d="M 51.176845,51.722335 43.332035,39.368577"
+       id="path4" /></svg>
+]]></data>
+
+<bounds state="0" left="0" right="1" top="0" bottom="1"/>
+<bounds state="1" left="0" right="1" top="0.0" bottom="1"/>
+<color state="0" red="0.96" blue="0.85" green="0.85"/>
+<color state="1" red="0.7" blue="0.7" green="0.7" />
+</image>
+</element>
+
+<element name="keycap2">
+<!-- <image file="keycap_white.svg"> -->
+<image>
+<bounds state="0" left="0" right="1" top="0" bottom="1"/>
+<bounds state="1" left="0" right="1" top="0.0" bottom="1"/>
+<color state="1" red="0.5" blue="0.9" />
+<color state="0" red="1.0" blue="1.0" green="1.0" />
+<data><![CDATA[
+	<svg >
+     <rect
+       style="fill:#e8e8e8;fill-opacity:1;stroke:#c9c9c9;stroke-width:0.420168;stroke-opacity:1"
+       id="rect1-7"
+       width="51.72472"
+       height="52.916534"
+       x="2.8895206"
+       y="3.6878514"
+       ry="10.975281" />
+       <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#848484;stroke-width:0.2883;stroke-opacity:1"
+       id="rect1"
+       width="33.704613"
+       height="38.233505"
+       x="11.89921"
+       y="1.9071316"
+       ry="7.9299116" />
+       <path
+       style="fill:#e8e8e8;fill-opacity:1;stroke:#c2c2c2;stroke-width:0.230074;stroke-opacity:1"
+       d="M 7.8270847,53.382654 14.517475,39.078844"
+       id="path3" />
+       <path
+       style="fill:#e8e8e8;fill-opacity:1;stroke:#b4b4b4;stroke-width:0.20781;stroke-opacity:1"
+       d="M 51.176845,51.722335 43.332035,39.368577"
+       id="path4" /></svg>
+]]></data></image>
+</element>
+
+
+<element name="pen0" >
+<disk>
+<color red="0.0" green="0.0" blue="0.0" />
+</disk>
+</element>
+
+<element name="pen1" >
+<disk>
+<color red="0.0" green="0.0" blue="1.0" />
+</disk>
+</element>
+
+<element name="pen2" >
+<disk>
+<color red="0.0" green="1.0" blue="0.0" />
+</disk>
+</element>
+
+<element name="pen3" >
+<disk>
+<color red="1.0" green="0.0" blue="0.0" />
+</disk>
+</element>
+
+<group name="pens">
+<!--
+  cr = "\n"
+function otag(t,attrs) attrs=attrs or "" return "<"..t.." "..attrs..">" end
+function stag(t,attrs) attrs=attrs or "" return "<"..t.." "..attrs.."/>" end
+function attr(k,v) return k..'="'..v..'" ' end
+function ctag(t) return '</'..t..'>' end
+function strnil(s) if not s then return "" else return s end end
+function torad(d) return d/180*math.pi end
+out=""
+numcols=4
+colsteps=2
+cylsize=4
+boxsize=25
+radius=cylsize+1
+for col=0,3 do
+out=out..otag("element", attr("ref","pen"..col)..attr("name","pen_pos"))..cr
+for rotpos=0,numcols*colsteps-1 do
+x0 = 10
+y0 = 10
+ang = (rotpos+4) * (360/(numcols*colsteps)) + (-col+1) * (360/4)
+xc = x0+math.cos(torad(ang))*radius
+yc = y0-math.sin(torad(ang))*radius
+out= out..stag("bounds",attr("state",rotpos)..attr("xc",xc)..attr("yc",yc)..attr("width",cylsize)..attr("height",cylsize))..cr
+out=out..stag("bounds", attr("state",rotpos + 8)..attr("xc",xc) ..attr("yc",yc + cylsize /2 ) .. attr("width",cylsize)..attr("height",cylsize))..cr
+end
+out=out..ctag("element")..cr..cr
+end
+print(("-"):rep(2)..">")
+print()
+print(out)
+-->
+
+<element ref="pen0" name="pen_pos" >
+<bounds state="0" xc="10.0" yc="15.0" width="4" height="4" />
+<bounds state="8" xc="10.0" yc="17.0" width="4" height="4" />
+<bounds state="1" xc="13.535533905933" yc="13.535533905933" width="4" height="4" />
+<bounds state="9" xc="13.535533905933" yc="15.535533905933" width="4" height="4" />
+<bounds state="2" xc="15.0" yc="10.0" width="4" height="4" />
+<bounds state="10" xc="15.0" yc="12.0" width="4" height="4" />
+<bounds state="3" xc="13.535533905933" yc="6.4644660940673" width="4" height="4" />
+<bounds state="11" xc="13.535533905933" yc="8.4644660940673" width="4" height="4" />
+<bounds state="4" xc="10.0" yc="5.0" width="4" height="4" />
+<bounds state="12" xc="10.0" yc="7.0" width="4" height="4" />
+<bounds state="5" xc="6.4644660940673" yc="6.4644660940673" width="4" height="4" />
+<bounds state="13" xc="6.4644660940673" yc="8.4644660940673" width="4" height="4" />
+<bounds state="6" xc="5.0" yc="10.0" width="4" height="4" />
+<bounds state="14" xc="5.0" yc="12.0" width="4" height="4" />
+<bounds state="7" xc="6.4644660940673" yc="13.535533905933" width="4" height="4" />
+<bounds state="15" xc="6.4644660940673" yc="15.535533905933" width="4" height="4" />
+</element>
+
+<element ref="pen1" name="pen_pos" >
+<bounds state="0" xc="5.0" yc="10.0" width="4" height="4" />
+<bounds state="8" xc="5.0" yc="12.0" width="4" height="4" />
+<bounds state="1" xc="6.4644660940673" yc="13.535533905933" width="4" height="4" />
+<bounds state="9" xc="6.4644660940673" yc="15.535533905933" width="4" height="4" />
+<bounds state="2" xc="10.0" yc="15.0" width="4" height="4" />
+<bounds state="10" xc="10.0" yc="17.0" width="4" height="4" />
+<bounds state="3" xc="13.535533905933" yc="13.535533905933" width="4" height="4" />
+<bounds state="11" xc="13.535533905933" yc="15.535533905933" width="4" height="4" />
+<bounds state="4" xc="15.0" yc="10.0" width="4" height="4" />
+<bounds state="12" xc="15.0" yc="12.0" width="4" height="4" />
+<bounds state="5" xc="13.535533905933" yc="6.4644660940673" width="4" height="4" />
+<bounds state="13" xc="13.535533905933" yc="8.4644660940673" width="4" height="4" />
+<bounds state="6" xc="10.0" yc="5.0" width="4" height="4" />
+<bounds state="14" xc="10.0" yc="7.0" width="4" height="4" />
+<bounds state="7" xc="6.4644660940673" yc="6.4644660940673" width="4" height="4" />
+<bounds state="15" xc="6.4644660940673" yc="8.4644660940673" width="4" height="4" />
+</element>
+
+<element ref="pen2" name="pen_pos" >
+<bounds state="0" xc="10.0" yc="5.0" width="4" height="4" />
+<bounds state="8" xc="10.0" yc="7.0" width="4" height="4" />
+<bounds state="1" xc="6.4644660940673" yc="6.4644660940673" width="4" height="4" />
+<bounds state="9" xc="6.4644660940673" yc="8.4644660940673" width="4" height="4" />
+<bounds state="2" xc="5.0" yc="10.0" width="4" height="4" />
+<bounds state="10" xc="5.0" yc="12.0" width="4" height="4" />
+<bounds state="3" xc="6.4644660940673" yc="13.535533905933" width="4" height="4" />
+<bounds state="11" xc="6.4644660940673" yc="15.535533905933" width="4" height="4" />
+<bounds state="4" xc="10.0" yc="15.0" width="4" height="4" />
+<bounds state="12" xc="10.0" yc="17.0" width="4" height="4" />
+<bounds state="5" xc="13.535533905933" yc="13.535533905933" width="4" height="4" />
+<bounds state="13" xc="13.535533905933" yc="15.535533905933" width="4" height="4" />
+<bounds state="6" xc="15.0" yc="10.0" width="4" height="4" />
+<bounds state="14" xc="15.0" yc="12.0" width="4" height="4" />
+<bounds state="7" xc="13.535533905933" yc="6.4644660940673" width="4" height="4" />
+<bounds state="15" xc="13.535533905933" yc="8.4644660940673" width="4" height="4" />
+</element>
+
+<element ref="pen3" name="pen_pos" >
+<bounds state="0" xc="15.0" yc="10.0" width="4" height="4" />
+<bounds state="8" xc="15.0" yc="12.0" width="4" height="4" />
+<bounds state="1" xc="13.535533905933" yc="6.4644660940673" width="4" height="4" />
+<bounds state="9" xc="13.535533905933" yc="8.4644660940673" width="4" height="4" />
+<bounds state="2" xc="10.0" yc="5.0" width="4" height="4" />
+<bounds state="10" xc="10.0" yc="7.0" width="4" height="4" />
+<bounds state="3" xc="6.4644660940673" yc="6.4644660940673" width="4" height="4" />
+<bounds state="11" xc="6.4644660940673" yc="8.4644660940673" width="4" height="4" />
+<bounds state="4" xc="5.0" yc="10.0" width="4" height="4" />
+<bounds state="12" xc="5.0" yc="12.0" width="4" height="4" />
+<bounds state="5" xc="6.4644660940673" yc="13.535533905933" width="4" height="4" />
+<bounds state="13" xc="6.4644660940673" yc="15.535533905933" width="4" height="4" />
+<bounds state="6" xc="10.0" yc="15.0" width="4" height="4" />
+<bounds state="14" xc="10.0" yc="17.0" width="4" height="4" />
+<bounds state="7" xc="13.535533905933" yc="13.535533905933" width="4" height="4" />
+<bounds state="15" xc="13.535533905933" yc="15.535533905933" width="4" height="4" />
+</element>
+
+
+
+
+
+</group>
+
+<element name="rect12" >
+<rect >
+<color red="0.91" blue="0.69" green="0.87" />
+</rect >
+</element >
+<element name="rect11" >
+<rect >
+<color red="1.00" blue="0.67" green="0.93" />
+</rect >
+</element >
+<element name="rect10" >
+<rect >
+<color red="1.00" blue="0.50" green="0.90" />
+</rect >
+</element >
+<element name="rect9" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+</rect >
+</element >
+<element name="rect9-0" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+</rect >
+</element >
+<element name="rect9-0-5" >
+<rect >
+<color red="1.00" blue="0.50" green="0.50" />
+</rect >
+</element >
+<element name="rect9-9" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+</rect >
+</element >
+<element name="rect9-7" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+</rect >
+</element >
+<element name="rect9-93" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+
+</rect >
+</element >
+<element name="rect9-8" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+
+</rect >
+</element >
+<element name="rect9-6" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+
+</rect >
+</element >
+<element name="rect9-2" >
+<rect >
+<color state="0" red="1.00" blue="0.50" green="0.50" />
+<color state="1" red="0.50" blue="0.25" green="0.25" />
+
+</rect >
+</element >
+<element name="text10" >
+<text string="TEST" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6" >
+<text string="CLEAR" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-2" >
+<text string="CURSOR" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-3" >
+<text string="UP/DOWN" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8" >
+<text string="SELECT" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-2" >
+<text string="PEN" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-6" >
+<text string="FREE" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-4" >
+<text string="LOCAL" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-7" >
+<text string="REMOTE" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-61" >
+<text string="OPERATE" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-9" >
+<text string="MODE" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-5" >
+<text string="POWER" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-3" >
+<text string="ERROR" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text10-6-8-8" >
+<text string="ON/OFF" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text12" >
+<!-- <text string="&lt;" > -->
+<text string="^" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text12-8" >
+<text string="&gt;" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text12-3" >
+<text string="&lt;" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text12-9" >
+<text string="v" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text13" >
+<text string="◌" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text13-6" >
+<text string="⏺" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text13-62" >
+<text string="⏺" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="text13-0" >
+<text string="◌" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+<element name="rect8" >
+<rect >
+<color red="0.83" blue="0.00" green="0.00" />
+</rect >
+</element >
+<element name="rect8-2" >
+<rect >
+<color state="0" red="0.00" blue="0.00" green="0.00" />
+<color state="1" red="0.83" blue="0.05" green="0.05" />
+
+</rect >
+</element >
+<element name="rect8-6" >
+<rect >
+<color state="0" red="0.00" blue="0.00" green="0.00" />
+<color state="1" red="0.83" blue="0.05" green="0.05" />
+
+</rect >
+</element >
+<element name="rect8-1" >
+<rect >
+<color state="0" red="0.00" blue="0.00" green="0.00" />
+<color state="1" red="0.83" blue="0.05" green="0.05" />
+</rect >
+</element >
+
+<element name="counter" >
+<simplecounter digits="1"/>
+</element>
+
+<element name="pencolor" >
+<text state="0" string="Black">
+</text>
+<text state="1" string="Blue">
+</text>
+<text state="2" string="Green">
+</text>
+<text state="3" string="Red">
+</text>
+</element>
+
+<group name="pc6022panel" >
+
+<element ref="rect12" >
+<bounds x="27.76666259765625" y="36.33332824707031" width="224.65000915527344" height="604.7999877929688" />
+</element >
+<element ref="rect11" >
+<bounds x="40.616668701171875" y="423.23333740234375" width="198.9499969482422" height="24.649993896484375" />
+</element >
+<element ref="rect10" >
+<bounds x="39.48333740234375" y="50.76666259765625" width="201.21665954589844" height="163.8000030517578" />
+</element >
+<element ref="rect9" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x1">
+<bounds x="65" y="295.3666687011719" width="54.81666564941406" height="34.96665954589844" />
+</element >
+<element ref="rect9-0" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x80" >
+<bounds x="160.11666870117188" y="295.3666687011719" width="54.81666564941406" height="34.96665954589844" />
+</element >
+<element ref="rect9-0-5" >
+<bounds x="111.16667175292969" y="86.48333740234375" width="54.83332824707031" height="35.0333251953125" />
+</element >
+<element ref="rect9-9" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x4">
+<bounds x="65" y="370.20001220703125" width="54.81666564941406" height="35.03334045410156" />
+</element >
+<element ref="rect9-7" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x2" >
+<bounds x="160.11666870117188" y="370.20001220703125" width="54.81666564941406" height="35.03334045410156" />
+</element >
+<element ref="rect9-93" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x40" >
+<bounds x="116.64999389648438" y="472.3666687011719" width="54.81666564941406" height="35.05000305175781" />
+</element >
+<element ref="rect9-8" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x08">
+<bounds x="49.25" y="521.5" width="54.81666564941406" height="34.98333740234375" />
+</element >
+<element ref="rect9-6" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x20">
+<bounds x="180.39999389648438" y="521.5" width="54.81666564941406" height="34.98333740234375" />
+</element >
+<element ref="rect9-2" inputtag=":sl2:ssc:rs232:a410:PANEL" inputmask="0x10">
+<bounds x="116.64999389648438" y="568.25" width="54.81666564941406" height="34.96665954589844" />
+</element >
+<element ref="text10" >
+<bounds x="70" y="421.433349609375" width="42" height="24.550003051757812" />
+</element >
+<element ref="text10-6" >
+<bounds x="162.35000610351562" y="421.29998779296875" width="56.18333435058594" height="24.5" />
+</element >
+<element ref="text10-6-2" >
+<bounds x="104.73333740234375" y="448.26666259765625" width="67.96665954589844" height="24.550003051757812" />
+</element >
+<element ref="text10-6-3" >
+<bounds x="50.30000305175781" y="345.6166687011719" width="83.64999389648438" height="24.566665649414062" />
+</element >
+<element ref="text10-6-8" >
+<bounds x="154.1999969482422" y="345.3833312988281" width="63.16667175292969" height="24.550003051757812" />
+</element >
+<element ref="text10-6-8-2" >
+<bounds x="123.60000610351562" y="328.066650390625" width="35.633331298828125" height="24.566665649414062" />
+</element >
+<element ref="text10-6-8-6" >
+<bounds x="63.58332824707031" y="270.5" width="43.98333740234375" height="24.566665649414062" />
+</element >
+<element ref="text10-6-8-4" >
+<bounds x="158.6999969482422" y="271.54998779296875" width="57.583343505859375" height="24.566665649414062" />
+</element >
+<element ref="text10-6-8-7" >
+<bounds x="159.46665954589844" y="249.48333740234375" width="72.01667785644531" height="24.550003051757812" />
+</element >
+<element ref="text10-6-8-61" >
+<bounds x="60.96665954589844" y="248.9166717529297" width="77.60000610351562" height="24.5" />
+</element >
+<element ref="text10-6-8-9" >
+<bounds x="111.64999389648438" y="212" width="52.9666748046875" height="24.566665649414062" />
+</element >
+<element ref="text10-6-8-5" >
+<bounds x="63.58332824707031" y="135.28334045410156" width="63.30000305175781" height="24.54998779296875" />
+</element >
+<element ref="text10-6-8-3" >
+<bounds x="158.11666870117188" y="135.9499969482422" width="57.71665954589844" height="24.5" />
+</element >
+<element ref="text10-6-8-8" >
+<bounds x="107.03334045410156" y="55.51666259765625" width="64.38333129882812" height="24.5" />
+</element >
+<element ref="text12" >
+<bounds x="133.10000610351562" y="470.45001220703125" width="23.699996948242188" height="53.383331298828125" />
+</element >
+<element ref="text12-8" >
+<bounds x="196.46665954589844" y="513.16668701171875" width="23.766677856445312" height="53.383331298828125" />
+</element >
+<element ref="text12-3" >
+<bounds x="64.5" y="511.0333251953125" width="23.76666259765625" height="53.29998779296875" />
+</element >
+<element ref="text12-9" >
+<bounds x="133.28334045410156" y="558.6500244140625" width="23.76666259765625" height="53.366668701171875" />
+</element >
+<element ref="text13" >
+<bounds x="45.46665954589844" y="248.25" width="11.050003051757812" height="23.316665649414062" />
+</element >
+<element ref="text13-6" >
+<bounds x="47.48333740234375" y="264.54998779296875" width="13" height="23.399993896484375" />
+</element >
+<element ref="text13-62" >
+<bounds x="144.3000030517578" y="266.1333312988281" width="13" height="23.316665649414062" />
+</element >
+<element ref="text13-0" >
+<bounds x="142.98333740234375" y="248.68333435058594" width="11.0333251953125" height="23.316665649414062" />
+</element >
+<element ref="rect8" >
+<bounds x="71.05000305175781" y="159.8000030517578" width="41.7833251953125" height="16.083328247070312" />
+</element >
+<element ref="rect8-2" name="led_error">
+<bounds x="167.3000030517578" y="159.8000030517578" width="41.71665954589844" height="16.083328247070312" />
+</element >
+<element ref="rect8-6" name="led_free">
+<bounds x="71.05000305175781" y="233.43333435058594" width="41.7833251953125" height="16.083328247070312" />
+</element >
+<element ref="rect8-1" name="led_remote">
+<bounds x="167.3000030517578" y="233.43333435058594" width="41.71665954589844" height="16.083328247070312" />
+</element >
+
+<element ref="counter" name="pen_color"><!-- pen sensor -->
+            <bounds left="10" top="5" right="55"  bottom="90" />
+            <color red="0.0" blue="0.0" green="0.0" />
+    </element>
+    <element ref="counter" name="pen_pos"><!-- pen sensor -->
+            <bounds left="70" top="5" right="125"  bottom="90" />
+            <color red="0.0" blue="0.0" green="0.0" />
+    </element>
+        <element ref="counter" name="panel"><!-- pen sensor -->
+            <bounds left="150" top="5" right="175"  bottom="90" />
+            <color red="0.0" blue="0.0" green="0.0" />
+    </element>
+        <element ref="pencolor" name="pen_color"><!-- pen sensor -->
+            <bounds left="200" top="5" right="250"  bottom="90" />
+            <color red="0.0" blue="0.0" green="0.0" />
+    </element>
+         <element ref="counter" name="xpos"><!-- pen sensor -->
+            <bounds left="50" top="90" right="100"  bottom="120" />
+            <color red="0.0" blue="0.0" green="0.0" />
+                </element>
+                 <element ref="counter" name="ypos"><!-- pen sensor -->
+            <bounds left="190" top="90" right="235"  bottom="120" />
+            <color red="0.0" blue="0.0" green="0.0" />
+                </element>
+</group>
+
+
+<element name="textsave" >
+<text string="Save" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element>
+<element name="textclear" >
+<text string="Clear" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element>
+
+<!-- 
+	PORT_START("BAUD")
+	PORT_DIPNAME(0x07, 0x00, "Baud Rate") PORT_DIPLOCATION("DIPSW1:3,2,1")
+	PORT_DIPSETTING(0x00, "9600")
+	PORT_DIPSETTING(0x01, "4800")
+	PORT_DIPSETTING(0x02, "2400")
+	PORT_DIPSETTING(0x03, "1200")
+	PORT_DIPSETTING(0x04, "600")
+	PORT_DIPSETTING(0x05, "300")
+	PORT_DIPSETTING(0x06, "150")
+	PORT_DIPSETTING(0x07, "75")
+-->
+<element name="textbaud" >
+<text string="9600" state="0" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="4800" state="1" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="2400" state="2" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="1200" state="3" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="600" state="4" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="300" state="5" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="150" state="6" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="75" state="7" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+
+</element>
+
+<!--	
+	PORT_DIPNAME(0x04, 0x04, "Data Bits") PORT_DIPLOCATION("DIPSW1:8")
+	PORT_DIPSETTING(0x00, "7")
+	PORT_DIPSETTING(0x04, "8")
+
+	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_UNUSED )  // does this make it high?
+		
+	PORT_DIPNAME(0x10, 0x00, "Parity") PORT_DIPLOCATION("DIPSW1:7")
+	PORT_DIPSETTING(0x00, "None")
+	PORT_DIPSETTING(0x10, "Parity Enable")
+
+	PORT_DIPNAME(0x20, 0x00, "Odd/Even Parity") PORT_DIPLOCATION("DIPSW1:6")
+	PORT_DIPSETTING(0x00, "Odd")
+	PORT_DIPSETTING(0x20, "Eveh")
+
+	PORT_DIPNAME(0xC0, 0x40, "Stop") PORT_DIPLOCATION("DIPSW1:5,4")
+	PORT_DIPSETTING(0x00, "Invalid")
+	PORT_DIPSETTING(0x40, "1 Stop Bit")
+	PORT_DIPSETTING(0x80, "1.5 Stop Bits")
+	PORT_DIPSETTING(0xC0, "2 Stop Bits")
+-->
+
+
+<element name="textdatabits" >
+<text string="7" state="0" >   <!-- remember dip switches are INVERTED -->
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="8" state="1" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element>
+
+<element name="textparity" >
+<text string="none" state="0" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="odd" state="1" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="none" state="2" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="even" state="3" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element >
+
+<element name="textstopbits" >
+<text string="invalid" state="0" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="1 stop" state="1" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="1.5 stop" state="2" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+<text string="2 stop" state="3" >
+<color red="0.10" blue="0.10" green="0.10" />
+</text >
+</element>
+	
+
+
+<view name="PC6022 Layout">
+	<bounds left="0" right="200" top="0" bottom="100" />
+
+	<screen index="0">
+	   <bounds left="0" top="0" right="100" bottom="100" />
+	</screen>
+
+	<screen index="1">
+	   <bounds left="100" top="0" right="200" bottom="100" />
+	</screen>
+
+	<group ref="pc6022panel">
+	<bounds top="0" left="100" right="125" bottom="50" />
+	</group>
+	
+	<group ref="pens">
+	<bounds top="1" left="140" right="150" bottom="11" />
+	</group>
+	
+	<element ref="rect9-8" inputtag=":sl2:ssc:rs232:a410:SAVEPAGE" inputmask="0x01">
+	<bounds x="150" y="30" width="10" height="3" />
+	</element >
+	<element ref="rect9-8" inputtag=":sl2:ssc:rs232:a410:SAVEPAGE" inputmask="0x02">
+	<bounds x="150" y="20" width="10" height="3" />
+	</element >
+	
+	<element ref="textsave" inputtag=":sl2:ssc:rs232:a410:SAVEPAGE" inputmask="0x01">
+	<bounds x="150" y="30" width="10" height="3" />
+	</element >
+	
+	<element ref="textclear" inputtag=":sl2:ssc:rs232:a410:SAVEPAGE" inputmask="0x02">
+	<bounds x="150" y="20" width="10" height="3" />
+	</element >
+	
+	<element ref="textbaud" inputtag=":sl2:ssc:rs232:a410:BAUD" inputmask="0x07" inputraw="yes" >
+	<bounds x="150" y="2" width="10" height="3" />
+	</element >
+	
+	<element ref="textdatabits" inputtag=":sl2:ssc:rs232:a410:E800" inputmask="0x04" inputraw="yes" >
+	<bounds x="165" y="2" width="5" height="3" />
+	</element >
+	
+	<element ref="textparity" inputtag=":sl2:ssc:rs232:a410:E800" inputmask="0x30" inputraw="yes">
+	<bounds x="175" y="2" width="5" height="3" />
+	</element >
+	
+	<element ref="textstopbits" inputtag=":sl2:ssc:rs232:a410:E800" inputmask="0xc0" inputraw="yes" >
+	<bounds x="185" y="2" width="5" height="3" />
+	</element >
+	
+</view>
+</mamelayout>
+

@@ -64,6 +64,13 @@ public:
 	int m_xpos;
 	int m_ypos;
 
+	bitmap_rgb32& page_bitmap(){ return m_page_bitmap; }
+	required_device<stepper_device>& cr_stepper() { return m_cr_stepper; }
+	required_device<stepper_device>& pf_stepper() { return m_pf_stepper; }
+
+	int paper_width(){return m_paper_width;}
+	int paper_height(){return m_paper_height;}
+	void clear_page(){ m_page_bitmap.fill(0xffffff); }
 protected:
 	bitmap_printer_device(const machine_config &mconfig, device_type type, const char *tag, device_t *owner, uint32_t clock);
 
@@ -76,9 +83,10 @@ protected:
 
 private:
 	required_device<screen_device> m_screen;
+public:  // wanted to provide direct access to the steppers for set_absolute_positgion
 	required_device<stepper_device> m_pf_stepper;
 	required_device<stepper_device> m_cr_stepper;
-
+private:
 	required_ioport m_top_margin_ioport;
 	required_ioport m_bottom_margin_ioport;
 	required_ioport m_draw_marks_ioport;
@@ -117,6 +125,44 @@ private:
 	void draw7seg(u8 data, bool is_digit, int x0, int y0, int width, int height, int thick, bitmap_rgb32 &bitmap, u32 color, u32 erasecolor);
 	void draw_number(int number, int x, int y, bitmap_rgb32& bitmap);
 	void draw_inch_marks(bitmap_rgb32& bitmap);
+
+	void drawline(bitmap_rgb32 &bitmap, int x0, int y0, int x1, int y1, u32 pixelval)
+	//routine copied from void hp9845ct_base_state::draw_line(unsigned x0 , unsigned y0 , unsigned x1 , unsigned y1)
+	{
+		   int dx, dy, sx, sy, x, y, err, e2;
+
+		   // draw line, vector generator uses Bresenham's algorithm
+		   x = x0;
+		   y = y0;
+		   dx = abs((int) (x1 - x));
+		   sx = x < x1 ? 1 : -1;
+		   dy = abs((int) (y1 - y));
+		   sy = y < y1 ? 1 : -1;
+		   err = (dx > dy ? dx : -dy) / 2;
+
+		   for(;;)
+		   {
+				   if (!((x<0) || (x >= bitmap.width()) || (y<0) || (y >= bitmap.height())))
+								   bitmap.pix(y,x) = pixelval;
+
+				   if (x == x1 && y == y1) break;
+
+				   e2 = err;
+				   if (e2 > -dx)
+				   {
+								   err -= dy;
+								   x += sx;
+				   }
+				   if (e2 < dy)
+				   {
+								   err += dx;
+								   y += sy;
+				   }
+		   }
+	}
+
+	public:
+	void drawline(int x0, int y0, int x1, int y1, u32 pixelval) { drawline( m_page_bitmap, x0, y0, x1, y1, pixelval); }
 };
 
 DECLARE_DEVICE_TYPE(BITMAP_PRINTER, bitmap_printer_device)

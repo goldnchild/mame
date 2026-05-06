@@ -4886,6 +4886,8 @@ end
 
 if BUSES["RS232"] then
 	files {
+		MAME_DIR .. "src/devices/bus/rs232/apple_410.cpp",
+		MAME_DIR .. "src/devices/bus/rs232/apple_410.h",
 		MAME_DIR .. "src/devices/bus/rs232/exorterm.cpp",
 		MAME_DIR .. "src/devices/bus/rs232/exorterm.h",
 		MAME_DIR .. "src/devices/bus/rs232/heath_h19.cpp",
