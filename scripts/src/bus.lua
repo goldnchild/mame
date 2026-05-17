@@ -5883,6 +5883,8 @@ if BUSES["TI99"] then
 		MAME_DIR .. "src/devices/bus/ti99/sidecar/arcturus.h",
 		MAME_DIR .. "src/devices/bus/ti99/sidecar/speechsyn.cpp",
 		MAME_DIR .. "src/devices/bus/ti99/sidecar/speechsyn.h",
+		MAME_DIR .. "src/devices/bus/ti99/sidecar/thermal.cpp",
+		MAME_DIR .. "src/devices/bus/ti99/sidecar/thermal.h",
 	}
 end
 
