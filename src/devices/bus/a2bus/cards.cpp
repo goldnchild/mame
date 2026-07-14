@@ -36,6 +36,7 @@
 #include "a2sic.h"
 #include "a2softcard.h"
 #include "a2ssc.h"
+#include "a2silentype.h"
 #include "a2superdrive.h"
 #include "a2swyft.h"
 #include "a2themill.h"
@@ -45,6 +46,7 @@
 #include "a2vulcan.h"
 #include "a2wico_trackball.h"
 #include "a2zipdrive.h"
+#include "agraphtablet.h"
 #include "booti.h"
 #include "byte8251.h"
 #include "ccs7710.h"
@@ -105,6 +107,7 @@ void apple2_cards(device_slot_interface &device)
 	device.option_add("videoterm", A2BUS_VIDEOTERM);           // Videx VideoTerm
 	device.option_add("ssc", A2BUS_SSC);                       // Apple Super Serial Card
 	device.option_add("ssi", APRICORN_SSI);                    // Apricorn Super Serial Imager
+	device.option_add("silentype", A2BUS_SILENTYPE);                    // Apricorn Super Serial Imager
 	device.option_add("themill", A2BUS_THEMILL);               // Stellation Two The Mill (6809 card)
 	device.option_add("sam", A2BUS_SAM);                       // SAM Software Automated Mouth (8-bit DAC + speaker)
 	device.option_add("alfam2", A2BUS_ALFAM2);                 // ALF Apple Music II
@@ -165,6 +168,7 @@ void apple2_cards(device_slot_interface &device)
 	device.option_add("ap2", A2BUS_IBSAP2);                    // IBS Computertechnik AP 2 Serial Interface
 	device.option_add("sic", A2BUS_SIC);                       // Apple II Serial Interface Card
 	device.option_add("sweetalk", A2BUS_SWEETALK);             // Micromint Sweet Talker Phonetic Speech Synthesizer Interface
+	device.option_add("agraphtablet", A2BUS_AGRAPHTABLET);             // Micromint Sweet Talker Phonetic Speech Synthesizer Interface
 }
 
 void apple2e_cards(device_slot_interface &device)
@@ -183,6 +187,7 @@ void apple2e_cards(device_slot_interface &device)
 	device.option_add("videoterm", A2BUS_VIDEOTERM);           // Videx VideoTerm
 	device.option_add("ssc", A2BUS_SSC);                       // Apple Super Serial Card
 	device.option_add("ssi", APRICORN_SSI);                    // Apricorn Super Serial Imager
+	device.option_add("silentype", A2BUS_SILENTYPE);                    // Apricorn Super Serial Imager
 	device.option_add("swyft", A2BUS_SWYFT);                   // IAI SwyftCard
 	device.option_add("themill", A2BUS_THEMILL);               // Stellation Two The Mill (6809 card)
 	device.option_add("sam", A2BUS_SAM);                       // SAM Software Automated Mouth (8-bit DAC + speaker)
@@ -254,6 +259,7 @@ void apple2e_cards(device_slot_interface &device)
 	device.option_add("ap2", A2BUS_IBSAP2);                    // IBS Computertechnik AP 2 Serial Interface
 	device.option_add("sic", A2BUS_SIC);                       // Apple II Serial Interface Card
 	device.option_add("sweetalk", A2BUS_SWEETALK);             // Micromint Sweet Talker Phonetic Speech Synthesizer Interface
+	device.option_add("agraphtablet", A2BUS_AGRAPHTABLET);             // Micromint Sweet Talker Phonetic Speech Synthesizer Interface
 }
 
 void apple2gs_cards(device_slot_interface &device)
