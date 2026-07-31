@@ -125,7 +125,9 @@ a2bus_agraphtablet_device::a2bus_agraphtablet_device(const machine_config &mconf
 	m_rom(*this, AGRAPHTABLET_ROM_REGION),
 	m_joy3x(*this, "joystick_3_x"),
 	m_joy3y(*this, "joystick_3_y"),
-	m_joy3buttons(*this, "joystick_3_buttons")
+	m_joy3buttons(*this, "joystick_3_buttons"),
+	m_xpos(*this, "tablet_xpos"),
+	m_ypos(*this, "tablet_ypos")
 //  m_mouseb(*this, MOUSE_BUTTON_TAG),
 //  m_mousexy(*this, { MOUSE_XAXIS_TAG, MOUSE_YAXIS_TAG })
 {
@@ -146,6 +148,9 @@ void a2bus_agraphtablet_device::device_start()
 	save_item(NAME(m_tabletmax));
 	save_item(NAME(m_tabletoffscale));
 	save_item(NAME(m_timervalue));
+	m_xpos.resolve();
+	m_ypos.resolve();
+	
 }
 
 void a2bus_agraphtablet_device::device_reset()
@@ -166,26 +171,34 @@ uint8_t a2bus_agraphtablet_device::read_c0nx(uint8_t offset)
 	int value = 0;
 	if (offset == 0)       // DEV1 C080,X
 	{
-		// select x axis
+		// select x axis  start timer
 		m_timervalue = (m_tabletmax - m_tabletmin) / 255.0 * m_joy3x->read() + m_tabletmin;
 		if (m_joy3buttons->read() & 0x10) { m_timervalue = m_tabletoffscale; }
+		m_xpos = m_timervalue;
 		return value;
 	}
 	else if (offset == 1)  // DEV0 C081,X
 	{
-		// select y axis
+		// select y axis  start timer
 		m_timervalue = (m_tabletmax - m_tabletmin) / 255.0 * m_joy3y->read() + m_tabletmin;
 		if (m_joy3buttons->read() & 0x10) { m_timervalue = m_tabletoffscale; }
+		m_ypos = m_timervalue;
 		return value;
 	}
 	else if (offset == 2)  // DEV3 C082,X  = low 4 bits of counter
 	{
 		// Return a value if the pen is removed from the surface (simulated here by pressing a joystick button)
-		// reason we XOR is because the outputs from the 74S161 are inverted
-		value= ((m_timervalue & 0x0f)) ^ 0x7;  // only the 3 lowest bits
+		// reason we XOR is because the outputs from the 74S161 are inverted by gating through an LS368
+		//u8 xorvalue = 0x0f;  // clearly creates unstable position values
+		u8 xorvalue = 0x07;
+		value = ((m_timervalue & 0x0f)) ^ xorvalue;  // invert only the 3 lowest bits 
+		// the msb of the lower four doesn't get inverted, because of the way it is used to clock both of the 85L54 chips
+		// clock of the 85L54 works on positive transition
+		// 0 1111   
+		// 1 0000  <- increments on negative transition   (don't care about the first countup being missedss
 		return value;
 	}
-	else if (offset == 3)  // DEV2 C083,X = high 4 bits of counter
+	else if (offset == 3)  // DEV2 C083,X = high 8 bits of counter
 	{
 		// return high 8 bits of counter
 		value = (m_timervalue & 0xff0) >> 4;

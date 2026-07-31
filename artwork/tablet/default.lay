@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<!--
+license:CC0-1.0
+-->
+<mamelayout version="2">
+
+<element name="target">
+<image file="target.png">
+</image>
+</element>
+
+
+
+<element name="tabimg" >
+<rect>
+<bounds left="0" right="1200" top="0" bottom="1200"/>
+<color red="1.0" blue="1.0" green="0.5" />
+
+</rect>
+
+<image file="AIIGT_CLR_25square.jpg">
+<bounds left="0" right="1200" top="0" bottom="1200"/>
+<!-- needs coords or gets default of 0 to 1 -->
+</image>
+<text string="YES">
+<color red="1.0" blue="1.0" green="0.5" />
+<bounds left="0" right="1200" top="0" bottom="1200"/>
+</text>
+</element>
+
+
+	<view name="Internal Layout">
+
+		<element ref="tabimg">
+		<bounds left="0" right="200" top="0" bottom="200"/>
+
+</element>
+<element ref="target" id="target">
+<bounds left="20" right="30" top="20" bottom="30"/>
+</element>
+		<bounds left="0" right="200" top="0" bottom="200"/>
+
+	</view>
+
+
+
+
+
+<script>
+<![CDATA[
+    -- file is the layout file object
+    -- set a function to call after resolving tags
+    
+    file:set_resolve_tags_callback(
+        function ()
+    
+	file.views["Internal Layout"]:set_pointer_updated_callback(
+
+		function(ptype,pid,did,x,y,but,pbut,rbut,click)
+		print("type="..ptype,pid,did,"x="..x,y,but,pbut,rbut,click)	
+		--print("joyx",joyx)
+
+
+		if machine.ioport.ports[":gameio:dpjoy:joystick_1_x"] then
+		
+		-- two differnt ways to reference, one is with file, other with machine
+		
+		joyx = file.device:ioport(":gameio:dpjoy:joystick_1_x").fields["P1 Joystick X"]
+		joyy = file.device:ioport(":gameio:dpjoy:joystick_1_y").fields["P1 Joystick Y"]
+		joyb0 = file.device:ioport(":gameio:dpjoy:joystick_buttons").fields["P1 Button 1"]
+		
+		joyx = machine.ioport.ports[":gameio:dpjoy:joystick_1_x"].fields["P1 Joystick X"]
+		joyy = machine.ioport.ports[":gameio:dpjoy:joystick_1_y"].fields["P1 Joystick Y"]
+		joyb0 = machine.ioport.ports[":gameio:dpjoy:joystick_buttons"].fields["P1 Button 1"]    
+		joyx:set_value(math.floor(x*150)) joyy:set_value(math.floor(y*150)) 
+		joyb0:set_value(but & 1)
+		end
+
+		-- apple graphics tablet
+
+		if machine.ioport.ports[":sl2:agraphtablet:joystick_3_x"] then
+		joyx = machine.ioport.ports[":sl2:agraphtablet:joystick_3_x"].fields["P3 Joystick X"]
+		joyy = machine.ioport.ports[":sl2:agraphtablet:joystick_3_y"].fields["P3 Joystick Y"]
+		joyb0 = machine.ioport.ports[":sl2:agraphtablet:joystick_3_buttons"].fields["P5 Button 1"]    
+		joyx:set_value(math.floor(x*255)) joyy:set_value(math.floor(y*255)) 
+		joyb0:set_value(but & 1)
+		
+		viewx = x
+		viewy = y
+		
+		end
+
+		-- regular apple 2 joystick (like koalapad)
+
+	 	if machine.ioport.ports[":gameio:joy:joystick_1_x"] then
+		joyx = machine.ioport.ports[":gameio:joy:joystick_1_x"].fields["P1 Joystick X"]
+		joyy = machine.ioport.ports[":gameio:joy:joystick_1_y"].fields["P1 Joystick Y"]
+		joyb0 = machine.ioport.ports[":gameio:joy:joystick_buttons"].fields["P1 Button 1"]    
+		joyx:set_value(math.floor(x*255)) joyy:set_value(math.floor(y*255)) 
+		joyb0:set_value(but & 1)
+		end
+
+		-- Atari Paddle (like Atari Artist with CX77 Touch Tablet)
+
+	 	if machine.ioport.ports[":ctrl1:pad:POTX"] then
+		joyx = machine.ioport.ports[":ctrl1:pad:POTX"].fields["Paddle"]
+		joyy = machine.ioport.ports[":ctrl1:pad:POTY"].fields["Paddle 2"]
+		joyb0 = machine.ioport.ports[":ctrl1:pad:JOY"].fields["P1 Button 1"]    
+		joyx:set_value(math.floor(x*228)) joyy:set_value(228-math.floor(y*228)) 
+		joyb0:set_value(but & 1)
+		end
+		
+		mousex = x
+		mousey = y
+		end)
+
+	file.views["Internal Layout"].items["target"]:set_bounds_callback(
+		function( b )
+		-- if not b==nil then print(b) end
+		mousex = mousex or 0
+		mousey = mousey or 0
+		return emu.render_bounds(mousex-0.02,mousey-0.02,mousex+0.02,mousey+0.02)
+		end)
+	
+	end)	
+
+
+	function d() 
+	if machine.ioport.ports[":gameio:dpjoy:joystick_1_x"] then
+	joyxp = file.device:ioport(":gameio:dpjoy:joystick_1_x") 
+	joyyp = file.device:ioport(":gameio:dpjoy:joystick_1_y")
+	end
+	if machine.ioport.ports[":sl2:agraphtablet:joystick_3_x"] then
+	joyxp = machine.ioport.ports[":sl2:agraphtablet:joystick_3_x"]
+	joyyp = machine.ioport.ports[":sl2:agraphtablet:joystick_3_y"]
+	end
+	if machine.ioport.ports[":ctrl1:pad:POTX"] then
+		joyxp = machine.ioport.ports[":ctrl1:pad:POTX"]
+		joyyp = machine.ioport.ports[":ctrl1:pad:POTY"]    
+	end
+		
+	
+	machine.screens:at(1):draw_text(0,0,"pos="..joyxp:read()..","..joyyp:read()) 
+	out = machine.output
+--	if machine.time:as_double() > 5 then
+	machine.screens:at(1):draw_text(100,0,"pos="..out:get_value("tablet_xpos")..","..out:get_value("tablet_ypos").."      *3/2="..(out:get_value("tablet_xpos")*3/2)..","..(out:get_value("tablet_ypos")*3/2))
+	if viewx then machine.screens:at(1):draw_text(400,0,"view="..string.format("%.4f",viewx)..","..string.format("%.4f",viewy))
+	end
+--	end
+	end
+
+if emu.register_frame_done then emu.register_frame_done(d) end
+
+
+function printt(t) for i,j in pairs(t) do print(i,j) end end
+print("hello")
+--printt(getmetatable(emu))
+]]></script>
+
+
+</mamelayout>
+

@@ -47,11 +47,39 @@
 
 	The firmware is limits the maximum raw value to 0xa00 (2560 decimal) 
 	which is less than the full 12 bit 4096 range.
-	The minimum raw value is 0x60+1 (97 decimal).
+	The minimum raw value is 0x60+1 (97 decimal).  (0.485 inch at 200 dpi = Approx 0.5 inch)
 
 	The tablet active area is approximately 12x12 inches at 200 dpi resolution.  
 	The range from 97 to 2560 = 2463 which is approximately 2400 (12 inches * 200 dpi).
 
+	Just as a point of comparison, the Bitpad One manual describes the coordinate data sent on the rs232
+	interface with units that range from 0000 to 2200 decimal (in English 200dpi (.005 inch) units),
+	also ranging from 0000 to 2794 decimal (in Metric units (.1 mm units)).
+
+	The numbers returned by the firmware appear to take the count received and multiply that by 3,
+	so if we calibrate the values returned to the full 97 to 2560 range, it will return values from
+	291 to 7650   (note that 30 * 255 = 7650).  This appears to fit within a 4 digit coordinate XXXX.
+
+	When the Apple Graphics Tablet disk does its menu calibration, it appears to take these values
+	and divide them by two.
+	
+	If you look at original values from the calibration, it appears to make the range go in
+	values that make a range of 2800 (which approximates the apple graphics x coordinate of 280 pixels across).
+	This probably facilitates calculations.
+	
+	Original calibration values on the Apple Graphics Tablet disk is
+	2
+	293
+	326
+	3090
+	3118
+	
+	Looking at the x coordinate it runs from 293 to 3090 and the range is (3090-293) = 2797 which is approx 2800.
+	Looking at the y coordinate it runs from 326 to 3118 and the range is (3118-326) = 2792 which is approx 2800.
+	
+	
+	
+	
     LDA C082,X returns the lower 4 bits of the timer.  Bits 0-2 are inverted from a 74LS368
     hex bus driver.
 
@@ -133,16 +161,85 @@ emu.keypost('50 HGR\n100 PR#2\n105 PRINT "T1,P"\n110 PR#0\n200 IN#2\n210 INPUT A
 default offset 1536 = 0x600
 default scale = 16 (divides by 16)
 
+D = DEFAULT
+R = use scaling divisor
+P = stream mode
+
 PRINT "D,T1,P,R" will give a range from -77 to 269
 
 PRINT "D,T1,P,R,X0,Y0" will give a range from +18 to +365
 
 PRINT "D,T1,P,R,X0,Y0,S1" will give ranges from +291 to +5853   (same as without R)
-PRINT "D,T1,P,R,X0,Y0,S1" will give ranges from +145 to +2926
+PRINT "D,T1,P,R,X0,Y0,S2" will give ranges from +145 to +2926
 
 
 
 emu.keypost('NEW\n90 ONERR GOTO 150\n100 D$=CHR$(4)\n110 F$="TAB.INFORMATION":PRINT D$"OPEN "F$:PRINT D$"READ "F$\n120 INPUT A$\n130 PRINT A$\n140 GOTO 120\n150 PRINT D$"CLOSE "F$\nRUN\n')
+
+
+The active area is 12x12, the menu overlay consists of a 22x22 grid of half-inch squares, 
+with an extra half inch around the perimeter.  There are 4 small alignment dots at the
+corners of the grid for calibrating the menu.
+
+The tablet information file TAB.INFORMATION on the disk is 5 values, each on a separate line.`
+The tablet slot number, upper left x and y, then lower right x and y.
+
+High resolution scan of the menu overlay at 600 dpi is 7088x7304.
+
+
+
+NEW
+10 D$ = CHR$(4)
+20 F$ = "TAB.INFORMATION"
+30 ONERR GOTO 100
+40 PRINT D$; "OPEN "; F$
+50 PRINT D$; "READ "; F$
+60 INPUT A$
+70 PRINT A$
+80 GOTO 60
+100 PRINT D$; "CLOSE "; F$
+110 PRINT "DONE READING FILE."
+
+min=94
+max=2078
+
+
+min = 97
+max = 2060
+gives values of
+2
+249
+249
+2985
+2910
+range = 2740,2665
+
+97-2080
+gives values of
+2
+249
+255
+3020
+2932
+range = 2771,2677
+
+160-2200
+gives values of
+2
+348
+348
+3198
+3114
+range = 2850,2774
+
+102-2160
+2
+264
+264
+3194
+3102
+range = 2930,2838
+
 
 
 *********************************************************************/
@@ -191,7 +288,9 @@ class a2bus_agraphtablet_device: public device_t,
 	//required_ioport m_mouseb;
 	//required_ioport_array<2> m_mousexy;
 
-	//  int m_tabletmax = 2560;  // maximum value of the timer counters is 0xa00  = 2560
+	output_finder<> m_xpos, m_ypos;
+
+	//  int m_tabletmax = 2560;  // maximum valuez of the timer counters is 0xa00  = 2560
 	//  int m_tabletmin = 97;    // minimum value of the timer counters is 0x60+1 = 97
 	//  values outside of this range is considered "off-scale"
 
@@ -202,17 +301,20 @@ class a2bus_agraphtablet_device: public device_t,
 	*/
 
 	//  values that work better for apple graphics tablet disk
-	int m_tabletmin = 0x000+97;   // minimum value is 0x60+1 = 97
-	int m_tabletmax = 0x800-97;   // range 0-97,512,927-1024     // maximum value is 0xa00  = 2560
+	//int m_tabletmin = 0x000+97;   // minimum value is 0x60+1 = 97
+	//int m_tabletmax = 0x800-97;   // range 0-97,512,927-1024     // maximum value is 0xa00  = 2560
 	int m_tabletoffscale = 0xa01;  // value to return when pen is off the surface
-
+    
+    int m_tabletmin = 97;   // minimum value is 0x60+1 = 97
+	int m_tabletmax = 2200;   // range 0-97,512,927-1024     // maximum value is 0xa00  = 2560
+	
 	// tuning the tablet can be done from the mame debugger memory window,
 	//  just search for the Apple Graphics Tablet/:sl2
 	// tuning the tablet can be done from the mame lua console:
 	// too high values or too low values go "off scale"
-		// emu.item(manager:machine().devices[":sl2:agraphtablet"].items["0/m_tabletmax"]):write(0,2560)
-	// emu.item(manager:machine().devices[":sl2:agraphtablet"].items["0/m_tabletmin"]):write(0,100)
-	// emu.item(manager:machine().devices[":sl2:agraphtablet"].items["0/m_tabletoffvalue"]):write(0,0x60)
+	// emu.item(manager.machine.devices[":sl2:agraphtablet"].items["0/m_tabletmax"]):write(0,2560)
+	// emu.item(manager.machine.devices[":sl2:agraphtablet"].items["0/m_tabletmin"]):write(0,100)
+	// emu.item(manager.machine.devices[":sl2:agraphtablet"].items["0/m_tabletoffvalue"]):write(0,0x60)
 	//
 	// some of the offsets used by the firmware can be tuned on the fly as well.
 	// see page 64 of the Apple Graphics Tablet Reference manual
@@ -220,8 +322,8 @@ class a2bus_agraphtablet_device: public device_t,
 	// OFFXH = $0638 + MSLOT
 	// MSLOT = $CX where X is the slot number
 	// this will set the X offset to 0x600  or 1536
-	// print(manager:machine().devices[":maincpu"].spaces["program"]:write_u8(0x5b8+0xc2,0))
-	// print(manager:machine().devices[":maincpu"].spaces["program"]:write_u8(0x638+0xc2,6))
+	// print(manager.machine.devices[":maincpu"].spaces["program"]:write_u8(0x5b8+0xc2,0))
+	// print(manager.machine.devices[":maincpu"].spaces["program"]:write_u8(0x638+0xc2,6))
 
 	int m_timervalue;  // timer return value
 	private:
